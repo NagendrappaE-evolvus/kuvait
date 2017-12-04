@@ -1,0 +1,19 @@
+<div class="dropdown" style="margin:0;padding:0;">
+  <button type="button" class="form-control" style="margin: 0;padding: 2px 0 0 10px; background-color:transparent;" ng-click="toggleSelect()" ng-disabled="disabled" class="form-control" ng-class="{'error': !valid()}">
+    <span class="pull-left" >{{header}}</span>
+    <span class="caret pull-right" style="margin: 10px;"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li>
+      <input class="form-control" type="text" ng-model="searchText.label" autofocus="autofocus" placeholder="Filter" />
+    </li>
+    <li ng-show="multiple">
+      <button class="btn-link btn-small" ng-click="checkAll()"><i class="glyphicon glyphicon-ok"></i> Check all</button>
+      <button class="btn-link btn-small" ng-click="uncheckAll()"><i class="glyphicon glyphicon-remove"></i> Uncheck all</button>
+    </li>
+    <li ng-repeat="i in items | filter:searchText">
+      <a ng-click="select(i); focus()">
+        <i style="color:#23527c" ng-class="{'glyphicon glyphicon-ok': i.checked, 'glyphicon glyphicon-empty': !i.checked}"></i>&nbsp;{{i.label}}</a>
+    </li>
+  </ul>
+</div>

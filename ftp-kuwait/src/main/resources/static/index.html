@@ -1,0 +1,89 @@
+<!Doctype html>
+<html class="no-js">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<link rel="stylesheet" href="css/bootstrap/bootstrap.css">
+<link rel="stylesheet" href="css/alertify/alertify.min.css">
+<link rel="stylesheet" href="css/style.css">
+
+<!--[if IE]>
+    <link rel="stylesheet" href="css/ie.css" /> 
+<![endif]-->
+<link rel="stylesheet" href="css/datetime/datepicker.css">
+<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+<!-- Angular specific scripts -->
+
+<script src="js/angular/lib/angular.min.js" type="text/javascript"></script>
+<script src="js/angular/lib/angular-animate.min.js" type="text/javascript"></script>
+<script src="js/angular/lib/angular-route.min.js" type="text/javascript"></script>
+<script src="js/angular/third-party/ui-router/angular-ui-router.min.js" type="text/javascript"></script>
+<script src="js/angular/third-party/datetime/datepicker.js"
+	type="text/javascript"></script>
+<script src="js/angular/third-party/session/activity-monitor.min.js"
+	type="text/javascript"></script>	
+<script src="js/angular/third-party/pagination/angular.dirPagination.js"
+	type="text/javascript"></script>
+
+<script src="js/angular/third-party/highcharts/highcharts.js"
+	type="text/javascript"></script>
+
+<script src="js/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
+<script src="js/bootstrap/bootstrap.min.js" type="text/javascript"></script>
+<script src="js/angular/bootstrap/ui-bootstrap-2.5.0.min.js"
+	type="text/javascript"></script>
+
+<script src="js/angular/bootstrap/ui-bootstrap-tpls-2.5.0.min.js"
+	type="text/javascript"></script>
+<script src="js/angular/third-party/chips/angular-chips.min.js"
+	type="text/javascript"></script>	
+
+<title>Fund Transfer Pricing</title>
+</head>
+<body ng-app="FTPUiApp">
+	<div ui-view="home"></div>
+
+	<div class="lightgreybg achfooter">
+		<div class=" headcontrol">
+			<div class="col-md-6">&copy; Copyright <script type="text/javascript">document.write(new Date().getFullYear());</script> Al Ahli Bank of Kuwait
+			</div>
+			<div class="col-md-6">	<a class="navbar-brand brand-logo-link pull-right" style="margin: -15px;" target="_blank" href="https://www.evolvussolutions.com/"> <img
+						alt="Evolvus Solutions" src="images/evolvus.png">
+					</a> </div>			
+		</div>
+	</div>
+
+
+	<!--Application specific scripts go here -->
+	<!-- app -->
+	<script src="js/app/app.js" type="text/javascript"></script>
+	<script src="js/properties.js" type="text/javascript"></script>
+	
+	<!-- directives -->
+	<script src="js/angular/third-party/files/fileDirective.js" type="text/javascript"></script>
+	<script src="js/angular/third-party/multiselect/multiselect.js"	type="text/javascript"></script>
+	<!-- services -->
+	<script src="js/services/fileService.js" type="text/javascript"></script>
+	<script src="js/services/masterService.js" type="text/javascript"></script>
+	<script src="js/services/producService.js" type="text/javascript"></script>
+	<script src="js/services/ruleService.js" type="text/javascript"></script>
+	<script src="js/services/schemeService.js" type="text/javascript"></script>
+	<script src="js/services/ruleMappingService.js" type="text/javascript"></script>
+	<script src="js/services/authenticationService.js" type="text/javascript"></script>
+	<script src="js/services/userService.js" type="text/javascript"></script>
+	
+	<!-- controllers -->
+	<script src="js/controller/dashboardController.js" type="text/javascript"></script>
+	<script src="js/controller/fileController.js" type="text/javascript"></script>
+	<script src="js/controller/loginController.js" type="text/javascript"></script>
+	<script src="js/controller/masterController.js" type="text/javascript"></script>
+	<script src="js/controller/productsController.js" type="text/javascript"></script>
+	<script src="js/controller/schemeCodesController.js" type="text/javascript"></script>
+	<script src="js/controller/ruleMappingController.js" type="text/javascript"></script>
+	<script src="js/controller/manageRuleMappingController.js" type="text/javascript"></script>
+	<script src="js/controller/userController.js" type="text/javascript"></script>
+	<!-- Non - angular scripts -->
+	<script src="js/angular/alertify/alertify.min.js" type="text/javascript"></script>
+	<script src="js/angular/alertify/ngAlertify.js" type="text/javascript"></script>
+</body>
+
+</html>

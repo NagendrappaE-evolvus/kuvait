@@ -1,0 +1,54 @@
+<nav class="navbar navbar-default content-header titlebar">
+	<div class="headcontrol">
+		<label class="pull-right username-display">Region -&nbsp;<strong style="color:#0077c0;margin-right:30px">{{user.entity.regionName}}</strong><strong>{{user.name}}</strong> <span
+			class="glyphicon glyphicon-user"
+			style="background-color: #eeeeee; padding: 5px; border-radius: 15px;"></span>
+		</label>
+		<div class="container-fluid">
+			<div class="col-md-6 col-xs-6">
+				<div class="navbar-header">
+					<a class="navbar-brand brand-logo-link" ui-href="#"> <img
+						class="brand-image" alt="ABK" src="images/abk_logo.png"> <span
+						class="brand-text">Al Ahli Bank of Kuwait</span>
+					</a>
+				</div>
+				<h3 class="" style="color: #0077c0;">Fund Transfer Pricing</h3>
+			</div>
+			<div class="col-md-6 col-xs-6 app-menu">
+				<ul class="nav nav-pills pull-right">
+					<li role="navigation" ui-sref-active="active"><a
+						ui-sref="home.welcome">Home</a></li>
+					<li role="navigation" ui-sref-active="active"><a
+						ui-sref="home.rate-upload">Upload</a></li>
+					<li role="navigation" ui-sref-active="active" class="dropdown"><a
+						class="dropdown-toggle" data-toggle="dropdown" href="#"
+						onclick="return false;" role="button" aria-haspopup="false"
+						aria-expanded="true">Products &nbsp;<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li ng-repeat="product in products | orderBy:'productName'"><a
+								ui-sref="home.products({code:product.productCode,name:product.productName})">{{product.productName}}</a></li>
+						</ul></li>
+					<li role="navigation" ui-sref-active="active" class="dropdown"><a
+						class="dropdown-toggle" data-toggle="dropdown" href="#"
+						onclick="return false;" role="button" aria-haspopup="false"
+						aria-expanded="true">Configuration &nbsp;<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a
+								ui-sref="home.ruleMappings({targetType:'COA',targetTypeDesc:'Chart Of Accounts'})">Chart
+									Of Account</a></li>
+							<li><a
+								ui-sref="home.ruleMappings({targetType:'ORGH',targetTypeDesc:'Organization Hierarchies'})">Organization
+									Hierarchies</a></li>
+							<li><a ui-sref="home.schemecodes">Scheme Codes</a></li>
+							<li><a ui-sref="home.user-mgmt">User Management</a></li>
+						</ul></li>
+					<li role="navigation"><a ui-sref="#"
+							ng-click="logout()">
+							Log Out<span class="glyphicon glyphicon-log-out"></span>
+						</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</nav>
+<div ui-view="child"></div>

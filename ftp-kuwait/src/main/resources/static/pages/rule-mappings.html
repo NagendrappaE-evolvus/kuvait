@@ -1,0 +1,221 @@
+<div class="container ">
+	<div class="main-content">
+		<h3 >{{ruleMap.targetTypeDesc}}</h3>
+			<div class="jumbotron fileinput">
+				<label class="col-md-offset-3" ng-class="{'errortext':status}">{{message}}</label>
+				<div class="formcontrol">
+					<form class="form-horizontal" name="schemeMapForm" novalidate>
+						<div class="form-group form-group-md">
+							<label class="col-md-3 control-label" for="productName">
+								Product Name</label>
+							<div class="col-md-4">
+								<select class="form-control" id="productName" name="productName"
+									ng-change="fetchProduct()" ng-model="ruleMap.productCode"
+									ng-options="product.productCode as product.productName for product in products">
+									<option value="">Select</option>
+								</select>
+							</div>
+							<button type="button"
+								ng-disabled="ruleMap.productCode==null || ruleMap.productCode==''"
+								class="btn btn-orange btn-default"
+								ng-click="addTargetClicked()" data-toggle="modal"
+								data-target=".add-edit-assign-rule-modal">
+								Add {{ruleMap.targetTypeDesc}} <span
+									class="glyphicon glyphicon-plus pull-left"></span>
+							</button>
+						</div>
+
+						<div class="form-group form-group-md">
+							<label class="col-md-3 control-label" for="productName">
+								Search {{ruleMap.targetTypeDesc}}</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<input type="text" ng-model="search.$" class="form-control"
+										placeholder="Search" /> <span class="input-group-btn">
+										<button class="btn btn-default" type="button">
+											<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+										</button>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="panel panel-default"
+							ng-repeat="target in targets  | filter:search">
+							<div class="panel-heading">
+								<button type="button"
+									class="btn btn-small small-button pull-right"
+									data-toggle="modal"
+									data-target=".add-edit-assign-rule-modal"
+									ng-click="editTarget(target,ruleMap.targetType,ruleMap.productCode,'delete')">
+									<span class="glyphicon glyphicon-trash"></span>
+								</button>
+								<button type="button"
+									class="btn btn-small small-button pull-right"
+									data-toggle="modal"
+									data-target=".add-edit-assign-rule-modal"
+									ng-click="editTarget(target,ruleMap.targetType,ruleMap.productCode,'edit')">
+									<span class="glyphicon glyphicon-edit"></span>
+								</button>
+								<strong>{{target}} </strong>
+							</div>
+							<div style="" ng-class="panel-body ">
+								<table style="margin-bottom: 0px;" class="table table-bordered">
+									<thead>
+										<tr>
+											<th style="width: 25%">Rule Name</th>
+											<th style="width: 75%">Expressions</th>
+										</tr>
+									</thead>
+								</table>
+								<div class="table-responsive">
+									<table style="margin-bottom: 0px;" class="table table-bordered"
+										ng-repeat="rule in ruleMap.product.ruleMappings | filter:{ruleTarget:target}">
+
+										<tbody>
+											<tr>
+												<td style="width: 25%"><label class="control-label"
+													style="margin: 2px;"><strong>{{rule.ruleName}}</strong></label>
+												</td>
+												<td style="width: 75%">
+													<ul class="pagination" style="margin: 2px;"
+														ng-repeat="expression in rule.expressions | groupBy:'expName'">
+														<div ng-if="expression.expName_CHANGED" style="display: block"></div>
+														<li><label class="btn btn-default pull-left"
+															style="margin: 2px;"
+															ng-if="expression.expName_CHANGED"><strong>{{expression.expName}}</strong></label>
+															<label style="margin: 2px;" class="btn btn-default">{{expression.expValue}}</label>
+														</li>
+													</ul>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+
+					</form>
+				</div>
+			</div>
+	</div>
+</div>
+<div class="modal fade add-edit-assign-rule-modal" tabindex="-1"
+	role="dialog" aria-labelledby="addEditAssignRuleModal">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="modalTitleId">Add / Edit
+					{{ruleMap.targetTypeDesc+' - '+ ruleMap.productCode}}</h4>
+			</div>
+			<div class="modal-body">
+				<label class="col-md-offset-3" ng-class="{'errortext':modalStatus}">{{modalMessage}} <button class="btn btn-link" ng-click="createNewRuleMap()" ng-if="modalMessage &&  !modalStatus" >Create New</button></label>
+				<div class="formcontrol">
+					<form class="form-horizontal" name="modalForm" novalidate>
+						<div class="form-group form-group-md">
+							<label class="col-md-4 control-label" for="modalTarget">
+								Target</label>
+							<div class="col-md-5">
+								<input class="form-control" id="modalTarget" name="modalTarget"
+									ng-model="modalData.modalTarget" type="text" required="true" />
+							</div>
+						</div>
+						<div class="table-responsive panel-body">
+							<table style="margin-bottom: 0px;" class="table table-bordered">
+								<thead>
+									<tr>
+										<th style="width: 25%">Rule Name</th>
+										<th style="width: 70%">Expressions</th>
+										<th style="width: 5%">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr
+										ng-repeat="ruleMap in modalData.ruleMappings track by $index"
+										ng-init="ruleIndex = $index" ng-hide="ruleMap.crudOperation==='3'">
+										<td style="width: 25%"><input class="form-control"
+											ng-model="ruleMap.ruleName" style="margin: 2px;" />
+											<p class="wrap-all">
+												<strong> {{ruleMap.ruleName}} </strong>
+											</p></td>
+										<td style="width: 75%">
+											<div class="row"
+												ng-repeat="expression in ruleMap.expressions track by $index"
+												ng-init="expIndex = $index" ng-hide="expression.crudOperation==='3'">
+												<div class="col-md-3">
+													<input class="form-control" ng-model="expression.expName"
+														placeholder="Key Name" style="margin: 2px;" />
+													<p class="wrap-all">
+														<strong> {{expression.expName}} </strong>
+													</p>
+												</div>
+												<div class="col-md-7">
+													<chips ng-model="expression.expValues"
+														render="renderValue(data)"> <chip-tmpl>
+													<div class="default-chip">
+														{{chip}} <span class="glyphicon glyphicon-remove"
+															remove-chip="deleteChip(data)"></span>
+													</div>
+													</chip-tmpl> <input chip-control name="expValue"
+														placeholder="Enter the Value"></input> </chips>
+													<span class="infotext">Type a value and press <span
+														class="label label-info">Enter</span>.
+													</span>
+												</div>
+												<div class="col-md-1 nopadding">
+													<button type="button"
+														class="btn btn-small small-button"
+														ng-click="deleteExpression(expIndex,ruleIndex)">
+														<span class="glyphicon glyphicon-remove"></span>
+													</button>
+												</div>
+											</div>
+											<button type="button"
+												class="btn btn-small small-button pull-right"
+												ng-click="addAnExpression(ruleIndex)" data-toggle="tooltip" data-placement="top" title="Add Expression"> 
+												<span class="glyphicon glyphicon-plus"></span>
+											</button>
+										</td>
+										<td style="width: 5%; vertical-align: top; text-align: center">
+											<button type="button"
+												class="btn btn-small small-button pull-right"
+												ng-click="deleteRuleMap(ruleIndex)">
+												<span class="glyphicon glyphicon-trash"></span>
+											</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="form-group-md padding-5px0px" >
+								<button type="button" id="saveRule" name="saveRule"
+									class="btn btn-default btn-orange pull-right margin-5px2px"
+									ng-click="saveRuleMap()">
+									Save Rules</span>
+								</button>
+								<button type="button" id="deleteRule" name="deleteRule"
+									class="btn btn-default btn-orange pull-right margin-5px2px" ng-disabled="ruleDeleted"
+									ng-click="removeRuleMaps()" ng-show="ruleMap.action=='delete'">
+									Delete Rules</span>
+								</button>
+								<button type="button" id="addRule" name="addRule"
+									class="btn btn-default btn-orange pull-right margin-5px2px"
+									ng-click="addARuleMap()">
+									&nbsp;Add Rule <span class="glyphicon glyphicon-plus pull-left"></span>
+								</button>
+							</div>
+						</div>
+
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

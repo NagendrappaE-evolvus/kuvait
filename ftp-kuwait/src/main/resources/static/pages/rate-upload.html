@@ -1,0 +1,89 @@
+<div class="container ">
+	<div class="main-content">
+		<h3>
+			Upload File
+		</h3>
+		<div class="jumbotron fileinput fileinput-new">
+			<label class="col-md-offset-3">{{message}}</label>
+			<div class="formcontrol">
+
+				<form class="form-horizontal" name="uploadForm" novalidate>
+				
+					<div class="form-group form-group-md">
+						<label class="col-md-3 control-label" for="applicableDate">
+							Applicable Date</label>
+						<div class="col-md-4">
+							<div class="input-group">
+								<input type="text" class="form-control" uib-datepicker-popup 
+									id="applicableDate" placeholder="Applicable Date"
+									name="applicableDate" ng-model="applicableDate" is-open="dateOpen"
+									ng-pattern="patterns.dateFormatKw"
+									ng-click="dateOpen=true"
+									ng-required="true"
+									datepicker-options="dateOptions" close-text="Close" /> <span
+									class="input-group-btn">
+									<button type="button" class="btn btn-default"
+										ng-click="dateOpen=true" id="calButton">
+										<i class="glyphicon glyphicon-calendar"></i>
+									</button>
+								</span>
+							</div>
+							<span class="errortext" ng-show="!uploadForm.applicableDate.$pristine && uploadForm.applicableDate.$invalid">Please
+								select a Date from Calendar.</span>
+						</div>
+					</div>
+				
+					<div class="form-group form-group-md">
+						<label class="col-md-3 control-label" for="fileType">
+							File Type</label>
+						<div class="col-md-4">
+							<select class="form-control" id="fileType" name="fileType"
+								ng-change="fileTypeChanged()" ng-model="fileType"
+								ng-options="fileType as fileType for fileType in fileTypes">
+								<option value="">Select</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- <div class="form-group form-group-md" ng-show="fileType=='Yield Curve'">
+						<label class="col-md-3 control-label" for="rateCcy">
+							Currency</label>
+						<div class="col-md-4">
+							<select  class="form-control" id="rateCcy" name="rateCcy" ng-model="rateCcy" ng-options="ccy as ccy for ccy in currencies | orderBy:ccy">
+								<option value="">Select</option>
+							</select>
+						</div>
+					</div> -->
+
+					<div class="form-group form-group-md">
+						<label class="col-md-3 control-label" for="selectedFile">
+							Select File</label>
+						<div class="col-md-4">
+							<label class="btn btn-default width-100percent" > <input type="file"
+								style="display: inline;    width:100%" file-model="selectedFile" id="selectedFile"
+								accept=".xls,.xlsx" required />
+							</label>
+						</div>
+					</div>
+					<label class="col-md-offset-3 col-md-4">{{selectedFile.name+"
+						"+(selectedFile.size!==NAN?(selectedFile.size/1024)+"KB":"")}}</label>
+					<div class="form-group form-group-md">
+						<div class="col-md-offset-3 col-md-4">
+							<button class="btn btn-default btn-orange uploadbtn"
+								ng-click="uploadForm.$valid && uploadFile()">
+								<span class="glyphicon glyphicon-upload"></span>Upload
+							</button>
+							<button type="reset" class="btn btn-default "
+								ng-click="resetFileForm()">
+								Reset
+							</button>
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+
+	</div>
+</div>
+

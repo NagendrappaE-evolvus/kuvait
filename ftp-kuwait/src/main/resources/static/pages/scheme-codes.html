@@ -1,0 +1,233 @@
+<div class="container ">
+	<div class="main-content">
+		<uib-tabset active="active"> <uib-tab index="0"
+			heading="Product & Scheme Code Mappings">
+		<div class="jumbotron fileinput fileinput-new">
+			<label class="col-md-offset-3" ng-class="{'errortext':status}">{{message}}</label>
+			<div class="formcontrol">
+				<form class="form-horizontal" name="schemeMapForm" novalidate>
+					<div class="form-group form-group-md">
+						<div class="col-md-offset-3 col-md-4">
+							<label class="radio-inline"> <input type="radio"
+								name="userAction" id="updateMap"
+								ng-checked="schemeMap.action=='update'"
+								ng-change="actionPerformed(schemeMapForm)"
+								ng-model="schemeMap.action" value="update"> <strong>Configure</strong>
+							</label> <label class="radio-inline"> <input type="radio"
+								name="userAction" id="viewMap"
+								ng-checked="schemeMap.action=='view'"
+								ng-change="actionPerformed(schemeMapForm)"
+								ng-model="schemeMap.action" value="view"> <strong>Enquiry</strong>
+							</label>
+						</div>
+					</div>
+					<div class="form-group form-group-md">
+						<label class="col-md-3 control-label" for="productName">
+							Product Name</label>
+						<div class="col-md-4">
+							<select class="form-control" id="productName" name="productName"
+								ng-change="fetchProduct()" ng-model="schemeMap.productCode"
+								ng-options="product.productCode as product.productName for product in products">
+								<option value="">Select</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group form-group-md">
+						<label class="col-md-3 control-label" for="schmCode">Scheme
+							Codes</label>
+						<!-- chips design -->
+						<div class="col-md-8">
+							<chips ng-model="schemeMap.prodSchemes"
+								render="renderSchemes(data)"> <chip-tmpl>
+							<div class="default-chip">
+								<strong>{{chip.schmCode}}</strong> {{"- "+chip.glSubHeadCode
+								+(chip.ftpCategory!=null && chip.ftpCategory!==' ' ?"- "+
+								chip.ftpCategory:"")}} <span
+									class="pull-right glyphicon glyphicon-remove"
+									remove-chip="deleteSchemeChip(chip)"></span>
+							</div>
+							</chip-tmpl> <input ng-model-control placeholder="Type Scheme Codes"
+								ng-disabled="schemeMap.action=='view'" ng-model="typeaheadmodel"
+								uib-typeahead="scheme as (scheme.schmCode+'-'+scheme.schmDesc+'-'+scheme.glSubHeadCode+'-'+scheme.ftpCategory) for scheme in availableSchemes | filter:$viewValue"></input>
+							</chips>
+							<span class="infotext" ng-show="schemeMap.action=='update'">Please
+								select Schemes from list.</span>
+						</div>
+						<!-- /chips design -->
+					</div>
+					<div class="form-group form-group-md"
+						ng-show="schemeMap.action=='update'">
+						<div class="col-md-3 col-md-offset-3">
+							<button type="submit" class="btn btn-orange" id="saveCategory"
+								ng-click="saveSchemeMap(schemeMapForm)">Save</button>
+							<button type="reset" class="btn btn-default" id="resetCategory"
+								ng-click="resetSchemeMap(schemeMapForm)">Reset</button>
+						</div>
+					</div>
+					<div class="form-group form-group-md"
+						ng-show="schemeMap.action=='view'">
+						<div class="col-md-3 col-md-offset-3">
+							<button type="submit" class="btn btn-orange"
+								ng-disabled="schemeMap.productCode===''" id="editCategory"
+								ng-click="editSchemeMap(schemeMap.productCode)">Edit</button>
+							<button type="reset" class="btn btn-default" id="resetCategory"
+								ng-click="resetSchemeMap(schemeMapForm)">Reset</button>
+
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		</uib-tab> <uib-tab index="1" heading="Add / Edit Scheme Codes">
+		<div class="row">
+			<div class="fileinput col-md-6 fileinput-new">
+				<div class="panel panel-default main-content">
+					<div class="panel-heading">
+						<strong>Add / Edit Scheme Code</strong>
+					</div>
+					<div class="panel-body">
+						<label class="col-md-offset-4"
+							ng-class="{'errortext':schemeFormStatus}">{{schemeFormMessage}}</label>
+						<div class="formcontrol">
+							<form name="schemeForm" class="form-horizontal" novalidate>
+								<div class="form-group">
+									<label class="col-md-4 control-label" for="schemeCode">Scheme
+										Code</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="scheme.schemeCode"
+											class="form-control text-uppercase" ng-required="true"
+											ng-pattern="patterns.alphaNumWithUnderScore" ng-maxlength="30"
+											id="schemeCode" name="schemeCode"
+											ng-disabled="scheme.action=='view'" placeholder="Scheme Code">
+										<span class="errortext"
+											ng-show="!schemeForm.schemeCode.$pristine && schemeForm.schemeCode.$invalid">Enter
+											an alphanumeric code of length 30.</span>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-4 control-label" for="schemeDesc">Description</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="scheme.schemeDesc"
+											class="form-control" ng-required="true" ng-maxlength="100"
+											id="schemeDesc" name="schemeDesc"
+											ng-disabled="scheme.action=='view'"
+											placeholder="Scheme Description" /> <span class="errortext"
+											ng-show="!schemeForm.schemeDesc.$pristine && schemeForm.schemeDesc.$invalid">Scheme
+											description should be in alphanumeric pattern.</span>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-4 control-label" for="ftpCategory">FTP
+										Category</label>
+									<div class="col-md-7">
+										<input type="text" ng-model="scheme.ftpCategory"
+											class="form-control" ng-maxlength="100" id="ftpCategory"
+											name="ftpCategory" ng-disabled="scheme.action=='view'"
+											placeholder="FTP Category" /> <span class="errortext"
+											ng-show="!schemeForm.ftpCategory.$pristine && schemeForm.ftpCategory.$invalid">FTP
+											Category should be in alphanumeric pattern.</span>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-4 control-label" for="glSubHeadCode">GL
+										Sub Head Code</label>
+									<div class="col-md-7">
+										<input class="form-control" ng-pattern="patterns.numeric"
+											type="text" id="glSubHeadCode"
+											ng-disabled="scheme.action=='view'"
+											ng-model="scheme.glSubHeadCode" name="glSubHeadCode"
+											ng-maxlength="5" placeholder="GL Sub Head Code"> <span
+											class="errortext"
+											ng-show="!schemeForm.glSubHeadCode.$pristine && schemeForm.glSubHeadCode.$invalid">Enter
+											a numeric code of length 5.</span>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-md-6 col-md-offset-4">
+										<button type="submit" class="btn btn-orange" id="btnSave"
+											ng-disabled="scheme.action=='view'"
+											ng-show="scheme.action=='new' || scheme.action=='view'"
+											ng-click="saveScheme(schemeForm)">&nbsp;Save&nbsp;</button>
+										<button type="submit" class="btn btn-orange" id="btnUpdate"
+											ng-show="scheme.action=='edit'"
+											ng-click="updateScheme(schemeForm)">&nbsp;Update&nbsp;</button>
+										<button type="reset" class="btn btn-default" id="resetScheme"
+											ng-click="resetScheme(schemeForm)">&nbsp;Reset&nbsp;</button>
+									</div>
+								</div>
+							</form>
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="panel panel-default main-content ">
+					<div class="panel-heading">
+						<strong>Scheme Codes</strong>
+					</div>
+					<div class="panel-body">
+						<div ng-init="pageChanged()">
+							<div class="col-md-6 col-md-offset-6 input-group">
+								<input type="text" ng-model="pagination.searchString"
+									class="form-control" ng-change="searchSchemes()"
+									placeholder="Search" /> <span class="input-group-btn">
+									<button class="btn btn-default" type="button"
+										ng-click="searchSchemes()">
+										<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+									</button>
+								</span>
+							</div>
+							<p></p>
+							<table width="100%" class="table table-hover" border="0"
+								cellspacing="0" cellpadding="0">
+								<tbody>
+									<tr>
+										<th scope="col">Scheme<br>Code
+										</th>
+										<th scope="col">GL</th>
+										<th scope="col">FTP Category</th>
+										<th scope="col">Action</th>
+									</tr>
+									<tr ng-show="schemes.length==0">
+										<td style="text-align: center" colspan="4">No schemes are
+											available.</td>
+									</tr>
+									<tr
+										dir-paginate="scheme in schemes | itemsPerPage:pagination.pageSize | orderBy:'schmDesc'"
+										pagination-id="schemeConf" total-items="paginationTotalCount"
+										current-page="pagination.currentPage"
+										ng-show="schemes.length > 0">
+										<td style="width: 10%">{{scheme.schmCode}}</td>
+										<td style="width: 10%">{{scheme.glSubHeadCode}}</td>
+										<td style="width: 45%; word-break: break-word;">{{scheme.ftpCategory}}</td>
+										<td style="width: 35%">
+											<button type="button" class="btn btn-small small-button"
+												ng-click="fetch('edit',scheme)">
+												<span class="glyphicon glyphicon-pencil"></span>
+											</button>
+											<button type="button" class="btn btn-small small-button"
+												ng-click="fetch('view',scheme)">
+												<span class="glyphicon glyphicon-eye-open"></span>
+											</button>
+											<button type="button" class="btn btn-small small-button"
+												ng-click="deleteScheme(scheme)">
+												<span class="glyphicon glyphicon-trash	"></span>
+											</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<dir-pagination-controls max-size="5" direction-links="true"
+								pagination-id="schemeConf" boundary-links="true"
+								on-page-change="pageChanged()"
+								template-url="js/angular/third-party/pagination/dirPagination.tpl.html">
+							</dir-pagination-controls>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</uib-tab> </uib-tabset>
+	</div>
+</div>

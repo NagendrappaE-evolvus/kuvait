@@ -1,0 +1,190 @@
+<div class="container ">
+	<div class="main-content">
+
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<strong>Add / Update User</strong>
+					<button type="button" class="btn btn-default btn-orange pull-right"
+						ng-click="resetUser(userForm)">
+						New User<span class="glyphicon glyphicon-plus pull-left"></span>
+					</button>
+				</div>
+				<div class="panel-body">
+					<label class="col-md-offset-4" ng-class="{'errortext':status}">{{message}}</label>
+					<div class="formcontrol">
+						<form name="userForm" class="form-horizontal" id="userForm"
+							novalidate>
+							<div class="form-group">
+								<label class="col-md-4 control-label" for="username">Username</label>
+								<div class="col-md-7">
+									<input type="text" ng-model="mgmUser.username"
+										class="form-control" ng-required="true" ng-maxlength="20"
+										ng-disabled="action=='view'" id="username" name="username"
+										placeholder="Username"> <span class="errortext"
+										ng-show="!userForm.username.$pristine && userForm.username.$invalid">Username required, maximum
+										length allowed is 20.</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label" for="name">First
+									Name</label>
+								<div class="col-md-7">
+									<input type="text" ng-model="mgmUser.name" class="form-control"
+										ng-pattern="patterns.alphaWithSpaceAndPeriod"
+										ng-disabled="action=='view'" id="name"
+										placeholder="First Name"> <span class="errortext"
+										ng-show="!userForm.name.$pristine && userForm.name.$invalid">Enter
+										only alphabets in Name.</span>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-md-4 control-label" for="fullName">Full
+									Name</label>
+								<div class="col-md-7">
+									<input type="text" ng-model="mgmUser.fullName"
+										class="form-control" ng-pattern="patterns.alphaWithSpaceAndPeriod"
+										ng-disabled="action=='view'" id="fullName"
+										placeholder="First Name"> <span class="errortext"
+										ng-show="!userForm.fullName.$pristine && userForm.fullName.$invalid">Enter
+										only alphabets in Full Name.</span>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-md-4 control-label" for="email">Email</label>
+								<div class="col-md-7">
+									<input type="text" ng-model="mgmUser.email" class="form-control"
+										ng-pattern="patterns.email" ng-disabled="action=='view'" name="email"
+										id="email" placeholder="Email"> <span
+										class="errortext"
+										ng-show="!userForm.email.$pristine && userForm.email.$invalid">Enter
+										a valid Email.</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label">Region</label>
+								<div class="col-md-7">
+									<select ng-init="initEntity();" ng-model="mgmUser.entity" class="form-control" ng-options="entity as entity.regionName for entity in entities" id="region">
+									</select>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-4 control-label" for="status">Status</label>
+								<div class="col-md-1">
+									<div class="checkbox">
+										<label ng-class="{'red-color':!mgmUser.isActive}"> <input type="checkbox" id="status"
+											checked="mgmUser.isActive===true" ng-init="mgmUser.isActive=false"
+											ng-model="mgmUser.isActive" ng-disabled="action=='view'" />
+											{{mgmUser.isActive?"Active":"Inactive"}}
+										</label>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-4 control-label" for="isadmin">Is Admin</label>
+								<div class="col-md-1">
+									<div class="checkbox">
+										<label > <input type="checkbox" id="isadmin" name="isadmin"
+											checked="mgmUser.isAdmin===true" ng-init="mgmUser.isAdmin=false"
+											ng-model="mgmUser.isAdmin" ng-disabled="action=='view'" />
+											{{mgmUser.isAdmin?"Yes":"No"}}
+										</label>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group form-group-md">
+								<div class="col-md-6 col-md-offset-4">
+									<button type="submit" class="btn btn-orange" id="btnSave"
+										ng-show="action=='new' || action=='view'"
+										ng-disabled="action=='view' || userForm.$invalid"
+										ng-click="saveUser(userForm)">&nbsp;Save&nbsp;</button>
+									<button type="submit" class="btn btn-orange" id="btnUpdate"
+										ng-show="action=='edit'" ng-click="updateUser(userForm)">&nbsp;Update&nbsp;</button>
+									<button type="button" class="btn btn-default" id="resetUser"
+										ng-click="resetUser(userForm)">&nbsp;Reset&nbsp;</button>
+								</div>
+							</div>
+						</form>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<strong>Available Users</strong>
+					<div class="input-group pull-right" style="margin-top: -1px;">
+						<strong style="margin-top: 5px;" class="col-md-4">Region
+						</strong>
+						<div class="form-group col-md-8">
+							<select ng-init="initSearchEntity()" ng-model="searchEntity" class="form-control" ng-change="searchUsers()" ng-options="entity as entity.regionName for entity in entities" class="form-control" id="region">
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div ng-init="pageChanged()">
+						<div class="col-md-6 col-md-offset-6 input-group">
+							<input type="text" ng-model="searchString" class="form-control"
+								ng-change="searchUsers()" placeholder="Search"> <span
+								class="input-group-btn">
+								<button class="btn btn-default" type="button"
+									ng-click="searchUsers()">
+									<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+								</button>
+							</span>
+						</div>
+						<p></p>
+						<table width="100%" class="table table-hover" border="0"
+							cellspacing="0" cellpadding="0">
+							<tbody>
+								<tr>
+									<th scope="col">Username</th>
+									<th scope="col">Status</th>
+									<th scope="col">Action</th>
+								</tr>
+								<tr ng-show="users.length==0">
+									<td style="text-align: center" colspan="4">No Users are
+										available.</td>
+								</tr>
+								<tr
+									dir-paginate="user in fetchedUsers | itemsPerPage:pagination.pageSize"
+									pagination-id="users" total-items="paginationTotalCount"
+									current-page="pagination.currentPage"
+									ng-show="fetchedUsers.length>0">
+									<td>{{user.username}}</td>
+									<td>{{user.isActive?"Active":"Inactive"}}</td>
+									<td>
+										<button type="button" class="btn btn-small small-button"
+											ng-click="fetch('edit',user)">
+											<span class="glyphicon glyphicon-pencil"></span>
+										</button>
+										<button type="button" class="btn btn-small small-button"
+											ng-click="fetch('view',user)">
+											<span class="glyphicon glyphicon-eye-open"></span>
+										</button>
+
+									</td>
+
+								</tr>
+							</tbody>
+						</table>
+						<dir-pagination-controls max-size="8" direction-links="true"
+							pagination-id="users" boundary-links="true"
+							on-page-change="pageChanged()"
+							template-url="js/angular/third-party/pagination/dirPagination.tpl.html">
+						</dir-pagination-controls>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>

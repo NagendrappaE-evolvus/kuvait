@@ -1,0 +1,435 @@
+<div class="container ">
+	<div class="main-content">
+			<div class="fileinput col-md-7 ">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<strong>Configuration - {{product.name}}</strong>
+						<button type="button"
+								class="btn btn-default btn-orange pull-right"
+								ng-click="resetProduct()">
+								New Rule<span
+									class="glyphicon glyphicon-plus pull-left"></span>
+							</button>
+					</div>
+					<div class="panel-body ">
+						<label class="col-md-offset-4" ng-class="{'errortext':status}">{{message}}</label>
+						<div class="formcontrol">
+
+							<form name="ruleForm" id="ruleForm" class="form-horizontal" novalidate>
+
+								<div class="form-group">
+									<label class="col-md-4 control-label" for="prd_ruleName">Rule
+										Name</label>
+									<div class="col-md-6">
+										<input class="form-control" id="prd_ruleName"
+											ng-required="true" ng-disabled="product.view=='view'"
+											ng-pattern="patterns.alphaNumWithSpaceAndUnderScore"
+											placeholder="Rule Name" name="prd_ruleName" ng-maxlength="30"
+											ng-model="product.rule.ruleName" /> <span class="errortext"
+											ng-show="!ruleForm.prd_ruleName.$pristine && ruleForm.prd_ruleName.$invalid">Rule
+											Name should contain only Alphabet and/or Numbers, Spaces,
+											Underscore('_').</span>
+									</div>
+
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-4 control-label" for="prd_trnsfrMethod">Transfer
+										Method</label>
+									<div class="col-md-6">
+										<select class="form-control" id="prd_trnsfrMethod"
+											ng-disabled="product.view=='view'" name="prd_trnsfrMethod"
+											ng-model="product.rule.transferMethod" ng-required="true" ng-change="transferMethodChanged()"
+											ng-options="method.name as method.name for method in transferMethods | orderBy:'name'">
+											<option value="">Select Method</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_trnsfrMethod.$pristine && ruleForm.prd_trnsfrMethod.$invalid">Please
+											Select a valid Transfer Method.</span>
+									</div>
+								</div>
+
+								<div class="form-group"
+									ng-repeat="field in product.variableFields | orderBy:'fieldOrder' track by $index">
+									<label class="col-md-4 control-label" for="{{field.fieldId}}">{{field.keyDesc}}</label>
+									<div class="col-md-6" ng-if="field.fieldType=='SELECT'">
+										<select class="form-control" id="{{field.fieldId}}"
+											ng-required="true" ng-disabled="product.view=='view'"
+											name="{{field.fieldId}}" ng-model="field.textValue"
+											ng-options="item.itemCode as item.itemValue for item in field.itemList">
+											<option value="">Not Applicable</option>
+										</select> <span ng-show="!ruleForm.{{field.fieldId}}.$pristine && ruleForm.{{field.fieldId}}.$invalid"
+											class="errortext">Invalid {{field.keyDesc}}</span>
+									</div>
+									<div class="col-md-6" ng-if="field.fieldType=='MULTISELECT'">
+										<multiselect multiple="true" ng-model="field.listValue"
+											options="item.itemCode as item.itemValue for item in field.itemList"
+											change="selected()"></multiselect>
+										<span ng-show="field.listValue.length == 0" class="errortext">Please
+											select {{field.keyDesc}}</span> <span
+											ng-show="!ruleForm.{{field.fieldId}}.$pristine && ruleForm.{{field.fieldId}}.$invalid"
+											class="errortext">Invalid {{field.keyDesc}}</span>
+									</div>
+									<div class="col-md-6" ng-if="field.fieldType=='NUMBER'">
+										<input class="form-control" id="{{field.fieldId}}"
+											ng-model="field.textValue" ng-disabled="product.view=='view'"
+											name="{{field.fieldId}}" type="text"
+											ng-init="field.textValue=''" placeholder="{{field.keyDesc}}" />
+										<span ng-show="!ruleForm.{{field.fieldId}}.$pristine && ruleForm.{{field.fieldId}}.$invalid"
+											class="errortext">Invalid {{field.keyDesc}}</span>
+									</div>
+									<div class="col-md-6" ng-if="field.fieldType=='TEXT'">
+										<input class="form-control" id="{{field.fieldId}}"
+											ng-init="field.textValue=''"
+											ng-disabled="product.view=='view'" name="{{field.fieldId}}"
+											type="text" ng-model="field.textValue"
+											placeholder="{{field.keyDesc}}" /> <span
+											ng-show="!ruleForm.{{field.fieldId}}.$pristine && ruleForm.{{field.fieldId}}.$invalid"
+											class="errortext">Invalid {{field.keyDesc}}</span>
+									</div>
+									<div class="col-md-6" ng-if="field.fieldType=='DATE'">
+										<div class="input-group">
+											<input type="text" class="form-control" uib-datepicker-popup
+												id="{{field.fieldId}}" placeholder="{{field.keyDesc}}"
+												ng-disabled="product.view=='view'" 
+												ng-required="true"
+												name="{{field.fieldId}}" ng-model="field.textValue"
+												is-open="field.dateOpen" ng-pattern="patterns.dateFormatKw"
+												ng-click="field.dateOpen=true "
+												datepicker-options="dateOptions" close-text="Close" /> <span
+												class="input-group-btn">
+												<button type="button" class="btn btn-default"
+													ng-click="field.dateOpen=true">
+													<i class="glyphicon glyphicon-calendar"></i>
+												</button>
+											</span>
+										</div>
+										<span ng-show="!ruleForm.{{field.fieldId}}.$pristine && ruleForm.{{field.fieldId}}.$invalid"
+											class="errortext">Invalid {{field.keyDesc}}</span>
+									</div>
+									<div class="col-md-6" ng-if="field.fieldType=='CHIPS'">
+										<chips ng-model="field.listValue" render="renderChip(data)">
+										<chip-tmpl>
+										<div class="default-chip">
+											{{chip.itemValue}} <span class="glyphicon glyphicon-remove"
+												remove-chip="deleteChip(data)"></span>
+										</div>
+										</chip-tmpl> <input chip-control name="{{field.fieldId}}"
+											placeholder="{{field.keyDesc}}"
+											ng-disabled="product.view=='view'"></input> </chips>
+										<span class="infotext" ng-disabled="product.view=='new'">Input
+											{{field.keyDesc}} and press <span class="label label-info">Enter</span>.
+										</span>
+									</div>
+									<div class="col-md-6" ng-if="field.fieldType=='PRECHIPS'">
+										<chips ng-model="field.listValue" render="renderPreChip(data)">
+										<chip-tmpl>
+										<div class="default-chip">
+											{{chip.itemValue}} <span
+												class="pull-right glyphicon glyphicon-remove"
+												remove-chip="deletePreChip(chip)"></span>
+										</div>
+										</chip-tmpl> <input ng-model-control placeholder="{{field.keyDesc}}"
+											ng-disabled="product.view=='view'" ng-model="typeaheadmodel"
+											uib-typeahead="item as item.itemValue for item in field.itemList | filter:$viewValue"
+											></input> </chips>
+										<span class="infotext" ng-show="product.view=='new'">Please
+											select {{field.keyDesc}} from list.</span>
+									</div>
+									
+
+									<div class="col-md-2"
+										ng-if="field.fieldType=='DATE_C' || field.fieldType=='NUMBER_C'">
+										<select class="form-control" id="{{field.fieldId}}Op"
+											ng-change="operatorChanged($index)"
+											name="{{field.fieldId}}Op" ng-model="field.operator"
+											ng-init="field.operator=''"
+											ng-disabled="product.view=='view'"
+											ng-options="op.code as ('('+op.symbol+') - ' + op.text) for op in comparators">
+											<option value="">(NA) - Not Applicable</option>
+										</select>
+									</div>
+									<div class="col-md-4" ng-if="field.fieldType=='DATE_C'">
+										<div class="input-group">
+											<input type="text" class="form-control" uib-datepicker-popup
+												id="{{field.fieldId}}" placeholder="{{field.keyDesc}}"
+												ng-disabled="field.operator==null ||field.operator=='' || product.view=='view'"
+												ng-required="field.operator!=null && field.operator!=''"
+												name="{{field.fieldId}}" ng-model="field.textValue"
+												is-open="field.dateOpen" ng-pattern="patterns.dateFormatKw"
+												ng-click="field.dateOpen=true" 
+												datepicker-options="dateOptions" close-text="Close" /> <span
+												class="input-group-btn">
+												<button type="button" class="btn btn-default"
+													ng-click="field.dateOpen=true">
+													<i class="glyphicon glyphicon-calendar"></i>
+												</button>
+											</span>
+										</div>
+										<span
+											ng-show="field.operator!=null && field.operator!='' && field.textValue==''"
+											class="errortext">Please select the {{field.keyDesc}}</span>
+									</div>
+
+									<div class="col-md-4" ng-if="field.fieldType=='NUMBER_C'">
+										<input class="form-control" id="{{field.fieldId}}"
+											ng-disabled="field.operator==null || field.operator=='' || product.view=='view'"
+											ng-required="field.operator!=null && field.operator!=''"
+											name="{{field.fieldId}}" type="text"
+											ng-model="field.textValue" ng-init="field.textValue=''"
+											placeholder="{{field.keyDesc}}" /> <span
+											ng-show="field.operator!=null && field.operator!='' && field.textValue==''"
+											class="errortext">Please enter the {{field.keyDesc}}</span>
+									</div>
+								</div>
+								<!--  -->
+
+								<div class="form-group">
+									<label class="col-md-4 control-label"
+										for="prd_rateRuleCalcMethd">Rate Rule Calculation</label>
+									<div class="col-md-6">
+										<select class="form-control" id="prd_rateRuleCalcMethd"
+											name="prd_rateRuleCalcMethd"
+											ng-change="rateRuleMethodChanged()"
+											ng-disabled="product.view=='view'"
+											ng-model="product.rateRuleCalcMethd" ng-required="true"
+											ng-options="method.name as method.name for method in rateRuleCalcMethods | orderBy:'name'">
+											<option value="">Select</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_rateRuleCalcMethd.$pristine && ruleForm.prd_rateRuleCalcMethd.$invalid">Please
+											Select a valid Rate Calculation Method.</span>
+									</div>
+
+								</div>
+
+								<div class="form-group"
+									ng-show="product.rule.isYieldCurveApplicable">
+									<label class="col-md-4 control-label" for="prd_yieldCurve">Tenor</label>
+									<div class="col-md-6">
+										<select class="form-control" id="yield_tenor"
+											ng-init="fetchYieldTenorItems()" name="yield_tenor"
+											ng-disabled="product.view=='view'"
+											ng-model="product.rule.yieldTenor"
+											ng-required="product.rule.isYieldCurveApplicable"
+											ng-options="item.itemCode as item.itemValue group by item.itemGroup for item in yieldTenorItems">
+											<option value="">Select</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_yieldCurve.$pristine && ruleForm.prd_yieldCurve.$invalid">Please
+											Select a valid Currency Curve.</span>
+									</div>
+								</div>
+
+								<!-- <div class="form-group"
+									ng-show="product.rule.isKeyCurveApplicable">
+									<label class="col-md-4 control-label" for="prd_keyRateCcy">Key Rate
+										Currency</label>
+									<div class="col-md-6">
+										<select class="form-control" id="prd_keyRateCcy"
+											ng-init="fetchCcyCurveItems()" name="prd_keyRateCcy"
+											ng-disabled="product.view=='view'"
+											ng-model="product.rule.keyRateCcy"
+											ng-required="product.rule.isKeyCurveApplicable"
+											ng-options="item.itemCode as (item.itemCode+' - '+item.itemValue) for item in ccyCurveItems">
+											<option value="">Select</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_keyRateCcy.$pristine && ruleForm.prd_keyRateCcy.$invalid">Please
+											Select a valid Key Currency Curve.</span>
+									</div>
+								</div> -->
+								
+								<div class="form-group"
+									ng-show="product.rule.isKeyCurveApplicable">
+									<label class="col-md-4 control-label" for="prd_keyRateCode">
+										Method For Key Rates</label>
+									<div class="col-md-6">
+										<select class="form-control" id="prd_keyRateCode"
+											ng-disabled="product.view=='view'" ng-init="fetchKeyItems()"
+											name="prd_keyRateCode"
+											ng-required="product.rule.isKeyCurveApplicable"
+											ng-model="product.rule.keyRateCode"
+											ng-options="item.itemCode as item.itemValue group by item.itemGroup for item in keyRateItems | orderBy:'itemGroup'">
+											<option value="">Select</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_keyRateCode.$pristine && ruleForm.prd_keyRateCode.$invalid">Please
+											Select a valid Method For Key Rates.</span>
+									</div>
+
+								</div>
+
+
+								<div class="form-group">
+									<label class="col-md-4 control-label" for="prd_adjCalcMethod">Adjustments
+										Calculation</label>
+									<div class="col-md-6">
+										<select class="form-control" id="prd_adjCalcMethod"
+											ng-disabled="product.view=='view'" name="prd_adjCalcMethod"
+											ng-change="adjCalcMethodChanged()"
+											ng-model="product.adjCalcMethod"
+											ng-options="method.name as method.name for method in adjCalcMethods | orderBy:'name'">
+											<option value="">Not Applicable</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_adjCalcMethod.$pristine && ruleForm.prd_adjCalcMethod.$invalid">Please
+											Select a valid Adjustments Calculation Method.</span>
+									</div>
+								</div>
+
+								<!-- <div class="form-group"
+									ng-show="product.rule.isMrgnAdjstTempApplicable">
+									<label class="col-md-4 control-label" for="prd_mrgnAdjstTempCcy">TR Adjustment Rate
+										Currency</label>
+									<div class="col-md-6">
+										<select class="form-control" id="prd_mrgnAdjstTempCcy"
+											ng-init="fetchCcyCurveItems()" name="prd_mrgnAdjstTempCcy"
+											ng-disabled="product.view=='view'"
+											ng-model="product.rule.mrgnAdjstTempCcy"
+											ng-required="product.rule.isMrgnAdjstTempApplicable"
+											ng-options="item.itemCode as (item.itemCode+' - '+item.itemValue) for item in ccyCurveItems">
+											<option value="">Select</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_mrgnAdjstTempCcy.$pristine && ruleForm.prd_mrgnAdjstTempCcy.$invalid">Please
+											Select a valid TR Adjustment Currency Curve.</span>
+									</div>
+								</div> -->
+								<div class="form-group"
+									ng-show="product.rule.isMrgnAdjstTempApplicable">
+									<label class="col-md-4 control-label"
+										for="prd_mrgnAdjstTempCode">Rate Method For TR
+										Adjustment</label>
+									<div class="col-md-6">
+										<select ng-init="fetchMrarginAdjItems()" class="form-control"
+											ng-disabled="product.view=='view'" id="prd_mrgnAdjstTempCode"
+											name="prd_mrgnAdjstTempCode"
+											ng-model="product.rule.mrgnAdjstTempCode"
+											ng-required="product.rule.isMrgnAdjstTempApplicable"
+											ng-options="item.itemCode as item.itemValue group by item.itemGroup for item in marginAdjItems | orderBy:'itemGroup'">
+											<option value="">Select</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_mrgnAdjstTempCode.$pristine && ruleForm.prd_mrgnAdjstTempCode.$invalid">Please
+											Select a valid TR Adjustments Rate Method.</span>
+									</div>
+								</div>
+								
+								<!--  <div class="form-group"
+									ng-show="product.rule.isMrgnAdjstExtApplicable">
+									<label class="col-md-4 control-label" for="prd_mrgnAdjstExtCcy">TR Margin
+										Curve Extended Currency</label>
+									<div class="col-md-6">
+										<select class="form-control" id="prd_mrgnAdjstExtCcy"
+											ng-init="fetchCcyCurveItems()" name="prd_mrgnAdjstExtCcy"
+											ng-disabled="product.view=='view'"
+											ng-model="product.rule.mrgnAdjstExtCcy"
+											ng-required="product.rule.isMrgnAdjstExtApplicable"
+											ng-options="item.itemCode as (item.itemCode+' - '+item.itemValue) for item in ccyCurveItems">
+											<option value="">Select</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_mrgnAdjstExtCcy.$pristine && ruleForm.prd_mrgnAdjstExtCcy.$invalid">Please
+											Select a valid TR Margin
+										Curve Extended Currency.</span>
+									</div>
+								</div>-->
+				
+								<div class="form-group"
+									ng-show="product.rule.isMrgnAdjstExtApplicable">
+									<label class="col-md-4 control-label"
+										for="prd_mrgnAdjstExtCode">Rate Method for TR Margin
+										Curve Extended</label>
+									<div class="col-md-6">
+										<select ng-init="fetchMrarginExtItems()" class="form-control"
+											ng-disabled="product.view=='view'" id="prd_mrgnAdjstExtCode"
+											name="prd_mrgnAdjstExtCode"
+											ng-model="product.rule.mrgnAdjstExtCode"
+											ng-required="product.rule.isMrgnAdjstExtApplicable"
+											ng-options="item.itemCode as item.itemValue for item in marginExtItems | orderBy:'itemGroup'">
+											<option value="">Select</option>
+										</select> <span class="errortext"
+											ng-show="!ruleForm.prd_mrgnAdjstExtCode.$pristine && ruleForm.prd_mrgnAdjstExtCode.$invalid">Please
+											Select a valid TR Margin Curve Extended Method.</span>
+									</div>
+								</div>
+								<div class="form-group form-group-md">
+									<div class="col-md-offset-4 col-md-8">
+										<button type="button" ng-click="saveProduct(ruleForm)"
+											class="btn btn-default btn-orange uploadbtn"
+											ng-disabled="ruleForm.$pristine || ruleForm.$invalid || product.view=='view'">
+											{{product.view=='edit'?'Update':'Save'}}</button>
+										<button type="reset"
+											class="btn btn-default" ng-click="resetProduct(ruleForm)">Reset</button>
+										<br /> 
+										<span
+											ng-show="!ruleForm.$pristine && ruleForm.$invalid"
+											class="errortext">Rule can only be saved if valid
+											values are entered or selected.</span>
+									</div>
+
+								</div>
+
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-5">
+				<div class="panel panel-default ">
+					<div class="panel-heading">
+						<strong>Configured Rules</strong>
+					</div>
+					<div class="panel-body">
+						<div ng-init="pageChanged()">
+							<div class="col-md-6 col-md-offset-6 input-group">
+								<input type="text" ng-model="searchString" class="form-control"
+									ng-change="searchRules()" placeholder="Search"> <span
+									class="input-group-btn">
+									<button class="btn btn-default" type="button"
+										ng-click="searchRules()">
+										<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+									</button>
+								</span>
+							</div>
+							<p></p>
+							<table width="100%" class="table table-hover" border="0"
+								cellspacing="0" cellpadding="0">
+								<tbody>
+									<tr>
+										<th scope="col">Rule Name</th>
+										<th scope="col">Action</th>
+									</tr>
+									<tr ng-show="fetchedRules.length==0">
+										<td style="text-align: center" colspan="4">No Rules are
+											Available.</td>
+									</tr>
+									<tr
+										dir-paginate="rule in fetchedRules | itemsPerPage:pagination.pageSize | orderBy:'ruleName'"
+										pagination-id="rules" total-items="paginationTotalCount"
+										current-page="pagination.currentPage"
+										ng-show="fetchedRules.length>0">
+										<td>{{rule.ruleName}}</td>
+										<td>
+											<button type="button" class="btn btn-small small-button"
+												ng-click="fetchRule('edit',rule)">
+												<span class="glyphicon glyphicon-edit"></span>
+											</button>
+											<button type="button" class="btn btn-small small-button"
+												ng-click="fetchRule('view',rule)">
+												<span class="glyphicon glyphicon-eye-open"></span>
+											</button>
+											<button type="button" class="btn btn-small small-button"
+												ng-click="deleteRule(rule)">
+												<span class="glyphicon glyphicon-trash	"></span>
+											</button>
+
+										</td>
+
+									</tr>
+								</tbody>
+							</table>
+							<dir-pagination-controls max-size="8" direction-links="true"
+								pagination-id="rules" boundary-links="true"
+								on-page-change="pageChanged()"
+								template-url="js/angular/third-party/pagination/dirPagination.tpl.html">
+							</dir-pagination-controls>
+						</div>
+
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
