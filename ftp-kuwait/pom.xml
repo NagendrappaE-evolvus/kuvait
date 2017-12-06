@@ -18,7 +18,6 @@
 		<java.version>1.8</java.version>
 		<lombok.version>1.14.6</lombok.version>
 		<poi-ooxml.version>3.15</poi-ooxml.version>
-		<spring-batch-excel.version>0.5.0-SNAPSHOT</spring-batch-excel.version>
 	</properties>
 	<dependencies>
 		<!-- Tomcat and Spring Web MVC -->
@@ -41,9 +40,6 @@
 			<artifactId>spring-security-ldap</artifactId>
 		</dependency>
 
-		<!--<dependency> <groupId>org.springframework.session</groupId> <artifactId>spring-session</artifactId> 
-			</dependency> -->
-
 		<!-- HTTP Components -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -53,7 +49,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>${lombok.version}</version><!--$NO-MVN-MAN-VER$-->
+			<version>${lombok.version}</version><!--$NO-MVN-MAN-VER$ -->
 			<scope>provided</scope>
 		</dependency>
 
@@ -62,7 +58,7 @@
 			<artifactId>jjwt</artifactId>
 			<version>${jjwt.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -88,11 +84,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.batch</groupId>
-			<artifactId>spring-batch-excel</artifactId>
-			<version>${spring-batch-excel.version}</version>
-		</dependency> -->
 		<dependency>
 			<groupId>com.github.ulisesbocchio</groupId>
 			<artifactId>jasypt-spring-boot-starter</artifactId>
@@ -120,13 +111,50 @@
 		</dependency>
 	</dependencies>
 
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<findbugsXmlOutput>true</findbugsXmlOutput>
+					<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+					<xmlOutput>true</xmlOutput>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<remoteTagging>false</remoteTagging>
+					<useReleaseProfile>false</useReleaseProfile>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
+	<scm>
+		<developerConnection>scm:svn:http://codeserver.evolvus.com/source-repository/FTP_KUWAIT/trunk</developerConnection>
+		<connection>scm:svn:http://codeserver.evolvus.com/source-repository/FTP_KUWAIT/trunk</connection>
+		<url>scm:svn:http://codeserver.evolvus.com/source-repository/FTP_KUWAIT/trunk</url>
+	</scm>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>codeserver.evolvus.com</id>
+			<name>codeserver.evolvus.com-snapshots</name>
+			<url>http://www.evolvus.com/artifactory/libs-snapshot-local</url>
+		</snapshotRepository>
+		<repository>
+			<id>codeserver.evolvus.com</id>
+			<name>codeserver.evolvus.com-releases</name>
+			<url>http://www.evolvus.com/artifactory/libs-release-local</url>
+		</repository>
+	</distributionManagement>
 </project>
