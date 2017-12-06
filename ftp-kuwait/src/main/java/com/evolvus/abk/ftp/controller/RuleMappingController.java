@@ -105,7 +105,7 @@ public class RuleMappingController {
 			ruleMap = ruleMappingService.getRuleMap(requestInput.get("target"),
 					requestInput.get("targetType"), requestInput.get("productCode"),
 					ftpAuditService.getUserFromPrincipal(user));
-			if (null != ruleMap) {
+			if (!ruleMap.getModalTarget().isEmpty() && ruleMap.getRuleMappings()!=null && ruleMap.getRuleMappings().size()!=0) {
 				customResponse.setData(ruleMap);
 				customResponse.setStatus(Constants.STATUS_OK);
 			} else {
