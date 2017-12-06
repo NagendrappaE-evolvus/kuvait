@@ -14,7 +14,7 @@ import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties
 
 @ComponentScan(basePackages = "com.evolvus")
 @SpringBootApplication
-@PropertySource(ignoreResourceNotFound = false, value = "file:${SPRING_CONFIG_LOCATION}/application.properties")
+@PropertySource(ignoreResourceNotFound = false, value = {"file:${SPRING_CONFIG_LOCATION}/application.properties","classpath:/application.properties"})
 @EnableEncryptableProperties
 public class FtpKuwaitApp {
 	
