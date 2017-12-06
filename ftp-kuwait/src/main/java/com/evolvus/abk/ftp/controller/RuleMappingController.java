@@ -99,12 +99,13 @@ public class RuleMappingController {
 	public ResponseEntity<CustomResponse> getAssignRule(@RequestBody Map<String, String> requestInput, Principal user) {
 		HttpStatus httpStatus = HttpStatus.OK;
 		LOG.debug("Start getAssignRule");
+		AssignMappingRuleBean ruleMap = null;
 		CustomResponse customResponse = new CustomResponse();
 		try {
-			AssignMappingRuleBean ruleMap = ruleMappingService.getRuleMap(requestInput.get("target"),
+			ruleMap = ruleMappingService.getRuleMap(requestInput.get("target"),
 					requestInput.get("targetType"), requestInput.get("productCode"),
 					ftpAuditService.getUserFromPrincipal(user));
-			if (ruleMap != null) {
+			if (null != ruleMap) {
 				customResponse.setData(ruleMap);
 				customResponse.setStatus(Constants.STATUS_OK);
 			} else {

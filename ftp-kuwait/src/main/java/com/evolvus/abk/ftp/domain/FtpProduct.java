@@ -72,8 +72,7 @@ public class FtpProduct {
 	@Override
 	public String toString() {
 		return String.format(
-				"[Product={productCode=%s,productName=%s,createdBy=%s,createdTime=%s,updatedBy=%s,updatedTime=%s,variableFields=%s,rules=%s}]",
-				productCode, productName, createdBy, createdDate, lastUpdatedBy, lastUpdatedDate,
-				variableFields.toArray().toString(), rules.toArray().toString());
+				"[Product={productCode=%s,productName=%s,createdBy=%s,createdTime=%s,updatedBy=%s,updatedTime=%s}]",
+				productCode, productName, createdBy, createdDate, lastUpdatedBy, lastUpdatedDate);
 	}
 }

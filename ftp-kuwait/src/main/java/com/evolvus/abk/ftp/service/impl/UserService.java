@@ -74,14 +74,15 @@ public class UserService {
 	public CustomResponse updateUser(User user, User currentUser) {
 		LOG.debug("Start :: updateUser");
 		CustomResponse response = new CustomResponse();
+		User existingUser = null;
 		try {
 			if(currentUser.getIsAdmin()==null || !currentUser.getIsAdmin()) {
 				response.setStatus(Constants.STATUS_FAIL);
 				response.setDescription("Only admins have permission to update user details.");
 				return response;
 			} 
-			User existingUser = findByUsername(user.getUsername(), user.getEntity());
-			if (existingUser != null && user.getUserId() != existingUser.getUserId()) {
+			existingUser = findByUsername(user.getUsername(), user.getEntity());
+			if ( null  != existingUser && !user.getUserId().equals(existingUser.getUserId())) {
 				response.setStatus(Constants.STATUS_FAIL);
 				response.setDescription("A user with same username exist in target region.");
 			} else {

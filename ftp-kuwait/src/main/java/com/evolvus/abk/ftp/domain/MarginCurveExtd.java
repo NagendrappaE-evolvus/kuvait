@@ -81,7 +81,7 @@ public class MarginCurveExtd implements Cloneable{
 	@Override
 	public String toString() {
 		return String.format(
-				"[MarginAdjstTemp={keyRateId=%d, rateType=%s, ccyCode=%s, rateAppDate=%s, rateAppDateInFile=%s, tenorCode=%s, tenorDesc=%s, tenorFrom=%d,tenorTo=%d,tenorFromUnit=%s,tenorToUnit=%s,keyRate=%d,uploadDate=%s,uploadedBy=%s}]",
+				"[MarginAdjstTemp={keyRateId=%d, rateType=%s, ccyCode=%s, rateAppDate=%s, rateAppDateInFile=%s, tenorCode=%s, tenorDesc=%s, tenorFrom=%d,tenorTo=%d,tenorFromUnit=%s,tenorToUnit=%s,mrgnCrvExRate=%f,uploadDate=%s,uploadedBy=%s}]",
 				mrgnCrvExId, rateType, ccyCode, rateAppDate, rateDateInFile, tenorCode, tenorDesc, tenorFrom, tenorTo,
 				tenorFromUnit, tenorToUnit, mrgnCrvExRate, uploadDate, uploadedBy);
 	}

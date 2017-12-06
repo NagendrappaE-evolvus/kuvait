@@ -79,7 +79,7 @@ public class CurrencyCurveRates {
 	@Override
 	public String toString() {
 		return String.format(
-				"[CurrencyCurveRates={baseRateId=%d,ccyCode=%s,rateAppDate=%s,rateAppDateInFile=%s,tenorCode=%s,tenorDesc=%s,tenorFromDay=%d,tenorToDay=%d,tenorFromMonth=%d,tenorToMonth=%d,baseRate=%d,uploadDate=%s,uploadedBy=%s}]",
+				"[CurrencyCurveRates={baseRateId=%d,ccyCode=%s,rateAppDate=%s,rateAppDateInFile=%s,tenorCode=%s,tenorDesc=%s,tenorFromDay=%d,tenorToDay=%d,tenorFromMonth=%d,tenorToMonth=%d,baseRate=%f,uploadDate=%s,uploadedBy=%s}]",
 				baseRateId, ccyCode, rateAppDate, rateDateInFile, tenorCode, tenorDesc, tenorFromDay, tenorToDay,
 				tenorFromMonth, tenorToMonth, baseRate, uploadDate, uploadedBy);
 	}
