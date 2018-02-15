@@ -133,7 +133,7 @@ public class FileController {
 			if (!sourceDirectory.exists()) {
 				sourceDirectory.mkdirs();
 			}
-			sourceFile = new File(sourceDirectory.getAbsolutePath(), fileName);
+			sourceFile = new File(sourceDirectory, fileName);
 
 			sourceFile.createNewFile();
             multipartfile.transferTo(sourceFile);
