@@ -30,99 +30,102 @@ import com.evolvus.abk.ftp.service.impl.FtpAuditService;
 @RequestMapping("file")
 public class FileController {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FileController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileController.class);
 
-	@Value("${upload.file.location}")
-	String uploadFolder;
+    @Value("${upload.file.location}")
+    String uploadFolder;
 
-	@Autowired
-	FileUploadService fileUploadService;
+    @Autowired
+    FileUploadService fileUploadService;
 
-	@Autowired
-	FtpAuditService ftpAuditService;
+    @Autowired
+    FtpAuditService ftpAuditService;
 
-	/**
-	 * Nacha upload.
-	 *
-	 * @param multipartfile
-	 *            the multipartfile
-	 * @param userName
-	 *            the user name
-	 * @return the response entity
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 */
-	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public ResponseEntity<CustomResponse> fileUpload(@RequestParam("file") MultipartFile multipartfile,
-			@RequestParam("fileType") String fileType, @RequestParam("date") String rateDate,
-			@RequestParam("overwrite") Boolean overwrite, Principal user) throws InterruptedException {
-		LOG.debug("Start fileUpload");
-		HttpStatus httpStatus = HttpStatus.OK;
-		CustomResponse customResponse = null;
+    /**
+     * Nacha upload.
+     *
+     * @param multipartfile
+     *            the multipartfile
+     * @param userName
+     *            the user name
+     * @return the response entity
+     * @throws InterruptedException
+     *             the interrupted exception
+     */
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public ResponseEntity<CustomResponse> fileUpload(@RequestParam("file") MultipartFile multipartfile,
+            @RequestParam("fileType") String fileType, @RequestParam("date") String rateDate,
+            @RequestParam("overwrite") Boolean overwrite, Principal user) throws InterruptedException {
+        LOG.debug("Start fileUpload");
+        HttpStatus httpStatus = HttpStatus.OK;
+        CustomResponse customResponse = null;
 
-		try {
-			FileInfo fileInfo = this.saveUploadedFile(multipartfile);
-			if (fileInfo.getFileSaved()) {
-				if ("Yield Curve".equals(fileType)) {
-					customResponse = fileUploadService.uploadCurveRates(fileType,fileInfo, rateDate, overwrite,
-							ftpAuditService.getUserFromPrincipal(user));
-				} else if ("All Key Rates".equals(fileType)) {
-					customResponse = fileUploadService.uploadKeyRates(fileType,fileInfo, rateDate, overwrite,
-							ftpAuditService.getUserFromPrincipal(user));
-				} else if ("Margin Adjustment".equals(fileType)) {
-					customResponse = fileUploadService.uploadMarginAdjustmentRates(fileType,fileInfo, rateDate,
-							overwrite, ftpAuditService.getUserFromPrincipal(user));
-				} else if ("Margin Curve Extended".equals(fileType)) {
-					customResponse = fileUploadService.uploadMarginCurveExtendedRates(fileType,fileInfo, rateDate,
-							overwrite, ftpAuditService.getUserFromPrincipal(user));
-				} else {
-					throw new CustomException("Invalid data for file upload.");
-				}
-			} else {
-				throw new CustomException("Error in writing file to disk.");
-			}
-		} catch (CustomException e) {
-			customResponse = new CustomResponse();
-			customResponse.setStatus(Constants.STATUS_OK);
-			customResponse.setDescription(e.getMessage());
-			LOG.error(e.getMessage());
-		} catch (Exception e) {
-			customResponse = new CustomResponse();
-			customResponse.setStatus(Constants.STATUS_OK);
-			customResponse.setDescription("Error in file upload.");
-			LOG.error("Error in data for file upload.");
-		}
-		LOG.debug("End fileUpload");
-		return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
-	}
+        try {
+            FileInfo fileInfo = this.saveUploadedFile(multipartfile);
+            if (fileInfo.getFileSaved()) {
+                if ("Yield Curve".equals(fileType)) {
+                    customResponse = fileUploadService.uploadCurveRates(fileType, fileInfo, rateDate, overwrite,
+                            ftpAuditService.getUserFromPrincipal(user));
+                } else if ("All Key Rates".equals(fileType)) {
+                    customResponse = fileUploadService.uploadKeyRates(fileType, fileInfo, rateDate, overwrite,
+                            ftpAuditService.getUserFromPrincipal(user));
+                } else if ("Margin Adjustment".equals(fileType)) {
+                    customResponse = fileUploadService.uploadMarginAdjustmentRates(fileType, fileInfo, rateDate,
+                            overwrite, ftpAuditService.getUserFromPrincipal(user));
+                } else if ("Margin Curve Extended".equals(fileType)) {
+                    customResponse = fileUploadService.uploadMarginCurveExtendedRates(fileType, fileInfo, rateDate,
+                            overwrite, ftpAuditService.getUserFromPrincipal(user));
+                } else {
+                    throw new CustomException("Invalid data for file upload.");
+                }
+            } else {
+                throw new CustomException("Error in writing file to disk.");
+            }
+        } catch (CustomException e) {
+            customResponse = new CustomResponse();
+            customResponse.setStatus(Constants.STATUS_OK);
+            customResponse.setDescription(e.getMessage());
+            LOG.error(e.getMessage());
+        } catch (Exception e) {
+            customResponse = new CustomResponse();
+            customResponse.setStatus(Constants.STATUS_OK);
+            customResponse.setDescription("Error in file upload.");
+            LOG.error("Error in data for file upload.");
+        }
+        LOG.debug("End fileUpload");
+        return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
+    }
 
-	@RequestMapping(value = "/checkDataAvailable", method = RequestMethod.POST)
-	public ResponseEntity<CustomResponse> checkDataAvailable(@RequestParam("fileType") String fileType,
-			@RequestParam("date") String date,Principal user) {
-		HttpStatus httpStatus = HttpStatus.OK;
-		CustomResponse customResponse = null;
-		LOG.debug("Start checkDataAvailable");
-		try {
-			customResponse = fileUploadService.dataExistingCount(fileType, date, ftpAuditService.getUserFromPrincipal(user));
-		} catch(Exception e) {
-			customResponse = new CustomResponse();
-			customResponse.setStatus(Constants.STATUS_FAIL);
-			customResponse.setDescription("Error in checking data.");
-			LOG.error("Error in finding count.");
-		}
-		LOG.debug("End checkDataAvailable");
-		return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
-	}
+    @RequestMapping(value = "/checkDataAvailable", method = RequestMethod.POST)
+    public ResponseEntity<CustomResponse> checkDataAvailable(@RequestParam("fileType") String fileType,
+            @RequestParam("date") String date, Principal user) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        CustomResponse customResponse = null;
+        LOG.debug("Start checkDataAvailable");
+        try {
+            customResponse = fileUploadService.dataExistingCount(fileType, date,
+                    ftpAuditService.getUserFromPrincipal(user));
+        } catch (Exception e) {
+            customResponse = new CustomResponse();
+            customResponse.setStatus(Constants.STATUS_FAIL);
+            customResponse.setDescription("Error in checking data.");
+            LOG.error("Error in finding count.");
+        }
+        LOG.debug("End checkDataAvailable");
+        return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
+    }
 
-	
-	private FileInfo saveUploadedFile(MultipartFile multipartfile) {
-		SimpleDateFormat timeStamp = new SimpleDateFormat("yyyyMMddHHmmss");
-		File sourceFile = null;
-		LOG.debug("Start saveUploadedFile");
-		FileInfo fileInfo = new FileInfo();
-		try {
-			String fileName = multipartfile.getOriginalFilename();
-			fileName = fileName.substring(0, fileName.lastIndexOf(".")) + "_"
+    private FileInfo saveUploadedFile(MultipartFile multipartfile) {
+        SimpleDateFormat timeStamp = new SimpleDateFormat("yyyyMMddHHmmss");
+        File sourceFile = null;
+        LOG.debug("Start saveUploadedFile");
+        FileInfo fileInfo = new FileInfo();
+        try {
+            String fileName = multipartfile.getOriginalFilename();
+            if(fileName.contains(File.separator)) {
+                fileName = fileName.substring(fileName.lastIndexOf(File.separator)+1,fileName.length());
+            }
+            fileName = fileName.substring(0, fileName.lastIndexOf(".")) + "_"
 					+ timeStamp.format(new Timestamp(System.currentTimeMillis()))
 					+ fileName.substring(fileName.lastIndexOf("."), fileName.length());
 
@@ -133,19 +136,20 @@ public class FileController {
 			sourceFile = new File(sourceDirectory.getAbsolutePath(), fileName);
 
 			sourceFile.createNewFile();
-			multipartfile.transferTo(sourceFile);
-			fileInfo.setFileName(sourceFile.getName());
-			fileInfo.setFilePath(sourceFile.getAbsolutePath());
-			fileInfo.setFileSize(String.valueOf(sourceFile.length() / 1024) + " kb");
-			fileInfo.setUploadedFile(sourceFile);
-			fileInfo.setFileSaved(Boolean.TRUE);
-		} catch (Exception e) {
-			fileInfo.setStackTrace(ExceptionUtils.getStackTrace(e));
-			fileInfo.setFileSaved(Boolean.FALSE);
-			LOG.error("Exception in saveUploadedFile: {} " + fileInfo.getStackTrace());
-		}
-		fileInfo.setUploadDate(new Date());
-		LOG.debug("End saveUploadedFile");
-		return fileInfo;
-	}
+            multipartfile.transferTo(sourceFile);
+            fileInfo.setFileName(sourceFile.getName());
+            fileInfo.setFilePath(sourceFile.getAbsolutePath());
+            fileInfo.setFileSize(String.valueOf(sourceFile.length() / 1024) + " kb");
+            fileInfo.setUploadedFile(sourceFile);
+            fileInfo.setFileSaved(Boolean.TRUE);
+
+        } catch (Exception e) {
+            fileInfo.setStackTrace(ExceptionUtils.getStackTrace(e));
+            fileInfo.setFileSaved(Boolean.FALSE);
+            LOG.error("Exception in saveUploadedFile: {} " + fileInfo.getStackTrace());
+        } 
+        fileInfo.setUploadDate(new Date());
+        LOG.debug("End saveUploadedFile");
+        return fileInfo;
+    }
 }
