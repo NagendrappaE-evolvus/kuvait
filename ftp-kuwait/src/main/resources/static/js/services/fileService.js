@@ -27,7 +27,7 @@ app.factory('UploadService', [
 								return errResponse;
 					});
 				},
-				checkDataAvailability:function(fileType,date) {
+				checkDataAvailability : function(fileType, date) {
 					var deferred = $q.defer();
 					  
 					$http

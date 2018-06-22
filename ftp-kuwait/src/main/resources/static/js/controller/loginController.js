@@ -88,7 +88,9 @@ app.controller("LoginController", [
 			
 			$rootScope.adjCalcMethods = [{name:"Transfer Rate Margin Adjustments"},
 				{name:"Transfer Rate Margin Curve Extended"}]
-			$rootScope.fileTypes = ["Yield Curve","Margin Adjustment","Margin Curve Extended","All Key Rates"];
+			/*$rootScope.fileTypes = ["Yield Curve","Margin Adjustment","Margin Curve Extended","All Key Rates"];*/
+			$rootScope.rateFileTypes = ["Currency Rates","Static Rates"];
+			$rootScope.mapperFileTypes = ["Grand Mapper","Product Mapper","Division Mapper","Policy Mapper"];
 			
 			$rootScope.dateOptions = {
 					    formatYear: 'yyyy',

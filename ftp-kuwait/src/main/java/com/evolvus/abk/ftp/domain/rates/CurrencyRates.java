@@ -1,0 +1,63 @@
+package com.evolvus.abk.ftp.domain.rates;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import com.evolvus.abk.ftp.domain.FtpEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Data;
+import lombok.ToString;
+
+@Data
+@Entity 
+@Table(name="FTP_CURRENCY_RATES")
+@ToString
+public class CurrencyRates {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "CUR_RATE_SEQ")
+	@SequenceGenerator(name = "CUR_RATE_SEQ", sequenceName = "CUR_RATE_SEQ")
+	@Column(name="CUR_ID")
+	private Long id;
+	
+	@Column(name="BUSINESS_CLOSE_DATE")
+	private Date businessCloseDate;
+	
+	@Column(name="CURRENCY")
+	private String currency;
+	
+	@Column(name="TENOR")
+	private String tenor;
+	
+	@Column(name="DAYS_FROM")
+	private Double daysFrom;
+	
+	@Column(name="DAYS_TO")
+	private Double daysTo;
+	
+	@Column(name="BASE")
+	private BigDecimal base;
+	
+	@Column(name="MARGIN")
+	private BigDecimal margin;
+	
+	@Column(name="NET")
+	private BigDecimal net;
+	
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "BANK_CODE")
+	private FtpEntity bankCode;
+}

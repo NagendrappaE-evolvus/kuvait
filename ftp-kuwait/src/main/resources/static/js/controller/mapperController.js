@@ -1,4 +1,4 @@
-app.controller("FileUploadController", [
+app.controller("MapperController", [
 		"$scope",
 		'UploadService',
 		"$http",
@@ -21,7 +21,6 @@ app.controller("FileUploadController", [
 					alertify.alert("Error","Please select the file.");
 					return false;
 				}
-				
 				/*var promiseData = UploadService.checkDataAvailability($scope.fileType,$scope.applicableDate);
 				promiseData.then(function(response) {
 					if(response.data!=null && response.status=='OK' && Number(response.data)>0) {
@@ -30,16 +29,15 @@ app.controller("FileUploadController", [
 										'Data already exist, click OK to overwrite.',
 										function() {
 											$scope.serveUploadFile($scope.fileType,$scope.selectedFile,$scope.applicableDate,true);
-										}, function() {
+										},function() {
 											$scope.message = "File not uploaded.";
 										});
 					} else {
 						$scope.serveUploadFile($scope.fileType,$scope.selectedFile,$scope.applicableDate,false);
 					}
-				}, function(errorResponse) {
+				},function(errorResponse) {
 					return false;
 				});*/
-				
 				$scope.serveUploadFile($scope.fileType,$scope.selectedFile,$scope.applicableDate,false);
 			};
 			

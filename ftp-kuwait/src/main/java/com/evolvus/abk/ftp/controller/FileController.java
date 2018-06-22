@@ -10,6 +10,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import com.evolvus.abk.ftp.bean.CustomException;
 import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
+import com.evolvus.abk.ftp.service.MapperFileService;
 import com.evolvus.abk.ftp.service.impl.FileUploadService;
 import com.evolvus.abk.ftp.service.impl.FtpAuditService;
 
@@ -40,9 +42,13 @@ public class FileController {
 
     @Autowired
     FtpAuditService ftpAuditService;
+    
+    @Autowired(required=true)
+    @Qualifier(value="GrandMapperFileService")
+    MapperFileService grandMapperService;
 
     /**
-     * Nacha upload.
+     * File UPLOAD.
      *
      * @param multipartfile
      *            the multipartfile
@@ -54,7 +60,7 @@ public class FileController {
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public ResponseEntity<CustomResponse> fileUpload(@RequestParam("file") MultipartFile multipartfile,
-            @RequestParam("fileType") String fileType, @RequestParam("date") String rateDate,
+            @RequestParam("fileType") String fileType, @RequestParam("date") String date,
             @RequestParam("overwrite") Boolean overwrite, Principal user) throws InterruptedException {
         LOG.debug("Start fileUpload");
         HttpStatus httpStatus = HttpStatus.OK;
@@ -63,17 +69,16 @@ public class FileController {
         try {
             FileInfo fileInfo = this.saveUploadedFile(multipartfile);
             if (fileInfo.getFileSaved()) {
-                if ("Yield Curve".equals(fileType)) {
-                    customResponse = fileUploadService.uploadCurveRates(fileType, fileInfo, rateDate, overwrite,
-                            ftpAuditService.getUserFromPrincipal(user));
+                if ("Grand Mapper".equals(fileType)) {
+                    customResponse = grandMapperService.uploadToTemp(fileInfo, date, user);
                 } else if ("All Key Rates".equals(fileType)) {
-                    customResponse = fileUploadService.uploadKeyRates(fileType, fileInfo, rateDate, overwrite,
+                    customResponse = fileUploadService.uploadKeyRates(fileType, fileInfo, date, overwrite,
                             ftpAuditService.getUserFromPrincipal(user));
                 } else if ("Margin Adjustment".equals(fileType)) {
-                    customResponse = fileUploadService.uploadMarginAdjustmentRates(fileType, fileInfo, rateDate,
+                    customResponse = fileUploadService.uploadMarginAdjustmentRates(fileType, fileInfo, date,
                             overwrite, ftpAuditService.getUserFromPrincipal(user));
                 } else if ("Margin Curve Extended".equals(fileType)) {
-                    customResponse = fileUploadService.uploadMarginCurveExtendedRates(fileType, fileInfo, rateDate,
+                    customResponse = fileUploadService.uploadMarginCurveExtendedRates(fileType, fileInfo, date,
                             overwrite, ftpAuditService.getUserFromPrincipal(user));
                 } else {
                     throw new CustomException("Invalid data for file upload.");
@@ -129,13 +134,14 @@ public class FileController {
 					+ timeStamp.format(new Timestamp(System.currentTimeMillis()))
 					+ fileName.substring(fileName.lastIndexOf("."), fileName.length());
 
-			File sourceDirectory = new File(uploadFolder);
+			File sourceDirectory = new File(uploadFolder+File.separator+new SimpleDateFormat("ddMMyyyy").format(new Date()));
 			if (!sourceDirectory.exists()) {
 				sourceDirectory.mkdirs();
 			}
 			sourceFile = new File(sourceDirectory, fileName);
 
 			sourceFile.createNewFile();
+			
             multipartfile.transferTo(sourceFile);
             fileInfo.setFileName(sourceFile.getName());
             fileInfo.setFilePath(sourceFile.getAbsolutePath());

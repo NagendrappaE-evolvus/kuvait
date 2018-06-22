@@ -102,6 +102,7 @@ public class FileUploadService
 				deleteExistingRecords(fileType, date, user);
 			}
 			DataFormatter dataFormatter = new DataFormatter();
+			
 			List<CurrencyCurveRates> curveRates = new ArrayList<CurrencyCurveRates>();
 			if (rowIterator.hasNext()) {
 				while (rowIterator.hasNext()) {
@@ -225,7 +226,7 @@ public class FileUploadService
 			rowIterator.next();
 
 			Calendar rateAppDate = Calendar.getInstance();
-			rateAppDate.setTime(new SimpleDateFormat("dd-MM-yyyy").parse(date));
+			rateAppDate.setTime(new SimpleDateFormat("dd-MM-yyyy").parse(date)) 	;
 			fileInfo.setRateApplicableDate(rateAppDate.getTime());
 
 			java.sql.Date uploadDate = new java.sql.Date(Calendar.getInstance().getTimeInMillis());
@@ -691,4 +692,13 @@ public class FileUploadService
 		LOG.debug("End dataExistingCount.");
 		return response;
 	}
+	
+	public Sheet getSheetByName(Workbook workbook,String name) {
+		return null;
+	}
+	
+	public Sheet getSheetByName(Workbook workbook,Integer index) {
+		return null;
+	}
+	
 }

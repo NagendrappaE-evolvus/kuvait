@@ -50,6 +50,14 @@ app.config(["$stateProvider", "$urlRouterProvider", "$routeProvider", "$location
 						controller : 'FileUploadController'
 					}
 				}
+			}).state('home.mappers-upload', {
+				url : "/mappers-upload",
+				views : {
+					"child" : {
+						templateUrl : 'pages/mappers-upload.html',
+						controller : 'MapperController'
+					}
+				}
 			}).state('home.products', {
 				url : "/products",
 				params : {code:null,name:null},
