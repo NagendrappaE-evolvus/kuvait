@@ -40,12 +40,19 @@ app.controller("MapperController", [
 				});*/
 				$scope.serveUploadFile($scope.fileType,$scope.selectedFile,$scope.applicableDate,false);
 			};
-			
+		
+			$scope.tempList = [];
+			$scope.mainList = [];
 			$scope.serveUploadFile = function(fileType,file,date,overwrite) {
 						$scope.message = "uploading....";
 						UploadService.uploadRateFile(fileType,file,date,overwrite)
 						.then(function(response) {
 								$scope.message = response.description;
+								if(response.status = "OK") {
+									$scope.tempList = response.data.TEMP;
+									$scope.mainList = response.data.MAIN;
+								}
+								
 						}, function(errorResponse) {
 								$scope.message = "Error occurred.";
 						});

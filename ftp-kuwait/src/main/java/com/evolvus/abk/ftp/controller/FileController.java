@@ -71,6 +71,9 @@ public class FileController {
             if (fileInfo.getFileSaved()) {
                 if ("Grand Mapper".equals(fileType)) {
                     customResponse = grandMapperService.uploadToTemp(fileInfo, date, user);
+                    if(customResponse.getStatus().equals(Constants.STATUS_OK)) {
+                    	customResponse.setData(grandMapperService.getDifferenceOfTempAndMain()); 
+                    }
                 } else if ("All Key Rates".equals(fileType)) {
                     customResponse = fileUploadService.uploadKeyRates(fileType, fileInfo, date, overwrite,
                             ftpAuditService.getUserFromPrincipal(user));
@@ -81,7 +84,7 @@ public class FileController {
                     customResponse = fileUploadService.uploadMarginCurveExtendedRates(fileType, fileInfo, date,
                             overwrite, ftpAuditService.getUserFromPrincipal(user));
                 } else {
-                    throw new CustomException("Invalid data for file upload.");
+                    throw new CustomException("Invalid file type.");
                 }
             } else {
                 throw new CustomException("Error in writing file to disk.");

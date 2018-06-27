@@ -24,7 +24,9 @@ public interface Constants {
 	String EMPTY = "";
 	
 	String STATUS_OK="OK";
-	
+	String STATUS_NO_DATA="NODATA";
+	String LIST_TEMP = "TEMP";
+	String LIST_MAIN = "MAIN";
 	String STATUS_FAIL="FAIL";
 	
 	String OP_EQUAL="=";

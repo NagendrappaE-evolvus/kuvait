@@ -19,9 +19,9 @@
 					<li role="navigation" ui-sref-active="active"><a
 						ui-sref="home.welcome">Home</a></li>
 					<li role="navigation" ui-sref-active="active"><a
-						ui-sref="home.rate-upload">Rate Upload</a></li>
+						ui-sref="home.rate-upload">Rates</a></li>
 					<li role="navigation" ui-sref-active="active" ><a
-						ui-sref="home.mappers-upload">Mapper Upload</a></li>
+						ui-sref="home.mappers-upload">Mappers</a></li>
 					<!-- <li role="navigation" ui-sref-active="active"><a
 						ui-sref="home.rate-upload">Upload</a></li>
 					<li role="navigation" ui-sref-active="active" class="dropdown"><a
@@ -46,6 +46,20 @@
 							<li><a ui-sref="home.schemecodes">Scheme Codes</a></li>
 							<li><a ui-sref="home.user-mgmt">User Management</a></li>
 						</ul></li> -->
+					<li role="navigation" ui-sref-active="active" class="dropdown"><a
+						class="dropdown-toggle" data-toggle="dropdown" href="#"
+						onclick="return false;" role="button" aria-haspopup="false"
+						aria-expanded="true">Configuration &nbsp;<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<!-- <li><a
+								ui-sref="home.ruleMappings({targetType:'COA',targetTypeDesc:'Chart Of Accounts'})">Chart
+									Of Account</a></li>
+							<li><a
+								ui-sref="home.ruleMappings({targetType:'ORGH',targetTypeDesc:'Organization Hierarchies'})">Organization
+									Hierarchies</a></li>
+							<li><a ui-sref="home.schemecodes">Scheme Codes</a></li> -->
+							<li><a ui-sref="home.user-mgmt">User Management</a></li>
+						</ul></li>
 					<li role="navigation"><a ui-sref="#"
 							ng-click="logout()">
 							Log Out<span class="glyphicon glyphicon-log-out"></span>
