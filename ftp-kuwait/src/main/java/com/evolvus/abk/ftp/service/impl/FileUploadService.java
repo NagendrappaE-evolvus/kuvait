@@ -45,6 +45,7 @@ import com.evolvus.abk.ftp.domain.MarginCurveExtd;
 import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.repository.AllKeyRatesRepository;
 import com.evolvus.abk.ftp.repository.CcyCurveRateRepository;
+import com.evolvus.abk.ftp.repository.CurrencyRateRepository;
 import com.evolvus.abk.ftp.repository.ItemRepository;
 import com.evolvus.abk.ftp.repository.MrgnAdjstRatesRepository;
 import com.evolvus.abk.ftp.repository.MrgnCurveExtdRepository;
@@ -70,6 +71,9 @@ public class FileUploadService
 
 	@Autowired
 	FtpAuditService ftpAuditService;
+	
+	@Autowired
+	CurrencyRateRepository currencyRateRepository;
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileUploadService.class);
 
@@ -650,7 +654,10 @@ public class FileUploadService
 		try {
 			java.sql.Date applyDate = new java.sql.Date(new SimpleDateFormat("dd-MM-yyyy").parse(date).getTime());
 
-			if ("Yield Curve".equals(fileType)) {
+			if("Currency Rates".equals(fileType)) {
+				recordsDeleted = currencyRateRepository.deleteInBulkByBusinessCloseDateAndBankCode(applyDate, user.getEntity());
+			}
+			else if("Yield Curve".equals(fileType)) {
 				recordsDeleted = ccyCurveRateRepository.deleteInBulkByRateDateInFileAndBankCode(applyDate, user.getEntity());
 			} else if ("All Key Rates".equals(fileType)) {
 				recordsDeleted = allKeyRatesRepository.deleteInBulkByRateDateInFileAndBankCode(applyDate, user.getEntity());
@@ -681,10 +688,12 @@ public class FileUploadService
 				recordsFound = mrgnAdjstRatesRepository.countByRateDateInFileAndBankCode(applyDate, user.getEntity());
 			} else if ("Margin Curve Extended".equals(fileType)) {
 				recordsFound = mrgnCurveExtdRepository.countByRateDateInFileAndBankCode(applyDate, user.getEntity());
+			}else if("Currency Rates".equalsIgnoreCase(fileType)) {
+				recordsFound = currencyRateRepository.countByBusinessCloseDateAndBankCode(applyDate, user.getEntity());
 			}
 			response.setStatus(Constants.STATUS_OK);
 			response.setData(recordsFound);
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			response.setStatus(Constants.STATUS_FAIL);
 			response.setDescription("Error in fetching da.");
 			LOG.error("Error in count check : " + ExceptionUtils.getStackTrace(e));

@@ -24,6 +24,7 @@ import com.evolvus.abk.ftp.bean.CustomException;
 import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
+import com.evolvus.abk.ftp.service.RateService;
 import com.evolvus.abk.ftp.service.MapperFileService;
 import com.evolvus.abk.ftp.service.impl.FileUploadService;
 import com.evolvus.abk.ftp.service.impl.FtpAuditService;
@@ -46,6 +47,10 @@ public class FileController {
     @Autowired(required=true)
     @Qualifier(value="GrandMapperFileService")
     MapperFileService grandMapperService;
+    
+    @Autowired(required=true)
+    @Qualifier(value="CurrencyRateFileService")
+    RateService currencyRateService;
 
     /**
      * File UPLOAD.
@@ -83,6 +88,13 @@ public class FileController {
                 } else if ("Margin Curve Extended".equals(fileType)) {
                     customResponse = fileUploadService.uploadMarginCurveExtendedRates(fileType, fileInfo, date,
                             overwrite, ftpAuditService.getUserFromPrincipal(user));
+                }else if ("Currency Rates".equals(fileType)) {
+               	 if(overwrite) {
+               		 fileUploadService.deleteExistingRecords(fileType, date, ftpAuditService.getUserFromPrincipal(user));
+               	 }
+                	 customResponse = currencyRateService.uploadRates(fileType, fileInfo, date, ftpAuditService.getUserFromPrincipal(user), overwrite);
+                }else if ("Static Rates".equals(fileType)) {
+                	System.out.println("........");
                 } else {
                     throw new CustomException("Invalid file type.");
                 }
