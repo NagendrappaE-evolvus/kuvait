@@ -33,7 +33,7 @@ public class KeyRates {
 	private Long id;
 	
 	@Column(name="BUSINESS_CLOSE_DATE")
-	private Date businessCloseDate;
+	private java.sql.Date businessCloseDate;
 	
 	@Column(name="CURRENCY")
 	private String currency;
@@ -51,4 +51,17 @@ public class KeyRates {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BANK_CODE")
 	private FtpEntity bankCode;
+	
+	@Column(name="UPLOADED_DATE")
+	private Date uploadedDate;
+	
+	@Column(name="UPLOADED_BY")
+	private String uploadedBy;
+	
+	@Column(name="OVERWRITTEN_DATE")
+	private Date overwrittenDate;
+	
+	@Column(name="OVERWRITTEN_BY")
+	private String overwrittenBy;
+	
 }

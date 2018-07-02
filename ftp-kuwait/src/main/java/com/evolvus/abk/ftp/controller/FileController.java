@@ -51,6 +51,10 @@ public class FileController {
     @Autowired(required=true)
     @Qualifier(value="CurrencyRateFileService")
     RateService currencyRateService;
+    
+    @Autowired(required=true)
+    @Qualifier(value="KeyRateFileService")
+    RateService keyRateService;
 
     /**
      * File UPLOAD.
@@ -94,7 +98,10 @@ public class FileController {
                	 }
                 	 customResponse = currencyRateService.uploadRates(fileType, fileInfo, date, ftpAuditService.getUserFromPrincipal(user), overwrite);
                 }else if ("Static Rates".equals(fileType)) {
-                	System.out.println("........");
+                  	 if(overwrite) {
+                   		 fileUploadService.deleteExistingRecords(fileType, date, ftpAuditService.getUserFromPrincipal(user));
+                   	 }
+                	customResponse = keyRateService.uploadRates(fileType, fileInfo, date, ftpAuditService.getUserFromPrincipal(user), overwrite);
                 } else {
                     throw new CustomException("Invalid file type.");
                 }

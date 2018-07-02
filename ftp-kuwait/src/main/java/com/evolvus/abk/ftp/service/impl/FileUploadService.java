@@ -47,6 +47,7 @@ import com.evolvus.abk.ftp.repository.AllKeyRatesRepository;
 import com.evolvus.abk.ftp.repository.CcyCurveRateRepository;
 import com.evolvus.abk.ftp.repository.CurrencyRateRepository;
 import com.evolvus.abk.ftp.repository.ItemRepository;
+import com.evolvus.abk.ftp.repository.KeyRateRepository;
 import com.evolvus.abk.ftp.repository.MrgnAdjstRatesRepository;
 import com.evolvus.abk.ftp.repository.MrgnCurveExtdRepository;
 
@@ -74,6 +75,9 @@ public class FileUploadService
 	
 	@Autowired
 	CurrencyRateRepository currencyRateRepository;
+	
+	@Autowired
+	KeyRateRepository keyRateRepository;
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileUploadService.class);
 
@@ -656,8 +660,9 @@ public class FileUploadService
 
 			if("Currency Rates".equals(fileType)) {
 				recordsDeleted = currencyRateRepository.deleteInBulkByBusinessCloseDateAndBankCode(applyDate, user.getEntity());
-			}
-			else if("Yield Curve".equals(fileType)) {
+			}else if("Static Rates".equals(fileType)) {
+				recordsDeleted = keyRateRepository.deleteInBulkByBusinessCloseDateAndBankCode(applyDate, user.getEntity());
+			}else if("Yield Curve".equals(fileType)) {
 				recordsDeleted = ccyCurveRateRepository.deleteInBulkByRateDateInFileAndBankCode(applyDate, user.getEntity());
 			} else if ("All Key Rates".equals(fileType)) {
 				recordsDeleted = allKeyRatesRepository.deleteInBulkByRateDateInFileAndBankCode(applyDate, user.getEntity());
@@ -690,10 +695,12 @@ public class FileUploadService
 				recordsFound = mrgnCurveExtdRepository.countByRateDateInFileAndBankCode(applyDate, user.getEntity());
 			}else if("Currency Rates".equalsIgnoreCase(fileType)) {
 				recordsFound = currencyRateRepository.countByBusinessCloseDateAndBankCode(applyDate, user.getEntity());
+			}else if("Static Rates".equalsIgnoreCase(fileType)) {
+				recordsFound = keyRateRepository.countByBusinessCloseDateAndBankCode(applyDate, user.getEntity());
 			}
 			response.setStatus(Constants.STATUS_OK);
 			response.setData(recordsFound);
-		} catch (Exception e) {
+		} catch (ParseException e) {
 			response.setStatus(Constants.STATUS_FAIL);
 			response.setDescription("Error in fetching da.");
 			LOG.error("Error in count check : " + ExceptionUtils.getStackTrace(e));
