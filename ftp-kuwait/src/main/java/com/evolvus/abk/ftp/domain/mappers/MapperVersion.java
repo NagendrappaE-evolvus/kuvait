@@ -9,18 +9,22 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-@Entity 
+@Entity
 @ToString
-@Table(name="FTP_MAPPER_VERSION")
+@Table(name = "FTP_MAPPER_VERSION")
 public class MapperVersion {
-	
+
 	@Id
-	@Column(name="MAPPER_NAME",length=30)
+	@Column(name = "MAPPER_NAME", length = 30)
 	private String mapperName;
-	
-	@Column(name="MAPPER_KEY",length=2)
+
+	@Column(name = "MAPPER_KEY", length = 2)
 	private String mapperKey;
-	
-	@Column(name="CURR_VERSION")
-	private Integer currentVersion;
+
+	@Column(name = "CURR_VERSION")
+	private Long currentVersion;
+
+	@Column(name = "CURR_ARCH_VERSION")
+	private Long currArchVersion;
+
 }

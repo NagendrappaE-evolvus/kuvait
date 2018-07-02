@@ -14,6 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.evolvus.abk.ftp.domain.FtpEntity;
+import com.evolvus.abk.ftp.domain.mappers.TopMapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;

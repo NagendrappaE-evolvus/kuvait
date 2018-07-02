@@ -1,7 +1,7 @@
 <div class="container ">
 	<div class="main-content">
 		<h3>Upload File</h3>
-		<div class="jumbotron fileinput fileinput-new">
+		<div class="jumbotron fileinput fileinput-new" style="overflow-y:auto">
 			<label class="col-md-offset-3">{{message}}</label>
 			<div class="formcontrol">
 
@@ -79,23 +79,32 @@
 
 				</form>
 			</div>
+			<div class="form-group form-group-md" ng-show="tempList.length>0 || mainList.length>0">
+				<button class="btn btn-default btn-orange" ng-click="processMappers()">
+					Proceed
+				</button>
+				<button class="btn btn-default">Cancel
+				</button>
+			</div>
 			<div class="main-content">
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<strong>Uploaded Content</strong>
 						</div>
-						<div class="panel-body">
-							<table width="100%" class="table table-hover" border="0"
+						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
+							<table width="100%" class="table table-bordered table-striped" border="0"
 								cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-										<th scope="col">Username</th>
-										<th scope="col">Status</th>
-										<th scope="col">Action</th>
+										<th ng-repeat="cHead in tableHeader"
+											><span
+											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
+												")}}</span><br>
+										<span>{{item2.join(" ")}}</span></th>
 									</tr>
-									<tr>
-										<td style="text-align: center" colspan="4">No Data 
+									<tr ng-show="tempList.length==0">
+										<td style="text-align: center" colspan="{{tableHeader.length}}">No Data
 											available.</td>
 									</tr>
 									<tr ng-repeat="obj in tempList">
@@ -104,26 +113,26 @@
 										<td>{{obj.drFtpCat}}</td>
 										<td>{{obj.crFtpCat}}</td>
 										<td>{{obj.userSubclassCodeIn}}</td>
-										
+
 										<td>{{obj.userSubclassCodeNotIn}}</td>
-										<td>{{obj.divisionCodeIn}}</td>
-										<td>{{obj.divisionCodeNotIn}}</td>
-										
-										<td>{{obj.custInLength}}</td>
-										<td>{{obj.custTypeIn}}</td>
-										<td>{{obj.custNotInLength}}</td>
-										
-										<td>{{obj.custTypeNotIn}}</td>
-										<td>{{obj.subDivisionCodeIn}}</td>
-										<td>{{obj.subDivisionCodeNotIn}}</td>
-										
-										<td>{{obj.tradingBookNameIn}}</td>
-										<td>{{obj.tradingBookNameNotIn}}</td>
-										<td>{{obj.instrumentClassIn}}</td>
-										
 										<td>{{obj.bacidIn}}</td>
 										<td>{{obj.bacidNotIn}}</td>
 										
+										<td>{{obj.divisionCodeIn}}</td>
+										<td>{{obj.divisionCodeNotIn}}</td>
+
+										<td>{{obj.custInLength}}</td>
+										<td>{{obj.custTypeIn}}</td>
+										<td>{{obj.custNotInLength}}</td>
+
+										<td>{{obj.custTypeNotIn}}</td>
+										<td>{{obj.subDivisionCodeIn}}</td>
+										<td>{{obj.subDivisionCodeNotIn}}</td>
+
+										<td>{{obj.tradingBookNameIn}}</td>
+										<td>{{obj.tradingBookNameNotIn}}</td>
+										<td>{{obj.instrumentClassIn}}</td>
+
 										<td>{{obj.instrumentClassNotIn}}</td>
 										<td>{{obj.groupByLogic}}</td>
 										<td>{{obj.count}}</td>
@@ -140,18 +149,19 @@
 						<div class="panel-heading">
 							<strong>Existing Content</strong>
 						</div>
-						<div class="panel-body">
-							<table width="100%" class="table table-hover" border="0"
+						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
+							<table width="100%" class="table table-bordered table-striped" border="0"
 								cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-     
-										<th scope="col"></th>
-										<th scope="col">Status</th>
-										<th scope="col">Action</th>
+										<th ng-repeat="cHead in tableHeader"
+											ng-click="sortColumn($index);"><span
+											ng-class='sortClass($index)'></span> {{getSplitWord(cHead)}}<span>{{item1.join("
+												")}}</span><br>
+										<span>{{item2.join(" ")}}</span></th>
 									</tr>
-									<tr ng-show="tempList.length==0">
-										<td style="text-align: center" colspan="4">No Data 
+									<tr ng-show="mainList.length==0">
+										<td style="text-align: center" colspan="{{tableHeader.length}}">No Data
 											available.</td>
 									</tr>
 									<tr ng-repeat="obj in mainList">
@@ -160,26 +170,26 @@
 										<td>{{obj.drFtpCat}}</td>
 										<td>{{obj.crFtpCat}}</td>
 										<td>{{obj.userSubclassCodeIn}}</td>
-										
+
 										<td>{{obj.userSubclassCodeNotIn}}</td>
-										<td>{{obj.divisionCodeIn}}</td>
-										<td>{{obj.divisionCodeNotIn}}</td>
-										
-										<td>{{obj.custInLength}}</td>
-										<td>{{obj.custTypeIn}}</td>
-										<td>{{obj.custNotInLength}}</td>
-										
-										<td>{{obj.custTypeNotIn}}</td>
-										<td>{{obj.subDivisionCodeIn}}</td>
-										<td>{{obj.subDivisionCodeNotIn}}</td>
-										
-										<td>{{obj.tradingBookNameIn}}</td>
-										<td>{{obj.tradingBookNameNotIn}}</td>
-										<td>{{obj.instrumentClassIn}}</td>
-										
 										<td>{{obj.bacidIn}}</td>
 										<td>{{obj.bacidNotIn}}</td>
 										
+										<td>{{obj.divisionCodeIn}}</td>
+										<td>{{obj.divisionCodeNotIn}}</td>
+
+										<td>{{obj.custInLength}}</td>
+										<td>{{obj.custTypeIn}}</td>
+										<td>{{obj.custNotInLength}}</td>
+
+										<td>{{obj.custTypeNotIn}}</td>
+										<td>{{obj.subDivisionCodeIn}}</td>
+										<td>{{obj.subDivisionCodeNotIn}}</td>
+
+										<td>{{obj.tradingBookNameIn}}</td>
+										<td>{{obj.tradingBookNameNotIn}}</td>
+										<td>{{obj.instrumentClassIn}}</td>
+
 										<td>{{obj.instrumentClassNotIn}}</td>
 										<td>{{obj.groupByLogic}}</td>
 										<td>{{obj.count}}</td>
@@ -194,4 +204,4 @@
 
 		</div>
 	</div>
-	</div>
+</div>

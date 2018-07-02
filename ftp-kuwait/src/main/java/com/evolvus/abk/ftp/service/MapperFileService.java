@@ -15,5 +15,9 @@ public interface MapperFileService {
 	
 	Map<String,List<? extends Object>> getDifferenceOfTempAndMain();
 	
+	Long archive();
+	
+	Long insertToMain();
+	
 	/*public CustomResponse uploadToMain(String fileType, FileInfo fileInfo, String date, User user);*/
 }

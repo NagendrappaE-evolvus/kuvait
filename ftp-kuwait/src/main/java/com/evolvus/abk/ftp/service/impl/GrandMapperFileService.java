@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,21 +26,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
 import com.evolvus.abk.ftp.domain.FtpAudit;
 import com.evolvus.abk.ftp.domain.User;
+import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
+import com.evolvus.abk.ftp.domain.mappers.archivals.FTPGrandMapperArchive;
 import com.evolvus.abk.ftp.domain.mappers.main.FTPGrandMapper;
 import com.evolvus.abk.ftp.domain.mappers.temp.FTPGrandMapperTemp;
 import com.evolvus.abk.ftp.repository.mappers.main.GrandMapperMainRepository;
+import com.evolvus.abk.ftp.repository.mappers.main.archivals.GrandMapperArchiveRepository;
 import com.evolvus.abk.ftp.repository.mappers.temp.GrandMapperTempRepository;
 import com.evolvus.abk.ftp.service.MapperFileService;
+import com.evolvus.abk.ftp.service.MapperVersionService;
 
 @Service
 @Qualifier(value = "GrandMapperFileService")
-public class GrandMapperFileService implements MapperFileService {
+public class GrandMapperFileService<T,V,X> implements MapperFileService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GrandMapperFileService.class);
 
@@ -53,7 +57,16 @@ public class GrandMapperFileService implements MapperFileService {
 
 	@Autowired
 	GrandMapperMainRepository grandMapperMainRepository;
+	
+	@Autowired
+	GrandMapperArchiveRepository grandMapperArchiveRepository;
 
+	@Autowired
+	MapperVersionService mapperVersionService;
+	
+	@Autowired
+	MapperConversionService mapperConversionService;
+	
 	@Override
 	public CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user) {
 
@@ -265,6 +278,15 @@ public class GrandMapperFileService implements MapperFileService {
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
+		} finally {
+			if (workbook!=null) {
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 
 		if (response.getStatus().equals(Constants.STATUS_FAIL)) {
@@ -286,6 +308,7 @@ public class GrandMapperFileService implements MapperFileService {
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain() {
 		// TODO Auto-generated method stub
 		List<String> tempNotInMain = grandMapperTempRepository.fetchRecordsNotInMain();
@@ -301,6 +324,47 @@ public class GrandMapperFileService implements MapperFileService {
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
 		return differences;
-
+	}
+	
+	@Override
+	@Transactional
+	public Long archive() {
+		Iterable<FTPGrandMapper> mappersList = grandMapperMainRepository.findAll();
+		List<FTPGrandMapperArchive> archives = new ArrayList<>();
+		mappersList.forEach(mapper-> {
+			grandMapperMainRepository.delete(mapper);
+			mapper.setId(null);
+			archives.add(mapperConversionService.mainToArchive(mapper));
+		});
+		if(!archives.isEmpty()) {
+			grandMapperArchiveRepository.save(archives);
+			if(!archives.isEmpty()) {
+				return (long) archives.size();
+			}
+		}
+		return 0L;
+	}
+	
+	@Override
+	@Transactional
+	public Long insertToMain() {
+		Iterable<FTPGrandMapperTemp> tempMappers = grandMapperTempRepository.findAll();
+		List<FTPGrandMapper> mainMappers = new ArrayList<>();
+		MapperVersion version = mapperVersionService.getMapper("FTP Category Mapper");
+		
+		Long nextMainVersion = version.getCurrentVersion() + 1;
+		String mainVersion = version.getMapperKey()+nextMainVersion;
+		tempMappers.forEach(mapper -> {
+			grandMapperTempRepository.delete(mapper);
+			mapper.setId(null);
+			mapper.setVersion(mainVersion);
+			mainMappers.add(mapperConversionService.tempToMain(mapper));
+		});
+		if(!mainMappers.isEmpty()) {
+			grandMapperMainRepository.save(mainMappers);
+			mapperVersionService.updateMapperVersion("FTP Category Mapper", nextMainVersion, version.getCurrentVersion());
+			return (long) mainMappers.size();
+		}
+		return 0L;
 	}
 }
