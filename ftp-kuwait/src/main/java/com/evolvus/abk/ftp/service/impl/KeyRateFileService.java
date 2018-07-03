@@ -12,6 +12,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -66,6 +67,7 @@ public class KeyRateFileService implements RateService {
 			Iterator<Row> rowIterator;
 			datatypeSheet = workbook.getSheet("Static_Rates_Data");
 			rowIterator = datatypeSheet.iterator();
+			DataFormatter dataFormatter = new DataFormatter();
 			int temp = 0;
 			if (rowIterator.hasNext()) {
 				rowIterator.next();
@@ -74,20 +76,18 @@ public class KeyRateFileService implements RateService {
 					KeyRates keyrate = new KeyRates();
 					keyrate.setBusinessCloseDate(sqlDate);
 					keyrate.setBankCode(user.getEntity());
-					Cell cell = currentRow.getCell(0);
-					if (cell.getCellType() == Cell.CELL_TYPE_STRING)
-						keyrate.setTenor(cell.getStringCellValue());
+					Cell currentCell = currentRow.getCell(0);
+					if (currentCell.getCellType() == Cell.CELL_TYPE_STRING)
+						keyrate.setTenor(currentCell.getStringCellValue());
 					else
 						throw new IllegalStateException();
 					
-					cell = currentRow.getCell(1);
-					if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-						String val=String.valueOf(cell.getNumericCellValue());
-						LOG.debug("........key rate val ....."+new BigDecimal(val));
-						keyrate.setKeyRate(new BigDecimal(val));
+					currentCell = currentRow.getCell(1);
+					if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+						keyrate.setKeyRate(new BigDecimal(dataFormatter.formatCellValue(currentCell)));
 					}
-					else if (cell.getCellType() == Cell.CELL_TYPE_STRING)
-						keyrate.setKeyRate(BigDecimal.valueOf(Double.parseDouble(cell.getStringCellValue())));
+					else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING)
+						keyrate.setKeyRate(BigDecimal.valueOf(Double.parseDouble(currentCell.getStringCellValue())));
 					else
 						throw new IllegalStateException();
 

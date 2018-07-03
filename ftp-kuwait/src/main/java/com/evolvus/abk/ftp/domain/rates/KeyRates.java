@@ -41,7 +41,7 @@ public class KeyRates {
 	@Column(name="TENOR")
 	private String tenor;
 	
-	@Column(name="KEY_RATE")
+	@Column(name="KEY_RATE",columnDefinition="decimal(17,7)")
 	private BigDecimal keyRate;
 	
 	@Column(name="LATEST")
