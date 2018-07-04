@@ -55,6 +55,11 @@ public class KeyRateFileService implements RateService {
 		FileInputStream excelFile = null;
 		Workbook workbook = null;
 		FtpAudit audit = new FtpAudit();
+		audit.setTxnStartTime(ftpAuditService.getCurrentTime());
+		audit.setTxnAction(Constants.TXN_FILE_UPLOAD);
+		audit.setTxnObjectType(KeyRates.class.getName());
+		audit.setBankCode(user.getEntity());
+		audit.setTxnUser(user.getUsername());
 		java.sql.Date sqlDate = null;
 		Sheet datatypeSheet = null;
 		Row currentRow = null;
@@ -139,6 +144,14 @@ public class KeyRateFileService implements RateService {
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
+		} finally {
+			if (workbook!=null) {
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		if (response.getStatus().equals(Constants.STATUS_FAIL)) {
 			fileUploadService.deleteExistingRecords(fileType, date, user);
