@@ -47,13 +47,13 @@ public class CurrencyRates {
 	@Column(name="DAYS_TO")
 	private Double daysTo;
 	
-	@Column(name="BASE")
+	@Column(name="BASE", columnDefinition="decimal(17,7)")
 	private BigDecimal base;
 	
-	@Column(name="MARGIN")
+	@Column(name="MARGIN", columnDefinition="decimal(17,7)")
 	private BigDecimal margin;
 	
-	@Column(name="NET")
+	@Column(name="NET", columnDefinition="decimal(17,7)")
 	private BigDecimal net;
 	
 	@Column(name="UPLOADED_DATE")

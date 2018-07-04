@@ -78,7 +78,7 @@ public class FileController {
         try {
             FileInfo fileInfo = this.saveUploadedFile(multipartfile);
             if (fileInfo.getFileSaved()) {
-                if ("Grand Mapper".equals(fileType)) {
+                if ("CT".equals(fileType)) {
                     customResponse = grandMapperService.uploadToTemp(fileInfo, date, user);
                     if(customResponse.getStatus().equals(Constants.STATUS_OK)) {
                     	customResponse.setData(grandMapperService.getDifferenceOfTempAndMain()); 

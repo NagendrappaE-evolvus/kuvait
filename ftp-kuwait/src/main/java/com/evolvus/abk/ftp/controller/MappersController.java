@@ -38,7 +38,7 @@ public class MappersController {
         HttpStatus httpStatus = HttpStatus.OK;
         CustomResponse customResponse = new CustomResponse();
         try {
-        	if ("Grand Mapper".equals(mapperName)) {
+        	if ("CT".equals(mapperName)) {
         			grandMapperService.archive();
         			Long mapperRecords = grandMapperService.insertToMain();
         			if(mapperRecords > 0L) {

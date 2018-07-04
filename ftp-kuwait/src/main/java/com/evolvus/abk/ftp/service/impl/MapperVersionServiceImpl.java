@@ -19,16 +19,16 @@ public class MapperVersionServiceImpl implements MapperVersionService {
 	
 	@Override
 	@Transactional(readOnly=true)
-	public MapperVersion getMapper(String name) {
-		if(name!=null && !name.trim().equals(Constants.EMPTY)) {
-			return mapperVersionRepository.findByMapperName(name);
+	public MapperVersion getMapper(String key) {
+		if(key!=null && !key.trim().equals(Constants.EMPTY)) {
+			return mapperVersionRepository.findByMapperKey(key);
 		}
 		return null;
 	}
 
 	@Override
-	public MapperVersion updateMapperVersion(String name, Long mainVersion, Long archivalVersion) {
-		MapperVersion mapperVersion = this.getMapper(name);
+	public MapperVersion updateMapperVersion(String key, Long mainVersion, Long archivalVersion) {
+		MapperVersion mapperVersion = this.getMapper(key);
 		if(mapperVersion!=null) {
 			mapperVersion.setCurrArchVersion(archivalVersion);
 			mapperVersion.setCurrentVersion(mainVersion);

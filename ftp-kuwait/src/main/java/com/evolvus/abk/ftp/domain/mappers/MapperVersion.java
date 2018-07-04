@@ -14,10 +14,11 @@ import lombok.ToString;
 @Table(name = "FTP_MAPPER_VERSION")
 public class MapperVersion {
 
-	@Id
+	
 	@Column(name = "MAPPER_NAME", length = 30)
 	private String mapperName;
 
+	@Id
 	@Column(name = "MAPPER_KEY", length = 2)
 	private String mapperKey;
 
