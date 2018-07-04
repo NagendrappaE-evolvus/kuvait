@@ -353,7 +353,7 @@ public class GrandMapperFileService<T,V,X> implements MapperFileService {
 		MapperVersion version = mapperVersionService.getMapper("CT");
 		
 		Long nextMainVersion = version.getCurrentVersion() + 1;
-		String mainVersion = version.getMapperKey()+nextMainVersion;
+		String mainVersion = version.getVersionChars()+nextMainVersion;
 		tempMappers.forEach(mapper -> {
 			grandMapperTempRepository.delete(mapper);
 			mapper.setId(null);
