@@ -13,7 +13,6 @@ import lombok.ToString;
 @ToString
 @Table(name = "FTP_MAPPER_VERSION")
 public class MapperVersion {
-
 	
 	@Column(name = "MAPPER_NAME", length = 30)
 	private String mapperName;
@@ -21,11 +20,13 @@ public class MapperVersion {
 	@Id
 	@Column(name = "MAPPER_KEY", length = 2)
 	private String mapperKey;
+	
+	@Column(name="VERSION_CHARS",length=2)
+	private String versionChars;
 
 	@Column(name = "CURR_VERSION")
 	private Long currentVersion;
 
 	@Column(name = "CURR_ARCH_VERSION")
 	private Long currArchVersion;
-
 }
