@@ -1,4 +1,4 @@
-package com.evolvus.abk.ftp.service.impl;
+package com.evolvus.abk.ftp.service.mappers.impl;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,6 +42,8 @@ import com.evolvus.abk.ftp.repository.mappers.main.archivals.ProductMapperArchiv
 import com.evolvus.abk.ftp.repository.mappers.temp.ProductMapperTempRepository;
 import com.evolvus.abk.ftp.service.MapperFileService;
 import com.evolvus.abk.ftp.service.MapperVersionService;
+import com.evolvus.abk.ftp.service.impl.FtpAuditService;
+import com.evolvus.abk.ftp.service.impl.MapperConversionService;
 
 @Service
 @Qualifier(value = "ProductMapperFileService")
