@@ -3,9 +3,9 @@ package com.evolvus.abk.ftp.repository.mappers.main.archivals;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.evolvus.abk.ftp.domain.mappers.archivals.FTPPolicyMapperArchive;
+import com.evolvus.abk.ftp.domain.mappers.archivals.FTPDivisionCodeMapperArchive;
 
 @Repository
-public interface DivisionCodeMapperArchiveRepository extends CrudRepository<FTPPolicyMapperArchive, Long> {
+public interface DivisionCodeMapperArchiveRepository extends CrudRepository<FTPDivisionCodeMapperArchive, Long> {
 	
 }

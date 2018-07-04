@@ -59,7 +59,10 @@ public class FileController {
     @Autowired(required=true)
     @Qualifier(value="ProductMapperFileService")
     MapperFileService productMapperService;
-
+    
+    @Autowired(required=true)
+    @Qualifier(value="DivisionCodeMapperService")
+    MapperFileService divisionMapperService;
 
     /**
      * File UPLOAD.
@@ -93,6 +96,12 @@ public class FileController {
                     customResponse = productMapperService.uploadToTemp(fileInfo, date, user);
                     if(customResponse.getStatus().equals(Constants.STATUS_OK)) {
                     	customResponse.setData(productMapperService.getDifferenceOfTempAndMain()); 
+                    }
+                }
+                else if("DC".equals(fileType)) {
+                    customResponse = divisionMapperService.uploadToTemp(fileInfo, date, user);
+                    if(customResponse.getStatus().equals(Constants.STATUS_OK)) {
+                    	customResponse.setData(divisionMapperService.getDifferenceOfTempAndMain()); 
                     }
                 }else if ("All Key Rates".equals(fileType)) {
                     customResponse = fileUploadService.uploadKeyRates(fileType, fileInfo, date, overwrite,
