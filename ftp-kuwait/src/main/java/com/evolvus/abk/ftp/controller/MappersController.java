@@ -27,6 +27,10 @@ public class MappersController {
     @Qualifier(value="GrandMapperFileService")
     private MapperFileService grandMapperService;
     
+    @Autowired(required=true)
+    @Qualifier(value="ProductMapperFileService")
+    private MapperFileService productMapperService;
+    
 	/**
      * Process Mappers.
      *
@@ -47,6 +51,15 @@ public class MappersController {
         				customResponse.setDescription("Data saved successfully");
         			}
         	}
+        	if ("PD".equals(mapperName)) {
+    			productMapperService.archive();
+    			Long mapperRecords = productMapperService.insertToMain();
+    			if(mapperRecords > 0L) {
+    				customResponse.setData("{mapperRecords:"+mapperRecords+"}");
+    				customResponse.setStatus("OK");
+    				customResponse.setDescription("Data saved successfully");
+    			}
+    	}
         } catch(Exception e) {
 
         }

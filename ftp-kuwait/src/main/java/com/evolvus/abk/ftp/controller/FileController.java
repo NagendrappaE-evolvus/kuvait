@@ -55,6 +55,11 @@ public class FileController {
     @Autowired(required=true)
     @Qualifier(value="KeyRateFileService")
     RateService keyRateService;
+    
+    @Autowired(required=true)
+    @Qualifier(value="ProductMapperFileService")
+    MapperFileService productMapperService;
+
 
     /**
      * File UPLOAD.
@@ -83,7 +88,13 @@ public class FileController {
                     if(customResponse.getStatus().equals(Constants.STATUS_OK)) {
                     	customResponse.setData(grandMapperService.getDifferenceOfTempAndMain()); 
                     }
-                } else if ("All Key Rates".equals(fileType)) {
+                }
+                else if("PD".equals(fileType)) {
+                    customResponse = productMapperService.uploadToTemp(fileInfo, date, user);
+                    if(customResponse.getStatus().equals(Constants.STATUS_OK)) {
+                    	customResponse.setData(productMapperService.getDifferenceOfTempAndMain()); 
+                    }
+                }else if ("All Key Rates".equals(fileType)) {
                     customResponse = fileUploadService.uploadKeyRates(fileType, fileInfo, date, overwrite,
                             ftpAuditService.getUserFromPrincipal(user));
                 } else if ("Margin Adjustment".equals(fileType)) {

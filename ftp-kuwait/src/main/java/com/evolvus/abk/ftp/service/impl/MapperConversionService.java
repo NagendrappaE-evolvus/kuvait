@@ -3,8 +3,11 @@ package com.evolvus.abk.ftp.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.evolvus.abk.ftp.domain.mappers.archivals.FTPGrandMapperArchive;
+import com.evolvus.abk.ftp.domain.mappers.archivals.FTPProductMapperArchive;
 import com.evolvus.abk.ftp.domain.mappers.main.FTPGrandMapper;
+import com.evolvus.abk.ftp.domain.mappers.main.FTPProductMapper;
 import com.evolvus.abk.ftp.domain.mappers.temp.FTPGrandMapperTemp;
+import com.evolvus.abk.ftp.domain.mappers.temp.FTPProductMapperTemp;
 
 @Service
 public class MapperConversionService {
@@ -98,5 +101,40 @@ public class MapperConversionService {
 		
 		archivalMapper.setBankCode(mainMapper.getBankCode());
 		return archivalMapper;
+	}
+	
+	public FTPProductMapper tempToMain(FTPProductMapperTemp tempMapper) {
+		
+		FTPProductMapper mainMapper = new FTPProductMapper();
+		
+		mainMapper.setFtpCategory(tempMapper.getFtpCategory());
+		mainMapper.setProdCode(tempMapper.getProdCode());
+		mainMapper.setProdDesc(tempMapper.getProdDesc());
+		mainMapper.setAstLiabClas(tempMapper.getAstLiabClas());
+		mainMapper.setCoreNonCore(tempMapper.getCoreNonCore());
+		mainMapper.setCorePrnt(tempMapper.getCorePrnt());
+		mainMapper.setBankCode(tempMapper.getBankCode());
+		mainMapper.setUploadedDate(tempMapper.getUploadedDate());
+		mainMapper.setUploadedBy(tempMapper.getUploadedBy());
+		mainMapper.setVersion(tempMapper.getVersion());
+		return mainMapper;
+		
+	}
+	
+	public FTPProductMapperArchive mainToArchive(FTPProductMapper mainMapper) {
+		
+		FTPProductMapperArchive archivalMapper = new FTPProductMapperArchive();
+		archivalMapper.setFtpCategory(mainMapper.getFtpCategory());
+		archivalMapper.setProdCode(mainMapper.getProdCode());
+		archivalMapper.setProdDesc(mainMapper.getProdDesc());
+		archivalMapper.setAstLiabClas(mainMapper.getAstLiabClas());
+		archivalMapper.setCoreNonCore(mainMapper.getCoreNonCore());
+		archivalMapper.setCorePrnt(mainMapper.getCorePrnt());
+		archivalMapper.setBankCode(mainMapper.getBankCode());
+		archivalMapper.setUploadedDate(mainMapper.getUploadedDate());
+		archivalMapper.setUploadedBy(mainMapper.getUploadedBy());
+		archivalMapper.setVersion(mainMapper.getVersion());
+		return archivalMapper;
+		
 	}
 }

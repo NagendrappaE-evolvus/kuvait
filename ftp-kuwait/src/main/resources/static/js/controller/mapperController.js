@@ -88,9 +88,11 @@ app.controller("MapperController", [
 			$scope.resetFileForm = function() {
 				$scope.selectedFile = null;
 				$scope.fileType = "";
+				$scope.mainList = [];
+				$scope.tempList = [];
 			};
 
-			$scope.tableHeader = [ "GL SUBHEAD CODE", "GL SUBHEAD DESC",
+			$scope.categoryMapper = [ "GL SUBHEAD CODE", "GL SUBHEAD DESC",
 					"DR FTP CATEGORY", "CR FTP CATEGORY",
 					"USER SUBCLASS CODE IN", "USER SUBCLASS CODE NOT IN",
 					"BACID IN", "BACID NOT IN", "DIVISION CODE IN",
@@ -101,6 +103,10 @@ app.controller("MapperController", [
 					"INSTRUMENT CLASS IN", "INSTRUMENT CLASS NOT IN",
 					"Group By logic", "Count",
 					"VERSION" ];
+			
+			$scope.productMapper = [ "FTP CATEGORY","PROD CODE","PROD DESC",
+				"AST LIAB CLAS","Core Non Core","CORE PRNT","VERSION" ];
+			
 			$scope.getSplitWord = function(item){
 	     		$scope.item1 = [];
 	            $scope.item2 = [];
