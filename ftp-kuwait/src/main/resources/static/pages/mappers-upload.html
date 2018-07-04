@@ -35,9 +35,9 @@
 						<label class="col-md-3 control-label" for="fileType"> File
 							Type</label>
 						<div class="col-md-4">
-							<select class="form-control" id="fileType" name="fileType"
+							<select ng-init="fetchFileTypes()" class="form-control" id="fileType" name="fileType"
 								ng-change="fileTypeChanged()" ng-model="fileType"
-								ng-options="fileType as fileType for fileType in mapperFileTypes">
+								ng-options="fileType.mapperKey as fileType.mapperName for fileType in mapperFiles">
 								<option value="">Select</option>
 							</select>
 						</div>
@@ -155,8 +155,8 @@
 								<tbody>
 									<tr>
 										<th ng-repeat="cHead in tableHeader"
-											ng-click="sortColumn($index);"><span
-											ng-class='sortClass($index)'></span> {{getSplitWord(cHead)}}<span>{{item1.join("
+											><span
+											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
 												")}}</span><br>
 										<span>{{item2.join(" ")}}</span></th>
 									</tr>

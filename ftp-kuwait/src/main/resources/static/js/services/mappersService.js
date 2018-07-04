@@ -17,6 +17,17 @@ app.factory('MapperService', [
 								+ JSON.stringify(errResponse));
 						return errResponse;
 					});
+				}, 
+				getAllMappers : function() {
+					return $http.get("/items/findAllMappers")
+					.then(function(response) {
+						result = response.data;
+						return result;
+					}, function(errResponse) {
+						console.log('Error while fetching mappers:'
+								+ JSON.stringify(errResponse));
+						return errResponse;
+					});
 				}
 			};
 		}]);

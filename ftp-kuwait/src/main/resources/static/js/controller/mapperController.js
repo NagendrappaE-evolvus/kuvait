@@ -57,6 +57,16 @@ app.controller("MapperController", [
 							$scope.message = "Error occurred.";
 						});
 			};
+			
+			$scope.fetchFileTypes= function() {
+				MapperService.getAllMappers()
+				.then(function(response) {
+					console.log(response);
+					$scope.mapperFiles = response.data;
+				}, function(errorResponse) {
+					$scope.message = "Error occurred.";
+				});
+			};
 
 			$scope.processMappers = function() {
 				if ($scope.fileType == undefined || $scope.fileType == "") {
@@ -104,29 +114,6 @@ app.controller("MapperController", [
 	              $scope.item2.push(res[i]);
 	          }	          
 	      };
-			// called on header click
-			$scope.sortColumn = function(colIndx) {
-				$scope.column = $scope.dataColumns[colIndx];
-				if ($scope.reverse) {
-					$scope.reverse = false;
-					$scope.reverseclass = 'arrow-up';
-				} else {
-					$scope.reverse = true;
-					$scope.reverseclass = 'arrow-down';
-				}
-			};
-
-			// remove and change class
-			$scope.sortClass = function(colIndx) {
-				if ($scope.column == $scope.dataColumns[colIndx]) {
-					if ($scope.reverse) {
-						return 'arrow-down';
-					} else {
-						return 'arrow-up';
-					}
-				} else {
-					return '';
-				}
-			};
+			
 
 		} ]);
