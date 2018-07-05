@@ -88,13 +88,13 @@ public class PolicyMapperFileService implements MapperFileService {
 			workbook = WorkbookFactory.create(excelFile);
 			Sheet datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
-			rowIterator.next();
 
 			List<FTPPolicyMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
 				// Clearing existing records
 				clearRecords();
+				rowIterator.next();
 				while (rowIterator.hasNext()) {
 					Row currentRow = rowIterator.next();
 					FTPPolicyMapperTemp mapper = null;

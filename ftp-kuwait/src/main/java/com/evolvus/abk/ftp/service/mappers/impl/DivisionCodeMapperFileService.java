@@ -85,23 +85,28 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 		audit.setTxnObjectType(FTPDivisionCodeMapperTemp.class.getName());
 		audit.setBankCode(appUser.getEntity());
 		audit.setTxnUser(appUser.getUsername());
+		Row currentRow=null;
+		Sheet datatypeSheet=null;
 		
 		try {
 			excelFile = new FileInputStream(fileInfo.getUploadedFile());
 			workbook = WorkbookFactory.create(excelFile);
-			Sheet datatypeSheet = workbook.getSheet("Mapping");
+			datatypeSheet = workbook.getSheet("Mapping");
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
-			rowIterator.next();
 
 			List<FTPDivisionCodeMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
 				clearRecords();
+				rowIterator.next();
 				while (rowIterator.hasNext()) {
-					Row currentRow = rowIterator.next();
+					currentRow = rowIterator.next();//currentRow.getLastCellNum()
 					FTPDivisionCodeMapperTemp mapper = null;
 					mapper = new FTPDivisionCodeMapperTemp();
-					if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
+					
+					if(currentRow.getCell(0)==null)
+						throw new IllegalArgumentException();
+					else if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
 						mapper.setGlSubHeadCode(currentRow.getCell(0).getStringCellValue().trim());
 					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setGlSubHeadCode((String.valueOf(currentRow.getCell(0).getNumericCellValue())));
@@ -181,7 +186,13 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
-		} catch (InvalidFormatException e) {
+		}catch (IllegalArgumentException e) {
+			response.setDescription("Unable to parse data, error while processing in sheet "
+					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum());
+			response.setStatus(Constants.STATUS_FAIL);
+			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
+			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
+		}catch (InvalidFormatException e) {
 			response.setDescription("Invalid format of the document");
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));

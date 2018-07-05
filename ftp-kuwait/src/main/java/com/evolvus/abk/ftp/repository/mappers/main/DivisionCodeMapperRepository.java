@@ -12,13 +12,13 @@ import com.evolvus.abk.ftp.domain.mappers.main.FTPDivisionCodeMapper;
 @Repository
 public interface DivisionCodeMapperRepository extends CrudRepository<FTPDivisionCodeMapper, Long> {
 	
-	@Query(value ="SELECT mapper.gl_sub_head_code FROM ftp_product_mapper mapper where "
+	@Query(value ="SELECT mapper.gl_sub_head_code FROM FTP_FINAL_DIVISION_MAPPER mapper where "
 			+ "CONCAT(mapper.gl_sub_head_code,mapper.glsh_char ,mapper.entity_code ,mapper.category,"+ 
 			"mapper.division_desc,mapper.officer,mapper.subdivision,mapper.division,"+
 			"mapper.final_division_desc) not in (SELECT "+
 			"CONCAT(tempMapper.gl_sub_head_code,tempMapper.glsh_char ,tempMapper.entity_code ,tempMapper.category,"+
 			"tempMapper.division_desc,tempMapper.officer,tempMapper.subdivision,tempMapper.division,"+
-			"tempMapper.final_division_desc) from ftp_product_mapper_temp tempMapper)",
+			"tempMapper.final_division_desc) from FTP_FINAL_DIVISION_MAPPER_TEMP tempMapper)",
 			nativeQuery=true)
 	List<String> fetchRecordsNotInTemp();
 	
