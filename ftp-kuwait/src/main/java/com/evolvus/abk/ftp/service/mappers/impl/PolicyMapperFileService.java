@@ -309,7 +309,6 @@ public class PolicyMapperFileService implements MapperFileService {
 		List<FTPPolicyMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper-> {
 			policyMapperRepository.delete(mapper);
-			mapper.setId(null);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
 		if(!archives.isEmpty()) {
@@ -332,7 +331,6 @@ public class PolicyMapperFileService implements MapperFileService {
 		String mainVersion = version.getVersionChars()+nextMainVersion;
 		tempMappers.forEach(mapper -> {
 			policyMapperTempRepository.delete(mapper);
-			mapper.setId(null);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});

@@ -107,7 +107,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 					else if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
 						mapper.setGlSubHeadCode(currentRow.getCell(0).getStringCellValue().trim());
 					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setGlSubHeadCode((String.valueOf(currentRow.getCell(0).getNumericCellValue())));
+						mapper.setGlSubHeadCode((String.valueOf((int)currentRow.getCell(0).getNumericCellValue())));
 					}
 
 					 if (currentRow.getCell(1).getCellTypeEnum() == CellType.NUMERIC) {
@@ -260,7 +260,6 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 		List<FTPDivisionCodeMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper-> {
 			//divisionMapperMainRepository.delete(mapper);
-			mapper.setId(null);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
 		divisionMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
@@ -286,7 +285,6 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 		String mainVersion = version.getVersionChars()+nextMainVersion;
 		tempMappers.forEach(mapper -> {
 			//divisionMapperTempRepository.delete(mapper);
-			mapper.setId(null);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});

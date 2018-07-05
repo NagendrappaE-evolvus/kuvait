@@ -221,7 +221,7 @@ public class ProductMapperFileService implements MapperFileService{
 		List<FTPProductMapperTemp> tempNotInMainList = productMapperTempRepository
 				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategory,ftpEntity);
 		List<FTPProductMapper> mainNotInTempList = productMapperMainRepository
-				.findByFtpCategoryAndBankCodeInOrderByFtpCategory(ftpCategory,ftpEntity);
+				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategory,ftpEntity);
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
@@ -235,7 +235,6 @@ public class ProductMapperFileService implements MapperFileService{
 		List<FTPProductMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper-> {
 			//productMapperMainRepository.delete(mapper);
-			mapper.setId(null);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
 		productMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
@@ -259,7 +258,6 @@ public class ProductMapperFileService implements MapperFileService{
 		String mainVersion = version.getVersionChars()+nextMainVersion;
 		tempMappers.forEach(mapper -> {
 			//productMapperTempRepository.delete(mapper);
-			mapper.setId(null);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});

@@ -32,10 +32,10 @@ public class FTPGrandMapper {
 	@Column(name="G_ID")
 	private Long id;
 	
-	@Column(name="GL_SUBHEAD_CODE" ,length=10)
+	@Column(name="GL_SUB_HEAD_CODE" ,length=10)
 	private String glSubheadCode;
 	
-	@Column(name="GL_SUBHEAD_DESC", length=255)
+	@Column(name="GL_SUB_HEAD_DESC", length=255)
 	private String glSubheadDesc;
 	
 	@Column(name="DR_FTP_CATEGORY", length=255)
@@ -86,10 +86,10 @@ public class FTPGrandMapper {
 	@Column(name="TRADING_BOOK_NAME_NOT_IN", length=255)
 	private String tradingBookNameNotIn;
 	
-	@Column(name="INSTRUMENT_CLASS_IN", length=255)
+	@Column(name="INSTRUMENT_SUB_CLASS_IN", length=255)
 	private String instrumentClassIn;
 
-	@Column(name="INSTRUMENT_CLASS_NOT_IN", length=255)
+	@Column(name="INSTRUMENT_SUB_CLASS_NOT_IN", length=255)
 	private String instrumentClassNotIn;
 	
 	@Column(name="GROUP_BY_LOGIC", length=255)

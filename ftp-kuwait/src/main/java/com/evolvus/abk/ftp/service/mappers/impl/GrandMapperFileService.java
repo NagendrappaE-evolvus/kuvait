@@ -336,7 +336,6 @@ public class GrandMapperFileService implements MapperFileService {
 		List<FTPGrandMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper-> {
 			//grandMapperMainRepository.delete(mapper);
-			mapper.setId(null);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
 		grandMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
@@ -360,7 +359,6 @@ public class GrandMapperFileService implements MapperFileService {
 		String mainVersion = version.getVersionChars()+nextMainVersion;
 		tempMappers.forEach(mapper -> {
 			//grandMapperTempRepository.delete(mapper);
-			mapper.setId(null);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});
