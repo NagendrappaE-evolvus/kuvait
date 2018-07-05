@@ -150,6 +150,7 @@ public class MapperConversionService {
 	// Policy Mapper Converter
 
 	public FTPPolicyMapper tempToMain(FTPPolicyMapperTemp tempMapper) {
+		
 		FTPPolicyMapper mainMapper = new FTPPolicyMapper();
 
 		mainMapper.setFtpCategory(tempMapper.getFtpCategory());
