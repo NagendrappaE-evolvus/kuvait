@@ -107,20 +107,10 @@ public class FileController {
 						customResponse.setData(divisionMapperService.getDifferenceOfTempAndMain());
 					}
 				} else if ("PC".equals(fileType)) {
-						customResponse = policyMapperFileService.uploadToTemp(fileInfo, date, user);
-						if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
-							customResponse.setData(policyMapperFileService.getDifferenceOfTempAndMain());
-						}
+					customResponse = policyMapperFileService.uploadToTemp(fileInfo, date, user);
+					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
+						customResponse.setData(policyMapperFileService.getDifferenceOfTempAndMain());
 					}
-				 else if ("All Key Rates".equals(fileType)) {
-					customResponse = fileUploadService.uploadKeyRates(fileType, fileInfo, date, overwrite,
-							ftpAuditService.getUserFromPrincipal(user));
-				} else if ("Margin Adjustment".equals(fileType)) {
-					customResponse = fileUploadService.uploadMarginAdjustmentRates(fileType, fileInfo, date, overwrite,
-							ftpAuditService.getUserFromPrincipal(user));
-				} else if ("Margin Curve Extended".equals(fileType)) {
-					customResponse = fileUploadService.uploadMarginCurveExtendedRates(fileType, fileInfo, date,
-							overwrite, ftpAuditService.getUserFromPrincipal(user));
 				} else if ("Currency Rates".equals(fileType)) {
 					if (overwrite) {
 						fileUploadService.deleteExistingRecords(fileType, date,

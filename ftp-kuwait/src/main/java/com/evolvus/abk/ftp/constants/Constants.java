@@ -51,4 +51,11 @@ public interface Constants {
 	String NA_SHORT = "NA";
 	
 	String NA_LONG = "Not Available";	
+	
+	String STR_ABOVE="Above";
+	String STR_UPTO="Upto";
+	String STR_TO = "To";
+	String NON_NUMERIC_PATTERN = "\\D";
+	String FROM="from";
+	String TO = "to";
 }

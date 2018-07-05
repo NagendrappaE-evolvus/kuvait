@@ -5,8 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
@@ -17,6 +20,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,40 +86,41 @@ public class CurrencyRateFileService implements RateService {
 						if (currentRow.getRowNum() < 3)
 							continue;
 						CurrencyRates curRates = new CurrencyRates();
-						Cell cell = currentRow.getCell(1);
+
+						Cell cell = currentRow.getCell(0);
+						String tenorDays = cell.getStringCellValue();
+						Map<String,Integer> tenorDaysMap = this.getTenorBucketInDays(tenorDays);
+						curRates.setDaysFrom(tenorDaysMap.get(Constants.FROM));
+						curRates.setDaysTo(tenorDaysMap.get(Constants.TO));
+
+						cell = currentRow.getCell(1);
 						curRates.setCurrency(datatypeSheet.getSheetName());
 
 						curRates.setBusinessCloseDate(sqlDate);
 						if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue() != null) {
 							curRates.setTenor(cell.getStringCellValue().trim());
-						}
-						else {
+						} else {
 							curRates.setTenor("");
 						}
-						curRates.setDaysFrom(Double.valueOf(RateConstants.RATE_HEADERS.get(temp).get("from")));
-						curRates.setDaysTo(Double.valueOf(RateConstants.RATE_HEADERS.get(temp).get("to")));
 
 						cell = currentRow.getCell(2);
 						if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 							curRates.setBase(BigDecimal.valueOf(cell.getNumericCellValue()));
-						}
-						else {
+						} else {
 							curRates.setBase(BigDecimal.ZERO);
 						}
 
 						cell = currentRow.getCell(3);
 						if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 							curRates.setMargin(BigDecimal.valueOf(cell.getNumericCellValue()));
-						}
-						else {
+						} else {
 							curRates.setMargin(BigDecimal.ZERO);
 						}
 
 						cell = currentRow.getCell(4);
 						if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 							curRates.setNet(BigDecimal.valueOf(cell.getNumericCellValue()));
-						}
-						else {
+						} else {
 							curRates.setNet(BigDecimal.ZERO);
 						}
 						curRates.setBankCode(user.getEntity());
@@ -167,7 +172,7 @@ public class CurrencyRateFileService implements RateService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} finally {
-			if (workbook!=null) {
+			if (workbook != null) {
 				try {
 					workbook.close();
 				} catch (IOException e) {
@@ -188,4 +193,53 @@ public class CurrencyRateFileService implements RateService {
 
 	}
 
+	@Override
+	public Map<String, Integer> getTenorBucketInDays(String tenor) {
+		
+		Map<String, Integer> tenorBucket = new HashMap<>();
+		String from = "";
+		String to = "";
+		String[] rawArray = null;
+		if (tenor != null && !tenor.trim().isEmpty()) {
+			String lowerCaseTenor = tenor.toLowerCase();
+			rawArray = this.getSplittedStringArray(tenor, Constants.NON_NUMERIC_PATTERN);
+			
+			if (lowerCaseTenor.contains(Constants.STR_ABOVE.toLowerCase())) {
+				if (rawArray.length == 1) {
+					from = rawArray[0];
+					to = rawArray[0];
+				}
+			} else if (lowerCaseTenor.contains(Constants.STR_UPTO.toLowerCase())) {
+				if (rawArray.length == 1) {
+					to = rawArray[0];
+				}
+			} else if (lowerCaseTenor.contains(Constants.STR_TO.toLowerCase())) {
+				if (rawArray.length == 2) {
+					from = rawArray[0];
+					to = rawArray[1];
+				}
+			}
+		}
+		
+		if(!from.isEmpty()) {
+			tenorBucket.put(Constants.FROM, Integer.parseInt(from));
+		} else {
+			tenorBucket.put(Constants.FROM, 0);
+		}
+		
+		if(!to.isEmpty()) {
+			tenorBucket.put(Constants.TO, Integer.parseInt(to));
+		} else {
+			tenorBucket.put(Constants.TO, 0);
+		}
+		return tenorBucket;
+
+	}
+
+	@Override
+	public String[] getSplittedStringArray(String str, String pattern) {
+		return Arrays.stream(str.split(pattern)).filter(value -> value != null && value.length() > 0)
+				.toArray(size -> new String[size]);
+
+	}
 }

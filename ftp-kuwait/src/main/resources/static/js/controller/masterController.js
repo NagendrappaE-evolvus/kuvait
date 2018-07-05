@@ -8,13 +8,13 @@ app.controller("MasterController", [
 			$state.transitionTo("login");
 		}
 		
-		$scope.products= [];
+		/*$scope.products= [];
 		MasterService.getProducts().then(
 				function(response) {
 					$scope.products= response.data;
 				}, function(errorResponse) {
 
-				});
+				});*/
 		
 		$scope.logout = function() {
 			 var promiseData = AuthService.logout();

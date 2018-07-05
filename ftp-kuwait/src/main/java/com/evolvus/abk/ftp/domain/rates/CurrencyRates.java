@@ -42,10 +42,10 @@ public class CurrencyRates {
 	private String tenor;
 	
 	@Column(name="DAYS_FROM")
-	private Double daysFrom;
+	private Integer daysFrom;
 	
 	@Column(name="DAYS_TO")
-	private Double daysTo;
+	private Integer daysTo;
 	
 	@Column(name="BASE", columnDefinition="decimal(17,7)")
 	private BigDecimal base;

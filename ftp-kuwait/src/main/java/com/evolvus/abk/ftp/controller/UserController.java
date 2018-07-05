@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.constants.Constants;
-import com.evolvus.abk.ftp.domain.FtpProduct;
 import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.service.impl.FtpAuditService;
 import com.evolvus.abk.ftp.service.impl.FtpEntityService;
