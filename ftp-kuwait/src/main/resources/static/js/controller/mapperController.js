@@ -24,19 +24,7 @@ app.controller("MapperController", [
 					alertify.alert("Error", "Please select the file.");
 					return false;
 				}
-				/*
-				 * var promiseData =
-				 * UploadService.checkDataAvailability($scope.fileType,$scope.applicableDate);
-				 * promiseData.then(function(response) { if(response.data!=null &&
-				 * response.status=='OK' && Number(response.data)>0) { alertify
-				 * .confirm('Confirm', 'Data already exist, click OK to
-				 * overwrite.', function() {
-				 * $scope.serveUploadFile($scope.fileType,$scope.selectedFile,$scope.applicableDate,true);
-				 * },function() { $scope.message = "File not uploaded."; }); }
-				 * else {
-				 * $scope.serveUploadFile($scope.fileType,$scope.selectedFile,$scope.applicableDate,false); }
-				 * },function(errorResponse) { return false; });
-				 */
+				
 				$scope.serveUploadFile($scope.fileType, $scope.selectedFile,
 						$scope.applicableDate, false);
 			};
@@ -75,10 +63,11 @@ app.controller("MapperController", [
 				}
 				MapperService.processMappers($scope.fileType)
 				.then(function(response) {
-					$scope.message = response.description;
+					
 					if (response.status === "OK") {
-						
+						$scope.resetFileForm();
 					}
+					$scope.message = response.description;
 				}, function(errorResponse) {
 					$scope.message = "Error occurred.";
 				});
@@ -90,6 +79,8 @@ app.controller("MapperController", [
 				$scope.fileType = "";
 				$scope.mainList = [];
 				$scope.tempList = [];
+				$scope.message = "";
+				$scope.applicableDate = "";
 			};
 
 			$scope.categoryMapper = [ "GL SUBHEAD CODE", "GL SUBHEAD DESC",

@@ -265,12 +265,10 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 		divisionMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
 		if(!archives.isEmpty()) {
 			divisionMapperArchiveRepository.save(archives);
-
 			if(!archives.isEmpty()) {
 				return (long) archives.size();
 			}
 		}
-
 		return 0L;
 	}
 	

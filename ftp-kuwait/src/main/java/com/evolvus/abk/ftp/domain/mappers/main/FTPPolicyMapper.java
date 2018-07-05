@@ -63,7 +63,7 @@ public class FTPPolicyMapper {
 	@Column(name="SUBDIVISION_CODE_NOT_IN")
 	private String subdivisionCodeNotIn;
 
-	@Column(name="FIXED_LENGTH")
+	@Column(name="FIXED_FLOAT")
 	private String fixedLength;
 	
 	@Column(name="MATURITY_DATE")
