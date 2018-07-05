@@ -20,7 +20,7 @@ import lombok.ToString;
 
 @Data
 @Entity 
-@Table(name="KWT_FTP_AUDIT")
+@Table(name="FTP_AUDIT_LOG")
 @ToString
 public class FtpAudit {
 	@Id
@@ -61,6 +61,6 @@ public class FtpAudit {
 	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "BANK_CODE")
+	@JoinColumn(name = "BANK_ID")
 	private FtpEntity bankCode;
 }

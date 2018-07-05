@@ -15,12 +15,12 @@ import com.evolvus.abk.ftp.domain.mappers.temp.FTPDivisionCodeMapperTemp;
 @Repository
 public interface DivisionCodeMapperTempRepository extends CrudRepository<FTPDivisionCodeMapperTemp, Long> {
 
-	@Query(value ="SELECT tempMapper.gl_sub_head_code FROM FTP_FINAL_DIVISION_MAPPER_TEMP tempMapper where tempMapper.bank_code=:bankCode and "
+	@Query(value ="SELECT tempMapper.gl_sub_head_code FROM FTP_FINAL_DIVISION_MAPPER_TEMP tempMapper where tempMapper.bank_id=:bankCode and "
 			+"CONCAT(tempMapper.gl_sub_head_code,tempMapper.glsh_char ,tempMapper.entity_code ,tempMapper.category," + 
 			"tempMapper.division_desc,tempMapper.officer,tempMapper.subdivision,tempMapper.division," + 
 			"tempMapper.final_division_desc) not in (SELECT CONCAT(mapper.gl_sub_head_code,mapper.glsh_char ,mapper.entity_code ,mapper.category, " + 
 			"mapper.division_desc,mapper.officer,mapper.subdivision,mapper.division," + 
-			"mapper.final_division_desc) from FTP_FINAL_DIVISION_MAPPER mapper where mapper.bank_code=:bankCode)",
+			"mapper.final_division_desc) from FTP_FINAL_DIVISION_MAPPER mapper where mapper.bank_id=:bankCode)",
 			nativeQuery=true)
 	List<String> fetchRecordsNotInMain(@Param("bankCode")String bankCode);
 	

@@ -108,7 +108,7 @@ public class FTPGrandMapperArchive {
 	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "BANK_CODE")
+	@JoinColumn(name = "BANK_ID")
 	private FtpEntity bankCode;
 }
 

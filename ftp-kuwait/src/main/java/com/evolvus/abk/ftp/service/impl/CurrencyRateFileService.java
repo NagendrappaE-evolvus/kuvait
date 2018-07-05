@@ -20,7 +20,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import org.springframework.stereotype.Service;
 import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
-import com.evolvus.abk.ftp.constants.RateConstants;
 import com.evolvus.abk.ftp.controller.FileController;
 import com.evolvus.abk.ftp.domain.FtpAudit;
 import com.evolvus.abk.ftp.domain.User;
@@ -213,7 +211,7 @@ public class CurrencyRateFileService implements RateService {
 				if (rawArray.length == 1) {
 					to = rawArray[0];
 				}
-			} else if (lowerCaseTenor.contains(Constants.STR_TO.toLowerCase())) {
+			} else {
 				if (rawArray.length == 2) {
 					from = rawArray[0];
 					to = rawArray[1];

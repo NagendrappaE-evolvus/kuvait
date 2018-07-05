@@ -13,10 +13,10 @@ import com.evolvus.abk.ftp.domain.mappers.temp.FTPProductMapperTemp;
 
 public interface ProductMapperTempRepository extends CrudRepository<FTPProductMapperTemp, Long>{
 
-	@Query(value ="SELECT tempMapper.ftp_category FROM ftp_product_mapper_temp tempMapper where tempMapper.bank_code=:bankCode and "
+	@Query(value ="SELECT tempMapper.ftp_category FROM ftp_product_mapper_temp tempMapper where tempMapper.bank_id=:bankCode and "
 			+"CONCAT(tempMapper.ftp_category,tempMapper.prod_code,tempMapper.prod_desc,tempMapper.ast_liab_clas,"+
 			"tempMapper.core_non_core,tempMapper.core_prnt) not in (SELECT CONCAT(mapper.ftp_category,mapper.prod_code,"+
-			"mapper.prod_desc,mapper.ast_liab_clas,mapper.core_non_core,mapper.core_prnt) from ftp_product_mapper mapper where mapper.bank_code=:bankCode)",
+			"mapper.prod_desc,mapper.ast_liab_clas,mapper.core_non_core,mapper.core_prnt) from ftp_product_mapper mapper where mapper.bank_id=:bankCode)",
 			nativeQuery=true)
 	List<String> fetchRecordsNotInMain(@Param("bankCode")String bankCode);
 
