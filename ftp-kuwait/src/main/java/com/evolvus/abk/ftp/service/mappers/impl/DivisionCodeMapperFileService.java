@@ -32,6 +32,7 @@ import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
 import com.evolvus.abk.ftp.domain.FtpAudit;
+import com.evolvus.abk.ftp.domain.FtpEntity;
 import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
 import com.evolvus.abk.ftp.domain.mappers.archivals.FTPDivisionCodeMapperArchive;
@@ -64,7 +65,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 	DivisionCodeMapperTempRepository divisionMapperTempRepository;
 
 	@Autowired
-	DivisionCodeMapperRepository divisiontMapperMainRepository;
+	DivisionCodeMapperRepository divisionMapperMainRepository;
 	
 	@Autowired
 	DivisionCodeMapperArchiveRepository divisionMapperArchiveRepository;
@@ -94,7 +95,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 			List<FTPDivisionCodeMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
-				clearRecords();
+				clearRecords(appUser.getEntity());
 				rowIterator.next();
 				while (rowIterator.hasNext()) {
 					currentRow = rowIterator.next();//currentRow.getLastCellNum()
@@ -215,7 +216,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 		}
 
 		if (response.getStatus().equals(Constants.STATUS_FAIL)) {
-			clearRecords();
+			clearRecords(appUser.getEntity());
 		}
 
 		audit.setMessage(response.getDescription());
@@ -228,22 +229,24 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 	}
 
 	@Override
-	public void clearRecords() {
-		divisionMapperTempRepository.deleteAll();
+	@Transactional
+	public void clearRecords(FtpEntity ftpEntity) {
+		divisionMapperTempRepository.deleteInBulkByBankCode(ftpEntity);
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain() {
-		List<String> tempNotInMain = divisionMapperTempRepository.fetchRecordsNotInMain();
-		List<String> mainNotInTemp = divisiontMapperMainRepository.fetchRecordsNotInTemp();
+	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain(FtpEntity ftpEntity) {
+		String bankCode=ftpEntity.getBankCode();
+		List<String> tempNotInMain = divisionMapperTempRepository.fetchRecordsNotInMain(bankCode);
+		List<String> mainNotInTemp = divisionMapperMainRepository.fetchRecordsNotInTemp(bankCode);
 		Set<String> glSubheadSet = new HashSet<>();
 		glSubheadSet.addAll(tempNotInMain);
 		glSubheadSet.addAll(mainNotInTemp);
 		List<FTPDivisionCodeMapperTemp> tempNotInMainList = divisionMapperTempRepository
-				.findByGlSubHeadCodeInOrderByGlSubHeadCode(glSubheadSet);
-		List<FTPDivisionCodeMapper> mainNotInTempList = divisiontMapperMainRepository
-				.findByGlSubHeadCodeInOrderByGlSubHeadCode(glSubheadSet);
+				.findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(glSubheadSet,ftpEntity);
+		List<FTPDivisionCodeMapper> mainNotInTempList = divisionMapperMainRepository
+				.findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(glSubheadSet,ftpEntity);
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
@@ -252,40 +255,44 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 
 	@Override
 	@Transactional
-	public Long archive() {
-		Iterable<FTPDivisionCodeMapper> mappersList = divisiontMapperMainRepository.findAll();
+	public Long archive(FtpEntity ftpEntity) {
+		Iterable<FTPDivisionCodeMapper> mappersList = divisionMapperMainRepository.findByBankCode(ftpEntity);
 		List<FTPDivisionCodeMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper-> {
-			divisiontMapperMainRepository.delete(mapper);
+			//divisionMapperMainRepository.delete(mapper);
 			mapper.setId(null);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
+		divisionMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
 		if(!archives.isEmpty()) {
 			divisionMapperArchiveRepository.save(archives);
+
 			if(!archives.isEmpty()) {
 				return (long) archives.size();
 			}
 		}
+
 		return 0L;
 	}
 	
 	@Override
 	@Transactional
-	public Long insertToMain() {
-		Iterable<FTPDivisionCodeMapperTemp> tempMappers = divisionMapperTempRepository.findAll();
+	public Long insertToMain(FtpEntity ftpEntity) {
+		Iterable<FTPDivisionCodeMapperTemp> tempMappers = divisionMapperTempRepository.findByBankCode(ftpEntity);
 		List<FTPDivisionCodeMapper> mainMappers = new ArrayList<>();
 		MapperVersion version = mapperVersionService.getMapper("DC");
 		
 		Long nextMainVersion = version.getCurrentVersion() + 1;
 		String mainVersion = version.getVersionChars()+nextMainVersion;
 		tempMappers.forEach(mapper -> {
-			divisionMapperTempRepository.delete(mapper);
+			//divisionMapperTempRepository.delete(mapper);
 			mapper.setId(null);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});
+		divisionMapperTempRepository.deleteInBulkByBankCode(ftpEntity);
 		if(!mainMappers.isEmpty()) {
-			divisiontMapperMainRepository.save(mainMappers);
+			divisionMapperMainRepository.save(mainMappers);
 			mapperVersionService.updateMapperVersion("DC", nextMainVersion, version.getCurrentVersion());
 			return (long) mainMappers.size();
 		}

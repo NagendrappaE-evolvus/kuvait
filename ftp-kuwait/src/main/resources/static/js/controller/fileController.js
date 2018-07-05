@@ -22,7 +22,7 @@ app.controller("FileUploadController", [
 					return false;
 				}
 				
-				/*var promiseData = UploadService.checkDataAvailability($scope.fileType,$scope.applicableDate);
+				var promiseData = UploadService.checkDataAvailability($scope.fileType,$scope.applicableDate);
 				promiseData.then(function(response) {
 					if(response.data!=null && response.status=='OK' && Number(response.data)>0) {
 						alertify
@@ -38,9 +38,9 @@ app.controller("FileUploadController", [
 					}
 				}, function(errorResponse) {
 					return false;
-				});*/
+				});
 				
-				$scope.serveUploadFile($scope.fileType,$scope.selectedFile,$scope.applicableDate,false);
+/*				$scope.serveUploadFile($scope.fileType,$scope.selectedFile,$scope.applicableDate,false);*/
 			};
 			
 			$scope.serveUploadFile = function(fileType,file,date,overwrite) {

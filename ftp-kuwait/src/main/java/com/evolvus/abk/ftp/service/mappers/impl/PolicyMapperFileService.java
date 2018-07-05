@@ -32,6 +32,7 @@ import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
 import com.evolvus.abk.ftp.domain.FtpAudit;
+import com.evolvus.abk.ftp.domain.FtpEntity;
 import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
 import com.evolvus.abk.ftp.domain.mappers.archivals.FTPPolicyMapperArchive;
@@ -93,7 +94,7 @@ public class PolicyMapperFileService implements MapperFileService {
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
 				// Clearing existing records
-				clearRecords();
+				clearRecords(appUser.getEntity());
 				rowIterator.next();
 				while (rowIterator.hasNext()) {
 					Row currentRow = rowIterator.next();
@@ -263,7 +264,7 @@ public class PolicyMapperFileService implements MapperFileService {
 		}
 
 		if (response.getStatus().equals(Constants.STATUS_FAIL)) {
-			clearRecords();
+			clearRecords(appUser.getEntity());
 		}
 
 		audit.setMessage(response.getDescription());
@@ -276,15 +277,17 @@ public class PolicyMapperFileService implements MapperFileService {
 	}
 
 	@Override
-	public void clearRecords() {
-		policyMapperTempRepository.deleteAll();		
+	@Transactional
+	public void clearRecords(FtpEntity ftpEntity) {
+		policyMapperTempRepository.deleteInBulkByBankCode(ftpEntity);		
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain() {
-		List<String> tempNotInMain = policyMapperTempRepository.fetchRecordsNotInMain();
-		List<String> mainNotInTemp = policyMapperRepository.fetchRecordsNotInTemp();
+	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain(FtpEntity ftpEntity) {
+		String bankCode=ftpEntity.getBankCode();
+		List<String> tempNotInMain = policyMapperTempRepository.fetchRecordsNotInMain(bankCode);
+		List<String> mainNotInTemp = policyMapperRepository.fetchRecordsNotInTemp(bankCode);
 		Set<String> ftpCategorySet = new HashSet<>();
 		ftpCategorySet.addAll(tempNotInMain);
 		ftpCategorySet.addAll(mainNotInTemp);
@@ -301,8 +304,8 @@ public class PolicyMapperFileService implements MapperFileService {
 
 	@Override
 	@Transactional
-	public Long archive() {
-		Iterable<FTPPolicyMapper> mappersList = policyMapperRepository.findAll();
+	public Long archive(FtpEntity ftpEntity) {
+		Iterable<FTPPolicyMapper> mappersList = policyMapperRepository.findByBankCode(ftpEntity);
 		List<FTPPolicyMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper-> {
 			policyMapperRepository.delete(mapper);
@@ -320,8 +323,8 @@ public class PolicyMapperFileService implements MapperFileService {
 
 	@Override
 	@Transactional
-	public Long insertToMain() {
-		Iterable<FTPPolicyMapperTemp> tempMappers = policyMapperTempRepository.findAll();
+	public Long insertToMain(FtpEntity ftpEntity) {
+		Iterable<FTPPolicyMapperTemp> tempMappers = policyMapperTempRepository.findByBankCode(ftpEntity);
 		List<FTPPolicyMapper> mainMappers = new ArrayList<>();
 		MapperVersion version = mapperVersionService.getMapper("PC");
 		

@@ -32,6 +32,7 @@ import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
 import com.evolvus.abk.ftp.domain.FtpAudit;
+import com.evolvus.abk.ftp.domain.FtpEntity;
 import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
 import com.evolvus.abk.ftp.domain.mappers.archivals.FTPProductMapperArchive;
@@ -93,7 +94,7 @@ public class ProductMapperFileService implements MapperFileService{
 			List<FTPProductMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
-				clearRecords();
+				clearRecords(appUser.getEntity());
 				while (rowIterator.hasNext()) {
 					Row currentRow = rowIterator.next();
 					FTPProductMapperTemp mapper = null;
@@ -189,7 +190,7 @@ public class ProductMapperFileService implements MapperFileService{
 		}
 
 		if (response.getStatus().equals(Constants.STATUS_FAIL)) {
-			clearRecords();
+			clearRecords(appUser.getEntity());
 		}
 
 		audit.setMessage(response.getDescription());
@@ -202,23 +203,25 @@ public class ProductMapperFileService implements MapperFileService{
 	}
 
 	@Override
-	public void clearRecords() {
-		productMapperTempRepository.deleteAll();		
+	@Transactional
+	public void clearRecords(FtpEntity ftpEntity) {
+		productMapperTempRepository.deleteInBulkByBankCode(ftpEntity);		
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain() {
+	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain(FtpEntity ftpEntity) {
 		
-		List<String> tempNotInMain = productMapperTempRepository.fetchRecordsNotInMain();
-		List<String> mainNotInTemp = productMapperMainRepository.fetchRecordsNotInTemp();
+		String bankCode = ftpEntity.getBankCode();
+		List<String> tempNotInMain = productMapperTempRepository.fetchRecordsNotInMain(bankCode);
+		List<String> mainNotInTemp = productMapperMainRepository.fetchRecordsNotInTemp(bankCode);
 		Set<String> ftpCategory = new HashSet<>();
 		ftpCategory.addAll(tempNotInMain);
 		ftpCategory.addAll(mainNotInTemp);
 		List<FTPProductMapperTemp> tempNotInMainList = productMapperTempRepository
-				.findByFtpCategoryInOrderByFtpCategory(ftpCategory);
+				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategory,ftpEntity);
 		List<FTPProductMapper> mainNotInTempList = productMapperMainRepository
-				.findByFtpCategoryInOrderByFtpCategory(ftpCategory);
+				.findByFtpCategoryAndBankCodeInOrderByFtpCategory(ftpCategory,ftpEntity);
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
@@ -227,14 +230,15 @@ public class ProductMapperFileService implements MapperFileService{
 
 	@Override
 	@Transactional
-	public Long archive() {
-		Iterable<FTPProductMapper> mappersList = productMapperMainRepository.findAll();
+	public Long archive(FtpEntity ftpEntity) {
+		Iterable<FTPProductMapper> mappersList = productMapperMainRepository.findByBankCode(ftpEntity);
 		List<FTPProductMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper-> {
-			productMapperMainRepository.delete(mapper);
+			//productMapperMainRepository.delete(mapper);
 			mapper.setId(null);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
+		productMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
 		if(!archives.isEmpty()) {
 			productMapperArchiveRepository.save(archives);
 			if(!archives.isEmpty()) {
@@ -246,19 +250,20 @@ public class ProductMapperFileService implements MapperFileService{
 
 	@Override
 	@Transactional
-	public Long insertToMain() {
-		Iterable<FTPProductMapperTemp> tempMappers = productMapperTempRepository.findAll();
+	public Long insertToMain(FtpEntity ftpEntity) {
+		Iterable<FTPProductMapperTemp> tempMappers = productMapperTempRepository.findByBankCode(ftpEntity);
 		List<FTPProductMapper> mainMappers = new ArrayList<>();
 		MapperVersion version = mapperVersionService.getMapper("PD");
 		
 		Long nextMainVersion = version.getCurrentVersion() + 1;
 		String mainVersion = version.getVersionChars()+nextMainVersion;
 		tempMappers.forEach(mapper -> {
-			productMapperTempRepository.delete(mapper);
+			//productMapperTempRepository.delete(mapper);
 			mapper.setId(null);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});
+		clearRecords(ftpEntity);
 		if(!mainMappers.isEmpty()) {
 			productMapperMainRepository.save(mainMappers);
 			mapperVersionService.updateMapperVersion("PD", nextMainVersion, version.getCurrentVersion());

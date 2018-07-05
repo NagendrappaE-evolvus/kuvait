@@ -4,20 +4,25 @@ import java.security.Principal;
 
 import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
+import com.evolvus.abk.ftp.domain.FtpEntity;
+
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.transaction.annotation.Transactional;
+
 
 public interface MapperFileService {
 	
 	CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user);
 	
-	void clearRecords();
+	void clearRecords(FtpEntity ftpEntity);
 	
-	Map<String,List<? extends Object>> getDifferenceOfTempAndMain();
+	Map<String,List<? extends Object>> getDifferenceOfTempAndMain(FtpEntity ftpEntity);
 	
-	Long archive();
+	Long archive(FtpEntity ftpEntity);
 	
-	Long insertToMain();
+	Long insertToMain(FtpEntity ftpEntity);
 	
 	/*public CustomResponse uploadToMain(String fileType, FileInfo fileInfo, String date, User user);*/
 }

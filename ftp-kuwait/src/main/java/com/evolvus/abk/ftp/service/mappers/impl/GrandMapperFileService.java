@@ -32,6 +32,7 @@ import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
 import com.evolvus.abk.ftp.domain.FtpAudit;
+import com.evolvus.abk.ftp.domain.FtpEntity;
 import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
 import com.evolvus.abk.ftp.domain.mappers.archivals.FTPGrandMapperArchive;
@@ -94,7 +95,7 @@ public class GrandMapperFileService implements MapperFileService {
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
 				// Clearing existing records
-				clearRecords();
+				clearRecords(appUser.getEntity());
 				while (rowIterator.hasNext()) {
 					Row currentRow = rowIterator.next();
 					FTPGrandMapperTemp mapper = null;
@@ -291,7 +292,7 @@ public class GrandMapperFileService implements MapperFileService {
 		}
 
 		if (response.getStatus().equals(Constants.STATUS_FAIL)) {
-			clearRecords();
+			clearRecords(appUser.getEntity());
 		}
 
 		audit.setMessage(response.getDescription());
@@ -304,22 +305,24 @@ public class GrandMapperFileService implements MapperFileService {
 	}
 
 	@Override
-	public void clearRecords() {
-		grandMapperTempRepository.deleteAll();
+	@Transactional
+	public void clearRecords(FtpEntity ftpEntity) {
+		grandMapperTempRepository.deleteInBulkByBankCode(ftpEntity);
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain() {
-		List<String> tempNotInMain = grandMapperTempRepository.fetchRecordsNotInMain();
-		List<String> mainNotInTemp = grandMapperMainRepository.fetchRecordsNotInTemp();
+	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain(FtpEntity ftpEntity) {
+		String bankCode=ftpEntity.getBankCode();
+		List<String> tempNotInMain = grandMapperTempRepository.fetchRecordsNotInMain(bankCode);
+		List<String> mainNotInTemp = grandMapperMainRepository.fetchRecordsNotInTemp(bankCode);
 		Set<String> glSubheadSet = new HashSet<>();
 		glSubheadSet.addAll(tempNotInMain);
 		glSubheadSet.addAll(mainNotInTemp);
 		List<FTPGrandMapperTemp> tempNotInMainList = grandMapperTempRepository
-				.findByGlSubheadCodeInOrderByGlSubheadCode(glSubheadSet);
+				.findByGlSubheadCodeInAndBankCodeOrderByGlSubheadCode(glSubheadSet,ftpEntity);
 		List<FTPGrandMapper> mainNotInTempList = grandMapperMainRepository
-				.findByGlSubheadCodeInOrderByGlSubheadCode(glSubheadSet);
+				.findByGlSubheadCodeInAndBankCodeOrderByGlSubheadCode(glSubheadSet,ftpEntity);
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
@@ -328,14 +331,15 @@ public class GrandMapperFileService implements MapperFileService {
 	
 	@Override
 	@Transactional
-	public Long archive() {
-		Iterable<FTPGrandMapper> mappersList = grandMapperMainRepository.findAll();
+	public Long archive(FtpEntity ftpEntity) {
+		Iterable<FTPGrandMapper> mappersList = grandMapperMainRepository.findByBankCode(ftpEntity);
 		List<FTPGrandMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper-> {
-			grandMapperMainRepository.delete(mapper);
+			//grandMapperMainRepository.delete(mapper);
 			mapper.setId(null);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
+		grandMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
 		if(!archives.isEmpty()) {
 			grandMapperArchiveRepository.save(archives);
 			if(!archives.isEmpty()) {
@@ -347,19 +351,20 @@ public class GrandMapperFileService implements MapperFileService {
 	
 	@Override
 	@Transactional
-	public Long insertToMain() {
-		Iterable<FTPGrandMapperTemp> tempMappers = grandMapperTempRepository.findAll();
+	public Long insertToMain(FtpEntity ftpEntity) {
+		Iterable<FTPGrandMapperTemp> tempMappers = grandMapperTempRepository.findByBankCode(ftpEntity);
 		List<FTPGrandMapper> mainMappers = new ArrayList<>();
 		MapperVersion version = mapperVersionService.getMapper("CT");
 		
 		Long nextMainVersion = version.getCurrentVersion() + 1;
 		String mainVersion = version.getVersionChars()+nextMainVersion;
 		tempMappers.forEach(mapper -> {
-			grandMapperTempRepository.delete(mapper);
+			//grandMapperTempRepository.delete(mapper);
 			mapper.setId(null);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});
+		clearRecords(ftpEntity);
 		if(!mainMappers.isEmpty()) {
 			grandMapperMainRepository.save(mainMappers);
 			mapperVersionService.updateMapperVersion("CT", nextMainVersion, version.getCurrentVersion());

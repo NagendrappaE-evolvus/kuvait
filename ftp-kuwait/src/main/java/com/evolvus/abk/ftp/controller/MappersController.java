@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.evolvus.abk.ftp.bean.CustomResponse;
+import com.evolvus.abk.ftp.domain.FtpEntity;
+import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.service.MapperFileService;
+import com.evolvus.abk.ftp.service.impl.FtpAuditService;
 
 @RestController
 @RequestMapping("mappers")
@@ -37,6 +40,9 @@ public class MappersController {
 	@Autowired(required = true)
 	@Qualifier(value = "DivisionCodeMapperService")
 	MapperFileService divisionMapperService;
+	
+	@Autowired
+	FtpAuditService ftpAuditService;
 
 	/**
 	 * Process Mappers.
@@ -48,10 +54,12 @@ public class MappersController {
 		LOG.debug("Start process mapper");
 		HttpStatus httpStatus = HttpStatus.OK;
 		CustomResponse customResponse = new CustomResponse();
+		User appUser=ftpAuditService.getUserFromPrincipal(user);
+		FtpEntity ftpEntity = appUser.getEntity();
 		try {
 			if ("CT".equals(mapperName)) {
-				grandMapperService.archive();
-				Long mapperRecords = grandMapperService.insertToMain();
+				grandMapperService.archive(ftpEntity);
+				Long mapperRecords = grandMapperService.insertToMain(ftpEntity);
 				if (mapperRecords > 0L) {
 					customResponse.setData("{mapperRecords:" + mapperRecords + "}");
 					customResponse.setStatus("OK");
@@ -59,8 +67,8 @@ public class MappersController {
 				}
 			}
 			if ("PD".equals(mapperName)) {
-				productMapperService.archive();
-				Long mapperRecords = productMapperService.insertToMain();
+				productMapperService.archive(ftpEntity);
+				Long mapperRecords = productMapperService.insertToMain(ftpEntity);
 				if (mapperRecords > 0L) {
 					customResponse.setData("{mapperRecords:" + mapperRecords + "}");
 					customResponse.setStatus("OK");
@@ -68,8 +76,8 @@ public class MappersController {
 				}
 			}
 			if ("PC".equals(mapperName)) {
-				policyMapperService.archive();
-				Long mapperRecords = policyMapperService.insertToMain();
+				policyMapperService.archive(ftpEntity);
+				Long mapperRecords = policyMapperService.insertToMain(ftpEntity);
 				if (mapperRecords > 0L) {
 					customResponse.setData("{mapperRecords:" + mapperRecords + "}");
 					customResponse.setStatus("OK");
@@ -77,8 +85,8 @@ public class MappersController {
 				}
 			}
 			if ("DC".equals(mapperName)) {
-				divisionMapperService.archive();
-				Long mapperRecords = divisionMapperService.insertToMain();
+				divisionMapperService.archive(ftpEntity);
+				Long mapperRecords = divisionMapperService.insertToMain(ftpEntity);
 				if (mapperRecords > 0L) {
 					customResponse.setData("{mapperRecords:" + mapperRecords + "}");
 					customResponse.setStatus("OK");

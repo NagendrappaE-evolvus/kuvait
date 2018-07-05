@@ -24,6 +24,8 @@ import com.evolvus.abk.ftp.bean.CustomException;
 import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
+import com.evolvus.abk.ftp.domain.FtpEntity;
+import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.service.RateService;
 import com.evolvus.abk.ftp.service.MapperFileService;
 import com.evolvus.abk.ftp.service.impl.FileUploadService;
@@ -87,6 +89,8 @@ public class FileController {
 		LOG.debug("Start fileUpload");
 		HttpStatus httpStatus = HttpStatus.OK;
 		CustomResponse customResponse = null;
+		User appUser = ftpAuditService.getUserFromPrincipal(user);
+		FtpEntity ftpEntity = appUser.getEntity();
 
 		try {
 			FileInfo fileInfo = this.saveUploadedFile(multipartfile);
@@ -94,37 +98,33 @@ public class FileController {
 				if ("CT".equals(fileType)) {
 					customResponse = grandMapperService.uploadToTemp(fileInfo, date, user);
 					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
-						customResponse.setData(grandMapperService.getDifferenceOfTempAndMain());
+						customResponse.setData(grandMapperService.getDifferenceOfTempAndMain(ftpEntity));
 					}
 				} else if ("PD".equals(fileType)) {
 					customResponse = productMapperService.uploadToTemp(fileInfo, date, user);
 					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
-						customResponse.setData(productMapperService.getDifferenceOfTempAndMain());
+						customResponse.setData(productMapperService.getDifferenceOfTempAndMain(ftpEntity));
 					}
 				} else if ("DC".equals(fileType)) {
 					customResponse = divisionMapperService.uploadToTemp(fileInfo, date, user);
 					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
-						customResponse.setData(divisionMapperService.getDifferenceOfTempAndMain());
+						customResponse.setData(divisionMapperService.getDifferenceOfTempAndMain(ftpEntity));
 					}
 				} else if ("PC".equals(fileType)) {
 					customResponse = policyMapperFileService.uploadToTemp(fileInfo, date, user);
 					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
-						customResponse.setData(policyMapperFileService.getDifferenceOfTempAndMain());
+						customResponse.setData(policyMapperFileService.getDifferenceOfTempAndMain(ftpEntity));
 					}
 				} else if ("Currency Rates".equals(fileType)) {
 					if (overwrite) {
-						fileUploadService.deleteExistingRecords(fileType, date,
-								ftpAuditService.getUserFromPrincipal(user));
+						fileUploadService.deleteExistingRecords(fileType, date, appUser);
 					}
-					customResponse = currencyRateService.uploadRates(fileType, fileInfo, date,
-							ftpAuditService.getUserFromPrincipal(user), overwrite);
+					customResponse = currencyRateService.uploadRates(fileType, fileInfo, date, appUser, overwrite);
 				} else if ("Static Rates".equals(fileType)) {
 					if (overwrite) {
-						fileUploadService.deleteExistingRecords(fileType, date,
-								ftpAuditService.getUserFromPrincipal(user));
+						fileUploadService.deleteExistingRecords(fileType, date, appUser);
 					}
-					customResponse = keyRateService.uploadRates(fileType, fileInfo, date,
-							ftpAuditService.getUserFromPrincipal(user), overwrite);
+					customResponse = keyRateService.uploadRates(fileType, fileInfo, date, appUser, overwrite);
 				} else {
 					throw new CustomException("Invalid file type.");
 				}
