@@ -14,11 +14,11 @@ public interface PolicyMapperTempRepository extends CrudRepository<FTPPolicyMapp
 	
 	@Query(value ="SELECT tempMapper.ftp_category FROM ftp_curve_mapper_temp tempMapper where CONCAT(tempMapper.ftp_category,tempMapper.ccy_code_in,tempMapper.ccy_code_not_in,tempMapper.division_code_in,tempMapper.division_code_not_in,"
 			+ "tempMapper.orig_division_code_in,tempMapper.orig_division_code_not_in,tempMapper.cust_type_in,tempMapper.cust_type_not_in,tempMapper.subdivision_code_in,"
-			+ "tempMapper.subdivision_code_not_in,tempMapper.maturity_date,tempMapper.base_tenor,tempMapper.margin_tenor,tempMapper.applicable_curve,tempMapper.pre_post,tempMapper.final_ftp_category) not in "
+			+ "tempMapper.subdivision_code_not_in,tempMapper.fixed_length,tempMapper.maturity_date,tempMapper.base_tenor,tempMapper.margin_tenor,tempMapper.applicable_curve,tempMapper.pre_post,tempMapper.final_ftp_category) not in "
 			+ "(SELECT CONCAT(mapper.ftp_category,mapper.ccy_code_in,mapper.ccy_code_not_in,mapper.division_code_in,mapper.division_code_not_in," 
 			+ "mapper.orig_division_code_in,mapper.orig_division_code_not_in,mapper.cust_type_in,mapper.cust_type_not_in,mapper.subdivision_code_in," 
-			+ "mapper.subdivision_code_not_in,mapper.maturity_date,mapper.base_tenor,mapper.margin_tenor,mapper.applicable_curve,mapper.pre_post,mapper.final_ftp_category) FROM ftp_curve_mapper mapper)",nativeQuery=true)
-	List<String> fetchRecordsNotInTemp();
+			+ "mapper.subdivision_code_not_in,mapper.fixed_length,mapper.maturity_date,mapper.base_tenor,mapper.margin_tenor,mapper.applicable_curve,mapper.pre_post,mapper.final_ftp_category) FROM ftp_curve_mapper mapper)",nativeQuery=true)
+	List<String> fetchRecordsNotInMain();
 	
 	List<FTPPolicyMapperTemp> findByFtpCategoryInOrderByFtpCategory(Set<String> ftpCategories);
 }

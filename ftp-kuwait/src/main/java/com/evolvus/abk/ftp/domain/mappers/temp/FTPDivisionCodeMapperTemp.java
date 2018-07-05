@@ -33,7 +33,7 @@ public class FTPDivisionCodeMapperTemp {
 	private Long id;
 	
 	@Column(name="GL_SUB_HEAD_CODE",length=20)
-	private String glsubHeadCode;
+	private String glSubHeadCode;
 	
 	@Column(name="GLSH_CHAR")
 	private Integer glshChar;

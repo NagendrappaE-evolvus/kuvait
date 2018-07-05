@@ -62,6 +62,9 @@ public class FTPPolicyMapper {
 	
 	@Column(name="SUBDIVISION_CODE_NOT_IN")
 	private String subdivisionCodeNotIn;
+
+	@Column(name="FIXED_LENGTH")
+	private String fixedLength;
 	
 	@Column(name="MATURITY_DATE")
 	private String maturityDate;
@@ -84,11 +87,11 @@ public class FTPPolicyMapper {
 	@Column(name="UPLOADED_DATE")
 	private Date uploadedDate;
 	
-	@Column(name="UPLOADED_BY")
-	private String uploadedBy;
-	
 	@Column(name="VERSION")
 	private String version;
+	
+	@Column(name="UPLOADED_BY")
+	private String uploadedBy;
 	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)

@@ -28,176 +28,190 @@ import com.evolvus.abk.ftp.service.RateService;
 import com.evolvus.abk.ftp.service.MapperFileService;
 import com.evolvus.abk.ftp.service.impl.FileUploadService;
 import com.evolvus.abk.ftp.service.impl.FtpAuditService;
+import com.evolvus.abk.ftp.service.mappers.impl.PolicyMapperFileService;
 
 @RestController
 @RequestMapping("file")
 public class FileController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FileController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FileController.class);
 
-    @Value("${upload.file.location}")
-    String uploadFolder;
+	@Value("${upload.file.location}")
+	String uploadFolder;
 
-    @Autowired
-    FileUploadService fileUploadService;
+	@Autowired
+	FileUploadService fileUploadService;
 
-    @Autowired
-    FtpAuditService ftpAuditService;
-    
-    @Autowired(required=true)
-    @Qualifier(value="GrandMapperFileService")
-    MapperFileService grandMapperService;
-    
-    @Autowired(required=true)
-    @Qualifier(value="CurrencyRateFileService")
-    RateService currencyRateService;
-    
-    @Autowired(required=true)
-    @Qualifier(value="KeyRateFileService")
-    RateService keyRateService;
-    
-    @Autowired(required=true)
-    @Qualifier(value="ProductMapperFileService")
-    MapperFileService productMapperService;
-    
-    @Autowired(required=true)
-    @Qualifier(value="DivisionCodeMapperService")
-    MapperFileService divisionMapperService;
+	@Autowired
+	FtpAuditService ftpAuditService;
 
-    /**
-     * File UPLOAD.
-     *
-     * @param multipartfile
-     *            the multipartfile
-     * @param userName
-     *            the user name
-     * @return the response entity
-     * @throws InterruptedException
-     *             the interrupted exception
-     */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public ResponseEntity<CustomResponse> fileUpload(@RequestParam("file") MultipartFile multipartfile,
-            @RequestParam("fileType") String fileType, @RequestParam("date") String date,
-            @RequestParam("overwrite") Boolean overwrite, Principal user) throws InterruptedException {
-        LOG.debug("Start fileUpload");
-        HttpStatus httpStatus = HttpStatus.OK;
-        CustomResponse customResponse = null;
+	@Autowired(required = true)
+	@Qualifier(value = "GrandMapperFileService")
+	MapperFileService grandMapperService;
 
-        try {
-            FileInfo fileInfo = this.saveUploadedFile(multipartfile);
-            if (fileInfo.getFileSaved()) {
-                if ("CT".equals(fileType)) {
-                    customResponse = grandMapperService.uploadToTemp(fileInfo, date, user);
-                    if(customResponse.getStatus().equals(Constants.STATUS_OK)) {
-                    	customResponse.setData(grandMapperService.getDifferenceOfTempAndMain()); 
-                    }
-                }
-                else if("PD".equals(fileType)) {
-                    customResponse = productMapperService.uploadToTemp(fileInfo, date, user);
-                    if(customResponse.getStatus().equals(Constants.STATUS_OK)) {
-                    	customResponse.setData(productMapperService.getDifferenceOfTempAndMain()); 
-                    }
-                }
-                else if("DC".equals(fileType)) {
-                    customResponse = divisionMapperService.uploadToTemp(fileInfo, date, user);
-                    if(customResponse.getStatus().equals(Constants.STATUS_OK)) {
-                    	customResponse.setData(divisionMapperService.getDifferenceOfTempAndMain()); 
-                    }
-                }else if ("All Key Rates".equals(fileType)) {
-                    customResponse = fileUploadService.uploadKeyRates(fileType, fileInfo, date, overwrite,
-                            ftpAuditService.getUserFromPrincipal(user));
-                } else if ("Margin Adjustment".equals(fileType)) {
-                    customResponse = fileUploadService.uploadMarginAdjustmentRates(fileType, fileInfo, date,
-                            overwrite, ftpAuditService.getUserFromPrincipal(user));
-                } else if ("Margin Curve Extended".equals(fileType)) {
-                    customResponse = fileUploadService.uploadMarginCurveExtendedRates(fileType, fileInfo, date,
-                            overwrite, ftpAuditService.getUserFromPrincipal(user));
-                }else if ("Currency Rates".equals(fileType)) {
-               	 if(overwrite) {
-               		 fileUploadService.deleteExistingRecords(fileType, date, ftpAuditService.getUserFromPrincipal(user));
-               	 }
-                	 customResponse = currencyRateService.uploadRates(fileType, fileInfo, date, ftpAuditService.getUserFromPrincipal(user), overwrite);
-                }else if ("Static Rates".equals(fileType)) {
-                  	 if(overwrite) {
-                   		 fileUploadService.deleteExistingRecords(fileType, date, ftpAuditService.getUserFromPrincipal(user));
-                   	 }
-                	customResponse = keyRateService.uploadRates(fileType, fileInfo, date, ftpAuditService.getUserFromPrincipal(user), overwrite);
-                } else {
-                    throw new CustomException("Invalid file type.");
-                }
-            } else {
-                throw new CustomException("Error in writing file to disk.");
-            }
-        } catch (CustomException e) {
-            customResponse = new CustomResponse();
-            customResponse.setStatus(Constants.STATUS_OK);
-            customResponse.setDescription(e.getMessage());
-            LOG.error(e.getMessage());
-        } catch (Exception e) {
-            customResponse = new CustomResponse();
-            customResponse.setStatus(Constants.STATUS_OK);
-            customResponse.setDescription("Error in file upload.");
-            LOG.error("Error in data for file upload.");
-        }
-        LOG.debug("End fileUpload");
-        return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
-    }
+	@Autowired(required = true)
+	@Qualifier(value = "CurrencyRateFileService")
+	RateService currencyRateService;
 
-    @RequestMapping(value = "/checkDataAvailable", method = RequestMethod.POST)
-    public ResponseEntity<CustomResponse> checkDataAvailable(@RequestParam("fileType") String fileType,
-            @RequestParam("date") String date, Principal user) {
-        HttpStatus httpStatus = HttpStatus.OK;
-        CustomResponse customResponse = null;
-        LOG.debug("Start checkDataAvailable");
-        try {
-            customResponse = fileUploadService.dataExistingCount(fileType, date,
-                    ftpAuditService.getUserFromPrincipal(user));
-        } catch (Exception e) {
-            customResponse = new CustomResponse();
-            customResponse.setStatus(Constants.STATUS_FAIL);
-            customResponse.setDescription("Error in checking data.");
-            LOG.error("Error in finding count.");
-        }
-        LOG.debug("End checkDataAvailable");
-        return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
-    }
+	@Autowired(required = true)
+	@Qualifier(value = "KeyRateFileService")
+	RateService keyRateService;
 
-    private FileInfo saveUploadedFile(MultipartFile multipartfile) {
-        SimpleDateFormat timeStamp = new SimpleDateFormat("yyyyMMddHHmmss");
-        File sourceFile = null;
-        LOG.debug("Start saveUploadedFile");
-        FileInfo fileInfo = new FileInfo();
-        try {
-            String fileName = multipartfile.getOriginalFilename();
-            if(fileName.contains(File.separator)) {
-                fileName = fileName.substring(fileName.lastIndexOf(File.separator)+1,fileName.length());
-            }
-            fileName = fileName.substring(0, fileName.lastIndexOf(".")) + "_"
+	@Autowired(required = true)
+	@Qualifier(value = "ProductMapperFileService")
+	MapperFileService productMapperService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "DivisionCodeMapperService")
+	MapperFileService divisionMapperService;
+
+	@Autowired(required = true)
+	@Qualifier(value = "PolicyMapperFileService")
+	PolicyMapperFileService policyMapperFileService;
+
+	/**
+	 * File UPLOAD.
+	 *
+	 * @param multipartfile
+	 *            the multipartfile
+	 * @param userName
+	 *            the user name
+	 * @return the response entity
+	 * @throws InterruptedException
+	 *             the interrupted exception
+	 */
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	public ResponseEntity<CustomResponse> fileUpload(@RequestParam("file") MultipartFile multipartfile,
+			@RequestParam("fileType") String fileType, @RequestParam("date") String date,
+			@RequestParam("overwrite") Boolean overwrite, Principal user) throws InterruptedException {
+		LOG.debug("Start fileUpload");
+		HttpStatus httpStatus = HttpStatus.OK;
+		CustomResponse customResponse = null;
+
+		try {
+			FileInfo fileInfo = this.saveUploadedFile(multipartfile);
+			if (fileInfo.getFileSaved()) {
+				if ("CT".equals(fileType)) {
+					customResponse = grandMapperService.uploadToTemp(fileInfo, date, user);
+					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
+						customResponse.setData(grandMapperService.getDifferenceOfTempAndMain());
+					}
+				} else if ("PD".equals(fileType)) {
+					customResponse = productMapperService.uploadToTemp(fileInfo, date, user);
+					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
+						customResponse.setData(productMapperService.getDifferenceOfTempAndMain());
+					}
+				} else if ("DC".equals(fileType)) {
+					customResponse = divisionMapperService.uploadToTemp(fileInfo, date, user);
+					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
+						customResponse.setData(divisionMapperService.getDifferenceOfTempAndMain());
+					}
+				} else if ("PC".equals(fileType)) {
+						customResponse = policyMapperFileService.uploadToTemp(fileInfo, date, user);
+						if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
+							customResponse.setData(policyMapperFileService.getDifferenceOfTempAndMain());
+						}
+					}
+				 else if ("All Key Rates".equals(fileType)) {
+					customResponse = fileUploadService.uploadKeyRates(fileType, fileInfo, date, overwrite,
+							ftpAuditService.getUserFromPrincipal(user));
+				} else if ("Margin Adjustment".equals(fileType)) {
+					customResponse = fileUploadService.uploadMarginAdjustmentRates(fileType, fileInfo, date, overwrite,
+							ftpAuditService.getUserFromPrincipal(user));
+				} else if ("Margin Curve Extended".equals(fileType)) {
+					customResponse = fileUploadService.uploadMarginCurveExtendedRates(fileType, fileInfo, date,
+							overwrite, ftpAuditService.getUserFromPrincipal(user));
+				} else if ("Currency Rates".equals(fileType)) {
+					if (overwrite) {
+						fileUploadService.deleteExistingRecords(fileType, date,
+								ftpAuditService.getUserFromPrincipal(user));
+					}
+					customResponse = currencyRateService.uploadRates(fileType, fileInfo, date,
+							ftpAuditService.getUserFromPrincipal(user), overwrite);
+				} else if ("Static Rates".equals(fileType)) {
+					if (overwrite) {
+						fileUploadService.deleteExistingRecords(fileType, date,
+								ftpAuditService.getUserFromPrincipal(user));
+					}
+					customResponse = keyRateService.uploadRates(fileType, fileInfo, date,
+							ftpAuditService.getUserFromPrincipal(user), overwrite);
+				} else {
+					throw new CustomException("Invalid file type.");
+				}
+			} else {
+				throw new CustomException("Error in writing file to disk.");
+			}
+		} catch (CustomException e) {
+			customResponse = new CustomResponse();
+			customResponse.setStatus(Constants.STATUS_OK);
+			customResponse.setDescription(e.getMessage());
+			LOG.error(e.getMessage());
+		} catch (Exception e) {
+			customResponse = new CustomResponse();
+			customResponse.setStatus(Constants.STATUS_OK);
+			customResponse.setDescription("Error in file upload.");
+			LOG.error("Error in data for file upload.");
+		}
+		LOG.debug("End fileUpload");
+		return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
+	}
+
+	@RequestMapping(value = "/checkDataAvailable", method = RequestMethod.POST)
+	public ResponseEntity<CustomResponse> checkDataAvailable(@RequestParam("fileType") String fileType,
+			@RequestParam("date") String date, Principal user) {
+		HttpStatus httpStatus = HttpStatus.OK;
+		CustomResponse customResponse = null;
+		LOG.debug("Start checkDataAvailable");
+		try {
+			customResponse = fileUploadService.dataExistingCount(fileType, date,
+					ftpAuditService.getUserFromPrincipal(user));
+		} catch (Exception e) {
+			customResponse = new CustomResponse();
+			customResponse.setStatus(Constants.STATUS_FAIL);
+			customResponse.setDescription("Error in checking data.");
+			LOG.error("Error in finding count.");
+		}
+		LOG.debug("End checkDataAvailable");
+		return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
+	}
+
+	private FileInfo saveUploadedFile(MultipartFile multipartfile) {
+		SimpleDateFormat timeStamp = new SimpleDateFormat("yyyyMMddHHmmss");
+		File sourceFile = null;
+		LOG.debug("Start saveUploadedFile");
+		FileInfo fileInfo = new FileInfo();
+		try {
+			String fileName = multipartfile.getOriginalFilename();
+			if (fileName.contains(File.separator)) {
+				fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.length());
+			}
+			fileName = fileName.substring(0, fileName.lastIndexOf(".")) + "_"
 					+ timeStamp.format(new Timestamp(System.currentTimeMillis()))
 					+ fileName.substring(fileName.lastIndexOf("."), fileName.length());
 
-			File sourceDirectory = new File(uploadFolder+File.separator+new SimpleDateFormat("ddMMyyyy").format(new Date()));
+			File sourceDirectory = new File(
+					uploadFolder + File.separator + new SimpleDateFormat("ddMMyyyy").format(new Date()));
 			if (!sourceDirectory.exists()) {
 				sourceDirectory.mkdirs();
 			}
 			sourceFile = new File(sourceDirectory, fileName);
 
 			sourceFile.createNewFile();
-			
-            multipartfile.transferTo(sourceFile);
-            fileInfo.setFileName(sourceFile.getName());
-            fileInfo.setFilePath(sourceFile.getAbsolutePath());
-            fileInfo.setFileSize(String.valueOf(sourceFile.length() / 1024) + " kb");
-            fileInfo.setUploadedFile(sourceFile);
-            fileInfo.setFileSaved(Boolean.TRUE);
 
-        } catch (Exception e) {
-            fileInfo.setStackTrace(ExceptionUtils.getStackTrace(e));
-            fileInfo.setFileSaved(Boolean.FALSE);
-            LOG.error("Exception in saveUploadedFile: {} " + fileInfo.getStackTrace());
-        } 
-        fileInfo.setUploadDate(new Date());
-        LOG.debug("End saveUploadedFile");
-        return fileInfo;
-    }
+			multipartfile.transferTo(sourceFile);
+			fileInfo.setFileName(sourceFile.getName());
+			fileInfo.setFilePath(sourceFile.getAbsolutePath());
+			fileInfo.setFileSize(String.valueOf(sourceFile.length() / 1024) + " kb");
+			fileInfo.setUploadedFile(sourceFile);
+			fileInfo.setFileSaved(Boolean.TRUE);
+
+		} catch (Exception e) {
+			fileInfo.setStackTrace(ExceptionUtils.getStackTrace(e));
+			fileInfo.setFileSaved(Boolean.FALSE);
+			LOG.error("Exception in saveUploadedFile: {} " + fileInfo.getStackTrace());
+		}
+		fileInfo.setUploadDate(new Date());
+		LOG.debug("End saveUploadedFile");
+		return fileInfo;
+	}
 }

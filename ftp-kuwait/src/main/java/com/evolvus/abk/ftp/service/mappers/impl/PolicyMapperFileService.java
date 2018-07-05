@@ -16,8 +16,8 @@ import java.util.Set;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -34,44 +34,44 @@ import com.evolvus.abk.ftp.constants.Constants;
 import com.evolvus.abk.ftp.domain.FtpAudit;
 import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
-import com.evolvus.abk.ftp.domain.mappers.archivals.FTPGrandMapperArchive;
-import com.evolvus.abk.ftp.domain.mappers.main.FTPGrandMapper;
+import com.evolvus.abk.ftp.domain.mappers.archivals.FTPPolicyMapperArchive;
+import com.evolvus.abk.ftp.domain.mappers.main.FTPPolicyMapper;
 import com.evolvus.abk.ftp.domain.mappers.temp.FTPGrandMapperTemp;
-import com.evolvus.abk.ftp.repository.mappers.main.GrandMapperMainRepository;
-import com.evolvus.abk.ftp.repository.mappers.main.archivals.GrandMapperArchiveRepository;
-import com.evolvus.abk.ftp.repository.mappers.temp.GrandMapperTempRepository;
+import com.evolvus.abk.ftp.domain.mappers.temp.FTPPolicyMapperTemp;
+import com.evolvus.abk.ftp.repository.mappers.main.PolicyMapperRepository;
+import com.evolvus.abk.ftp.repository.mappers.main.archivals.PolicyMapperArchiveRepository;
+import com.evolvus.abk.ftp.repository.mappers.temp.PolicyMapperTempRepository;
 import com.evolvus.abk.ftp.service.MapperFileService;
 import com.evolvus.abk.ftp.service.MapperVersionService;
 import com.evolvus.abk.ftp.service.impl.FtpAuditService;
 import com.evolvus.abk.ftp.service.impl.MapperConversionService;
 
 @Service
-@Qualifier(value = "GrandMapperFileService")
-public class GrandMapperFileService implements MapperFileService {
-
-	private static final Logger LOG = LoggerFactory.getLogger(GrandMapperFileService.class);
-
-	@Autowired
-	FtpAuditService ftpAuditService;
+@Qualifier(value="PolicyMapperFileService")
+public class PolicyMapperFileService implements MapperFileService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PolicyMapperFileService.class);
 
 	@Autowired
-	GrandMapperTempRepository grandMapperTempRepository;
-
-	@Autowired
-	GrandMapperMainRepository grandMapperMainRepository;
+	private FtpAuditService ftpAuditService;
 	
 	@Autowired
-	GrandMapperArchiveRepository grandMapperArchiveRepository;
-
-	@Autowired
-	MapperVersionService mapperVersionService;
+	private PolicyMapperTempRepository policyMapperTempRepository;
 	
 	@Autowired
-	MapperConversionService mapperConversionService;
+	private PolicyMapperRepository policyMapperRepository;
+	
+	@Autowired
+	private PolicyMapperArchiveRepository policyMapperArchiveRepository;
+	
+	@Autowired
+	private MapperConversionService mapperConversionService;
+	
+	@Autowired
+	private MapperVersionService mapperVersionService;
 	
 	@Override
 	public CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user) {
-
 		User appUser = ftpAuditService.getUserFromPrincipal(user);
 		FileInputStream excelFile = null;
 		Workbook workbook = null;
@@ -90,151 +90,123 @@ public class GrandMapperFileService implements MapperFileService {
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
 			rowIterator.next();
 
-			List<FTPGrandMapperTemp> mappersList = new ArrayList<>();
+			List<FTPPolicyMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
 				// Clearing existing records
 				clearRecords();
 				while (rowIterator.hasNext()) {
 					Row currentRow = rowIterator.next();
-					FTPGrandMapperTemp mapper = null;
-					mapper = new FTPGrandMapperTemp();
+					FTPPolicyMapperTemp mapper = null;
+					mapper = new FTPPolicyMapperTemp();
 					if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
-						mapper.setGlSubheadCode(currentRow.getCell(0).getStringCellValue().trim());
+						mapper.setFtpCategory(currentRow.getCell(0).getStringCellValue().trim());
 					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setGlSubheadCode(String.valueOf(currentRow.getCell(0).getNumericCellValue()));
+						mapper.setFtpCategory(String.valueOf(currentRow.getCell(0).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(1).getCellTypeEnum() == CellType.STRING) {
-						mapper.setGlSubheadDesc(currentRow.getCell(1).getStringCellValue().trim());
+						mapper.setCcyCodeIn(currentRow.getCell(1).getStringCellValue().trim());
 					} else if (currentRow.getCell(1).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setGlSubheadDesc(String.valueOf(currentRow.getCell(1).getNumericCellValue()));
+						mapper.setCcyCodeIn(String.valueOf(currentRow.getCell(1).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(2).getCellTypeEnum() == CellType.STRING) {
-						mapper.setDrFtpCat(currentRow.getCell(2).getStringCellValue().trim());
+						mapper.setCcyCodeNotIn(currentRow.getCell(2).getStringCellValue().trim());
 					} else if (currentRow.getCell(2).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setDrFtpCat(String.valueOf(currentRow.getCell(2).getNumericCellValue()));
+						mapper.setCcyCodeNotIn(String.valueOf(currentRow.getCell(2).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(3).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCrFtpCat(currentRow.getCell(3).getStringCellValue().trim());
+						mapper.setDivisionCodeIn(currentRow.getCell(3).getStringCellValue().trim());
 					} else if (currentRow.getCell(3).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCrFtpCat(String.valueOf(currentRow.getCell(3).getNumericCellValue()));
+						mapper.setDivisionCodeIn(String.valueOf(currentRow.getCell(3).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(4).getCellTypeEnum() == CellType.STRING) {
-						mapper.setUserSubclassCodeIn(currentRow.getCell(4).getStringCellValue().trim());
+						mapper.setDivisionCodeNotIn(currentRow.getCell(4).getStringCellValue().trim());
 					} else if (currentRow.getCell(4).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setUserSubclassCodeIn(String.valueOf(currentRow.getCell(4).getNumericCellValue()));
+						mapper.setDivisionCodeNotIn(String.valueOf(currentRow.getCell(4).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(5).getCellTypeEnum() == CellType.STRING) {
-						mapper.setUserSubclassCodeNotIn(currentRow.getCell(5).getStringCellValue().trim());
+						mapper.setOrigDivisionCodeIn(currentRow.getCell(5).getStringCellValue().trim());
 					} else if (currentRow.getCell(5).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setUserSubclassCodeNotIn(String.valueOf(currentRow.getCell(5).getNumericCellValue()));
+						mapper.setOrigDivisionCodeIn(String.valueOf(currentRow.getCell(5).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(6).getCellTypeEnum() == CellType.STRING) {
-						mapper.setBAcidIn(currentRow.getCell(6).getStringCellValue().trim());
+						mapper.setOrigDivisionCodeNotIn(currentRow.getCell(6).getStringCellValue().trim());
 					} else if (currentRow.getCell(6).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setBAcidIn(String.valueOf(currentRow.getCell(6).getNumericCellValue()));
+						mapper.setOrigDivisionCodeNotIn(String.valueOf(currentRow.getCell(6).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(7).getCellTypeEnum() == CellType.STRING) {
-						mapper.setBAcidNotIn(currentRow.getCell(7).getStringCellValue().trim());
+						mapper.setCustTypeIn(currentRow.getCell(7).getStringCellValue().trim());
 					} else if (currentRow.getCell(7).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setBAcidNotIn(String.valueOf(currentRow.getCell(7).getNumericCellValue()));
+						mapper.setCustTypeIn(String.valueOf(currentRow.getCell(7).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(8).getCellTypeEnum() == CellType.STRING) {
-						mapper.setDivisionCodeIn(currentRow.getCell(8).getStringCellValue().trim());
+						mapper.setCustTypeNotIn(currentRow.getCell(8).getStringCellValue().trim());
 					} else if (currentRow.getCell(8).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setDivisionCodeIn(String.valueOf(currentRow.getCell(8).getNumericCellValue()));
+						mapper.setCustTypeNotIn(String.valueOf(currentRow.getCell(8).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(9).getCellTypeEnum() == CellType.STRING) {
-						mapper.setDivisionCodeNotIn(currentRow.getCell(9).getStringCellValue().trim());
+						mapper.setSubdivisionCodeIn(currentRow.getCell(9).getStringCellValue().trim());
 					} else if (currentRow.getCell(9).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setDivisionCodeNotIn(String.valueOf(currentRow.getCell(9).getNumericCellValue()));
+						mapper.setSubdivisionCodeIn(String.valueOf(currentRow.getCell(9).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(10).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCustInLength(currentRow.getCell(10).getStringCellValue().trim());
+						mapper.setSubdivisionCodeNotIn(currentRow.getCell(10).getStringCellValue().trim());
 					} else if (currentRow.getCell(10).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCustInLength(String.valueOf((int) currentRow.getCell(10).getNumericCellValue()));
-					} else {
-						currentRow.getCell(10).getCellTypeEnum();
+						mapper.setSubdivisionCodeNotIn(String.valueOf((int) currentRow.getCell(10).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(11).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCustTypeIn(currentRow.getCell(11).getStringCellValue().trim());
+						mapper.setFixedLength(currentRow.getCell(11).getStringCellValue().trim());
 					} else if (currentRow.getCell(11).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCustTypeIn(String.valueOf(currentRow.getCell(11).getNumericCellValue()));
+						mapper.setFixedLength(String.valueOf(currentRow.getCell(11).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(12).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCustNotInLength(currentRow.getCell(12).getStringCellValue().trim());
+						mapper.setMaturityDate(currentRow.getCell(12).getStringCellValue().trim());
 					} else if (currentRow.getCell(12).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCustNotInLength(String.valueOf((int) currentRow.getCell(12).getNumericCellValue()));
+						mapper.setMaturityDate(String.valueOf((int) currentRow.getCell(12).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(13).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCustTypeNotIn(currentRow.getCell(13).getStringCellValue().trim());
+						mapper.setBaseTenor(currentRow.getCell(13).getStringCellValue().trim());
 					} else if (currentRow.getCell(13).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCustTypeNotIn(String.valueOf(currentRow.getCell(13).getNumericCellValue()));
+						mapper.setBaseTenor(String.valueOf(currentRow.getCell(13).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(14).getCellTypeEnum() == CellType.STRING) {
-						mapper.setSubDivisionCodeIn(currentRow.getCell(14).getStringCellValue().trim());
+						mapper.setMarginTenor(currentRow.getCell(14).getStringCellValue().trim());
 					} else if (currentRow.getCell(14).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setSubDivisionCodeIn(String.valueOf(currentRow.getCell(14).getNumericCellValue()));
+						mapper.setMarginTenor(String.valueOf(currentRow.getCell(14).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(15).getCellTypeEnum() == CellType.STRING) {
-						mapper.setSubDivisionCodeNotIn(currentRow.getCell(15).getStringCellValue().trim());
+						mapper.setApplicableCurve(currentRow.getCell(15).getStringCellValue().trim());
 					} else if (currentRow.getCell(15).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setSubDivisionCodeNotIn(String.valueOf(currentRow.getCell(15).getNumericCellValue()));
+						mapper.setApplicableCurve(String.valueOf(currentRow.getCell(15).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(16).getCellTypeEnum() == CellType.STRING) {
-						mapper.setTradingBookNameIn(currentRow.getCell(16).getStringCellValue().trim());
+						mapper.setPrePost(currentRow.getCell(16).getStringCellValue().trim());
 					} else if (currentRow.getCell(16).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setTradingBookNameIn(String.valueOf(currentRow.getCell(16).getNumericCellValue()));
+						mapper.setPrePost(String.valueOf(currentRow.getCell(16).getNumericCellValue()));
 					}
 
 					if (currentRow.getCell(17).getCellTypeEnum() == CellType.STRING) {
-						mapper.setTradingBookNameNotIn(currentRow.getCell(17).getStringCellValue().trim());
+						mapper.setFinalFtpCategory(currentRow.getCell(17).getStringCellValue().trim());
 					} else if (currentRow.getCell(17).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setTradingBookNameNotIn(String.valueOf(currentRow.getCell(17).getNumericCellValue()));
+						mapper.setFinalFtpCategory(String.valueOf(currentRow.getCell(17).getNumericCellValue()));
 					}
 
-					if (currentRow.getCell(18).getCellTypeEnum() == CellType.STRING) {
-						mapper.setInstrumentClassIn(currentRow.getCell(18).getStringCellValue().trim());
-					} else if (currentRow.getCell(18).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setInstrumentClassIn(String.valueOf(currentRow.getCell(18).getNumericCellValue()));
-					}
-
-					if (currentRow.getCell(19).getCellTypeEnum() == CellType.STRING) {
-						mapper.setInstrumentClassNotIn(currentRow.getCell(19).getStringCellValue().trim());
-					} else if (currentRow.getCell(19).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setInstrumentClassNotIn(String.valueOf(currentRow.getCell(19).getNumericCellValue()));
-					}
-
-					if (currentRow.getCell(20).getCellTypeEnum() == CellType.STRING) {
-						mapper.setGroupByLogic(currentRow.getCell(20).getStringCellValue().trim());
-					} else if (currentRow.getCell(20).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setGroupByLogic(String.valueOf(currentRow.getCell(20).getNumericCellValue()));
-					}
-
-					Double countValue = 0.0;
-					if (currentRow.getCell(21).getCellTypeEnum() == CellType.NUMERIC) {
-						countValue = currentRow.getCell(21).getNumericCellValue();
-					}
-
-					if (countValue != null) {
-						mapper.setCount(countValue);
-					}
 					mapper.setUploadedDate(new Date());
 					mapper.setUploadedBy(user.getName());
 					mapper.setBankCode(appUser.getEntity());
@@ -243,7 +215,7 @@ public class GrandMapperFileService implements MapperFileService {
 					numberOfRecords += 1;
 					fileInfo.setNoOfRecords(numberOfRecords);
 				}
-				grandMapperTempRepository.save(mappersList);
+				policyMapperTempRepository.save(mappersList);
 				response.setDescription("File uploaded successfully");
 				response.setStatus(Constants.STATUS_OK);
 			} else {
@@ -305,66 +277,68 @@ public class GrandMapperFileService implements MapperFileService {
 
 	@Override
 	public void clearRecords() {
-		grandMapperTempRepository.deleteAll();
+		policyMapperTempRepository.deleteAll();		
 	}
 
 	@Override
 	@Transactional(readOnly=true)
 	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain() {
-		List<String> tempNotInMain = grandMapperTempRepository.fetchRecordsNotInMain();
-		List<String> mainNotInTemp = grandMapperMainRepository.fetchRecordsNotInTemp();
-		Set<String> glSubheadSet = new HashSet<>();
-		glSubheadSet.addAll(tempNotInMain);
-		glSubheadSet.addAll(mainNotInTemp);
-		List<FTPGrandMapperTemp> tempNotInMainList = grandMapperTempRepository
-				.findByGlSubheadCodeInOrderByGlSubheadCode(glSubheadSet);
-		List<FTPGrandMapper> mainNotInTempList = grandMapperMainRepository
-				.findByGlSubheadCodeInOrderByGlSubheadCode(glSubheadSet);
+		List<String> tempNotInMain = policyMapperTempRepository.fetchRecordsNotInMain();
+		List<String> mainNotInTemp = policyMapperRepository.fetchRecordsNotInTemp();
+		Set<String> ftpCategorySet = new HashSet<>();
+		ftpCategorySet.addAll(tempNotInMain);
+		ftpCategorySet.addAll(mainNotInTemp);
+		List<FTPPolicyMapperTemp> tempNotInMainList = policyMapperTempRepository
+				.findByFtpCategoryInOrderByFtpCategory(ftpCategorySet);
+		List<FTPPolicyMapper> mainNotInTempList = policyMapperRepository
+				.findByFtpCategoryInOrderByFtpCategory(ftpCategorySet);
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
 		return differences;
 	}
 	
+
 	@Override
 	@Transactional
 	public Long archive() {
-		Iterable<FTPGrandMapper> mappersList = grandMapperMainRepository.findAll();
-		List<FTPGrandMapperArchive> archives = new ArrayList<>();
+		Iterable<FTPPolicyMapper> mappersList = policyMapperRepository.findAll();
+		List<FTPPolicyMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper-> {
-			grandMapperMainRepository.delete(mapper);
+			policyMapperRepository.delete(mapper);
 			mapper.setId(null);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
 		if(!archives.isEmpty()) {
-			grandMapperArchiveRepository.save(archives);
+			policyMapperArchiveRepository.save(archives);
 			if(!archives.isEmpty()) {
 				return (long) archives.size();
 			}
 		}
 		return 0L;
 	}
-	
+
 	@Override
 	@Transactional
 	public Long insertToMain() {
-		Iterable<FTPGrandMapperTemp> tempMappers = grandMapperTempRepository.findAll();
-		List<FTPGrandMapper> mainMappers = new ArrayList<>();
-		MapperVersion version = mapperVersionService.getMapper("CT");
+		Iterable<FTPPolicyMapperTemp> tempMappers = policyMapperTempRepository.findAll();
+		List<FTPPolicyMapper> mainMappers = new ArrayList<>();
+		MapperVersion version = mapperVersionService.getMapper("PC");
 		
 		Long nextMainVersion = version.getCurrentVersion() + 1;
 		String mainVersion = version.getVersionChars()+nextMainVersion;
 		tempMappers.forEach(mapper -> {
-			grandMapperTempRepository.delete(mapper);
+			policyMapperTempRepository.delete(mapper);
 			mapper.setId(null);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});
 		if(!mainMappers.isEmpty()) {
-			grandMapperMainRepository.save(mainMappers);
-			mapperVersionService.updateMapperVersion("CT", nextMainVersion, version.getCurrentVersion());
+			policyMapperRepository.save(mainMappers);
+			mapperVersionService.updateMapperVersion("PC", nextMainVersion, version.getCurrentVersion());
 			return (long) mainMappers.size();
 		}
 		return 0L;
 	}
+
 }

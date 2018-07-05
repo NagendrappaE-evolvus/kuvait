@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
@@ -23,14 +26,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.evolvus.abk.ftp.bean.CustomResponse;
 import com.evolvus.abk.ftp.bean.FileInfo;
 import com.evolvus.abk.ftp.constants.Constants;
 import com.evolvus.abk.ftp.domain.FtpAudit;
 import com.evolvus.abk.ftp.domain.User;
+import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
+import com.evolvus.abk.ftp.domain.mappers.archivals.FTPDivisionCodeMapperArchive;
+import com.evolvus.abk.ftp.domain.mappers.archivals.FTPGrandMapperArchive;
+import com.evolvus.abk.ftp.domain.mappers.main.FTPDivisionCodeMapper;
+import com.evolvus.abk.ftp.domain.mappers.main.FTPGrandMapper;
 import com.evolvus.abk.ftp.domain.mappers.temp.FTPDivisionCodeMapperTemp;
-
+import com.evolvus.abk.ftp.domain.mappers.temp.FTPGrandMapperTemp;
 import com.evolvus.abk.ftp.repository.mappers.main.DivisionCodeMapperRepository;
 import com.evolvus.abk.ftp.repository.mappers.main.archivals.DivisionCodeMapperArchiveRepository;
 import com.evolvus.abk.ftp.repository.mappers.temp.DivisionCodeMapperTempRepository;
@@ -41,9 +50,9 @@ import com.evolvus.abk.ftp.service.impl.MapperConversionService;
 
 @Service
 @Qualifier(value = "DivisionCodeMapperService")
-public class DivisionCodeMapperService implements MapperFileService {
+public class DivisionCodeMapperFileService implements MapperFileService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DivisionCodeMapperService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DivisionCodeMapperFileService.class);
 
 	@Autowired
 	FtpAuditService ftpAuditService;
@@ -93,9 +102,9 @@ public class DivisionCodeMapperService implements MapperFileService {
 					FTPDivisionCodeMapperTemp mapper = null;
 					mapper = new FTPDivisionCodeMapperTemp();
 					if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
-						mapper.setGlsubHeadCode(currentRow.getCell(0).getStringCellValue().trim());
+						mapper.setGlSubHeadCode(currentRow.getCell(0).getStringCellValue().trim());
 					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setGlsubHeadCode((String.valueOf(currentRow.getCell(0).getNumericCellValue())));
+						mapper.setGlSubHeadCode((String.valueOf(currentRow.getCell(0).getNumericCellValue())));
 					}
 
 					 if (currentRow.getCell(1).getCellTypeEnum() == CellType.NUMERIC) {
@@ -212,25 +221,67 @@ public class DivisionCodeMapperService implements MapperFileService {
 
 	@Override
 	public void clearRecords() {
-		
+		divisionMapperTempRepository.deleteAll();
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain() {
-
-		return null;
+		List<String> tempNotInMain = divisionMapperTempRepository.fetchRecordsNotInMain();
+		List<String> mainNotInTemp = divisiontMapperMainRepository.fetchRecordsNotInTemp();
+		Set<String> glSubheadSet = new HashSet<>();
+		glSubheadSet.addAll(tempNotInMain);
+		glSubheadSet.addAll(mainNotInTemp);
+		List<FTPDivisionCodeMapperTemp> tempNotInMainList = divisionMapperTempRepository
+				.findByGlSubHeadCodeInOrderByGlSubHeadCode(glSubheadSet);
+		List<FTPDivisionCodeMapper> mainNotInTempList = divisiontMapperMainRepository
+				.findByGlSubHeadCodeInOrderByGlSubHeadCode(glSubheadSet);
+		Map<String, List<? extends Object>> differences = new HashMap<>();
+		differences.put(Constants.LIST_MAIN, mainNotInTempList);
+		differences.put(Constants.LIST_TEMP, tempNotInMainList);
+		return differences;
 	}
 
 	@Override
+	@Transactional
 	public Long archive() {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<FTPDivisionCodeMapper> mappersList = divisiontMapperMainRepository.findAll();
+		List<FTPDivisionCodeMapperArchive> archives = new ArrayList<>();
+		mappersList.forEach(mapper-> {
+			divisiontMapperMainRepository.delete(mapper);
+			mapper.setId(null);
+			archives.add(mapperConversionService.mainToArchive(mapper));
+		});
+		if(!archives.isEmpty()) {
+			divisionMapperArchiveRepository.save(archives);
+			if(!archives.isEmpty()) {
+				return (long) archives.size();
+			}
+		}
+		return 0L;
 	}
-
+	
 	@Override
+	@Transactional
 	public Long insertToMain() {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<FTPDivisionCodeMapperTemp> tempMappers = divisionMapperTempRepository.findAll();
+		List<FTPDivisionCodeMapper> mainMappers = new ArrayList<>();
+		MapperVersion version = mapperVersionService.getMapper("DC");
+		
+		Long nextMainVersion = version.getCurrentVersion() + 1;
+		String mainVersion = version.getVersionChars()+nextMainVersion;
+		tempMappers.forEach(mapper -> {
+			divisionMapperTempRepository.delete(mapper);
+			mapper.setId(null);
+			mapper.setVersion(mainVersion);
+			mainMappers.add(mapperConversionService.tempToMain(mapper));
+		});
+		if(!mainMappers.isEmpty()) {
+			divisiontMapperMainRepository.save(mainMappers);
+			mapperVersionService.updateMapperVersion("DC", nextMainVersion, version.getCurrentVersion());
+			return (long) mainMappers.size();
+		}
+		return 0L;
 	}
 
 }

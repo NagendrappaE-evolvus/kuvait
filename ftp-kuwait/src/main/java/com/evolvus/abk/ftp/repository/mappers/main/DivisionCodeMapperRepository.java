@@ -1,6 +1,7 @@
 package com.evolvus.abk.ftp.repository.mappers.main;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -20,4 +21,6 @@ public interface DivisionCodeMapperRepository extends CrudRepository<FTPDivision
 			"tempMapper.final_division_desc) from ftp_product_mapper_temp tempMapper)",
 			nativeQuery=true)
 	List<String> fetchRecordsNotInTemp();
+	
+	List<FTPDivisionCodeMapper> findByGlSubHeadCodeInOrderByGlSubHeadCode(Set<String> glSubHeadCode);
 }

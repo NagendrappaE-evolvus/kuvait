@@ -61,6 +61,9 @@ public class FTPPolicyMapperTemp {
 	
 	@Column(name="SUBDIVISION_CODE_NOT_IN")
 	private String subdivisionCodeNotIn;
+
+	@Column(name="FIXED_LENGTH")
+	private String fixedLength;
 	
 	@Column(name="MATURITY_DATE")
 	private String maturityDate;

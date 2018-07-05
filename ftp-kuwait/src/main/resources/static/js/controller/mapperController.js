@@ -101,12 +101,38 @@ app.controller("MapperController", [
 					"SUBDIVISION CODE IN", "SUBDIVISION CODE NOT IN",
 					"TRADING BOOK NAME IN", "TRADING BOOK NAME NOT IN",
 					"INSTRUMENT CLASS IN", "INSTRUMENT CLASS NOT IN",
-					"Group By logic", "Count",
+					"GROUP BY LOGIC", "COUNT",
 					"VERSION" ];
 			
 			$scope.productMapper = [ "FTP CATEGORY","PROD CODE","PROD DESC",
 				"AST LIAB CLAS","Core Non Core","CORE PRNT","VERSION" ];
 			
+			$scope.divisionMapper = [
+				"GL SUB HEAD CODE",
+				"GLSH CHAR",
+				"ENTITY CODE",
+				"CATEGORY",
+				"DIVISION DESC",
+				"OFFICER",
+				"SUBDIVISION",
+				"DIVISION",
+				"FINAL DIVISION DESC",
+				"UPLOADED DATE",
+				"BANK ID",
+				"VERSION"
+			];
+			
+			$scope.policyMapper = [
+ 					"FTP CATEGORY", "CCY CODE IN",
+					"CCY CODE NOT IN", "DIVISION CODE IN",
+					"DIVISION CODE NOT IN", "ORIG DIVISION CODE IN",
+					"ORIG DIVISION CODE NOT IN", "CUST TYPE IN",
+					"CUST TYPE NOT IN", "SUBDIVISION CODE IN",
+					"SUBDIVISION CODE NOT IN", "FIXED LENGTH", "MATURITY DATE",
+					"BASE TENOR", "MARGIN TENOR", "APPLICABLE CURVE",
+					"PRE POST", "FINAL FTP CATEGORY", "UPLOADED DATE",
+					"BANK ID", "VERSION"
+			];
 			$scope.getSplitWord = function(item){
 	     		$scope.item1 = [];
 	            $scope.item2 = [];
