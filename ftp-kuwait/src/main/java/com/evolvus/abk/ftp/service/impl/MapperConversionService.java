@@ -182,11 +182,15 @@ public class MapperConversionService {
 
 		mainMapper.setUploadedBy(tempMapper.getUploadedBy());
 		mainMapper.setBankCode(tempMapper.getBankCode());
+		
+		mainMapper.setVersion(tempMapper.getVersion());
 
 		return mainMapper;
 	}
 
 	public FTPPolicyMapperArchive mainToArchive(FTPPolicyMapper mainMapper) {
+		
+		
 		FTPPolicyMapperArchive archivalMapper = new FTPPolicyMapperArchive();
 		archivalMapper.setFtpCategory(mainMapper.getFtpCategory());
 		archivalMapper.setCcyCodeIn(mainMapper.getCcyCodeIn());
@@ -219,6 +223,7 @@ public class MapperConversionService {
 		archivalMapper.setUploadedBy(mainMapper.getUploadedBy());
 		archivalMapper.setBankCode(mainMapper.getBankCode());
 
+		archivalMapper.setVersion(mainMapper.getVersion());
 		return archivalMapper;
 	}
 
@@ -245,6 +250,7 @@ public class MapperConversionService {
 		mainMapper.setUploadedDate(tempMapper.getUploadedDate());
 
 		mainMapper.setBankCode(tempMapper.getBankCode());
+		mainMapper.setVersion(tempMapper.getVersion());
 
 		return mainMapper;
 	}
@@ -270,6 +276,7 @@ public class MapperConversionService {
 		archivalMapper.setUploadedDate(mainMapper.getUploadedDate());
 
 		archivalMapper.setBankCode(mainMapper.getBankCode());
+		archivalMapper.setVersion(mainMapper.getVersion());
 
 		return archivalMapper;
 	}

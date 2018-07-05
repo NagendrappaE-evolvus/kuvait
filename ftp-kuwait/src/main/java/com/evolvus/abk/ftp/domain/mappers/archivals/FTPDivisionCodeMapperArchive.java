@@ -32,7 +32,7 @@ public class FTPDivisionCodeMapperArchive {
 	@Column(name="D_ID")
 	private Long id;
 	
-	@Column(name="GL_SUB_HEAD_CODE",length=20)
+	@Column(name="GL_SUB_HEAD_CODE", length=20)
 	private String glSubHeadCode;
 	
 	@Column(name="GLSH_CHAR")

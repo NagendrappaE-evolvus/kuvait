@@ -1,7 +1,8 @@
 <div class="container ">
 	<div class="main-content">
 		<h3>Upload File</h3>
-		<div class="jumbotron fileinput fileinput-new" style="overflow-y:auto">
+		<div class="jumbotron fileinput fileinput-new"
+			style="overflow-y: auto">
 			<label class="col-md-offset-3">{{message}}</label>
 			<div class="formcontrol">
 
@@ -35,8 +36,9 @@
 						<label class="col-md-3 control-label" for="fileType"> File
 							Type</label>
 						<div class="col-md-4">
-							<select ng-init="fetchFileTypes()" class="form-control" id="fileType" name="fileType"
-								ng-change="fileTypeChanged()" ng-model="fileType"
+							<select ng-init="fetchFileTypes()" class="form-control"
+								id="fileType" name="fileType" ng-change="fileTypeChanged()"
+								ng-model="fileType"
 								ng-options="fileType.mapperKey as fileType.mapperName for fileType in mapperFiles">
 								<option value="">Select</option>
 							</select>
@@ -79,12 +81,15 @@
 
 				</form>
 			</div>
-			<div class="form-group form-group-md" ng-show="tempList.length>0 || mainList.length>0">
-				<button class="btn btn-default btn-orange" ng-click="processMappers()">
-					Proceed
-				</button>
-				<button class="btn btn-default">Cancel
-				</button>
+			<div class="row">
+				<div class="form-group form-group-md"
+					ng-show="tempList.length>0 || mainList.length>0">
+					<div class="col-md-offset-8 col-md-4" style="padding-right:3%">
+						<button class="btn btn-default pull-right">Cancel</button>
+						<button class="btn btn-default btn-orange pull-right"
+							ng-click="processMappers()">Proceed</button>
+					</div>
+				</div>
 			</div>
 			<div ng-if="fileType=='CT'" class="main-content">
 				<div class="col-md-6">
@@ -92,20 +97,19 @@
 						<div class="panel-heading">
 							<strong>Uploaded Content</strong>
 						</div>
-						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
-							<table width="100%" class="table table-bordered table-striped" border="0"
-								cellspacing="0" cellpadding="0">
+						<div class="panel-body"
+							style="overflow-x: scroll; overflow-y: scroll">
+							<table width="100%" class="table table-bordered table-striped"
+								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-										<th ng-repeat="cHead in categoryMapper"
-											><span
-											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
-												")}}</span><br>
-										<span>{{item2.join(" ")}}</span></th>
+										<th ng-repeat="cHead in categoryMapper"><span></span>
+											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
+											<span>{{item2.join(" ")}}</span></th>
 									</tr>
 									<tr ng-show="tempList.length==0">
-										<td style="text-align: center" colspan="{{categoryMapper.length}}">No Data
-											available.</td>
+										<td style="text-align: center"
+											colspan="{{categoryMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in tempList">
 										<td>{{obj.glSubheadCode}}</td>
@@ -117,7 +121,7 @@
 										<td>{{obj.userSubclassCodeNotIn}}</td>
 										<td>{{obj.bacidIn}}</td>
 										<td>{{obj.bacidNotIn}}</td>
-										
+
 										<td>{{obj.divisionCodeIn}}</td>
 										<td>{{obj.divisionCodeNotIn}}</td>
 
@@ -149,20 +153,19 @@
 						<div class="panel-heading">
 							<strong>Existing Content</strong>
 						</div>
-						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
-							<table width="100%" class="table table-bordered table-striped" border="0"
-								cellspacing="0" cellpadding="0">
+						<div class="panel-body"
+							style="overflow-x: scroll; overflow-y: scroll">
+							<table width="100%" class="table table-bordered table-striped"
+								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-										<th ng-repeat="cHead in categoryMapper"
-											><span
-											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
-												")}}</span><br>
-										<span>{{item2.join(" ")}}</span></th>
+										<th ng-repeat="cHead in categoryMapper"><span></span>
+											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
+											<span>{{item2.join(" ")}}</span></th>
 									</tr>
 									<tr ng-show="mainList.length==0">
-										<td style="text-align: center" colspan="{{categoryMapper.length}}">No Data
-											available.</td>
+										<td style="text-align: center"
+											colspan="{{categoryMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in mainList">
 										<td>{{obj.glSubheadCode}}</td>
@@ -174,7 +177,7 @@
 										<td>{{obj.userSubclassCodeNotIn}}</td>
 										<td>{{obj.bacidIn}}</td>
 										<td>{{obj.bacidNotIn}}</td>
-										
+
 										<td>{{obj.divisionCodeIn}}</td>
 										<td>{{obj.divisionCodeNotIn}}</td>
 
@@ -201,27 +204,26 @@
 					</div>
 				</div>
 			</div>
-			
-			<div ng-if="fileType=='PD'"class="main-content">
+
+			<div ng-if="fileType=='PD'" class="main-content">
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<strong>Uploaded Content</strong>
 						</div>
-						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
-							<table width="100%" class="table table-bordered table-striped" border="0"
-								cellspacing="0" cellpadding="0">
+						<div class="panel-body"
+							style="overflow-x: scroll; overflow-y: scroll">
+							<table width="100%" class="table table-bordered table-striped"
+								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-										<th ng-repeat="cHead in productMapper"
-											><span
-											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
-												")}}</span><br>
-										<span>{{item2.join(" ")}}</span></th>
+										<th ng-repeat="cHead in productMapper"><span></span>
+											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
+											<span>{{item2.join(" ")}}</span></th>
 									</tr>
 									<tr ng-show="tempList.length==0">
-										<td style="text-align: center" colspan="{{productMapper.length}}">No Data
-											available.</td>
+										<td style="text-align: center"
+											colspan="{{productMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in tempList">
 										<td>{{obj.ftpCategory}}</td>
@@ -244,20 +246,19 @@
 						<div class="panel-heading">
 							<strong>Existing Content</strong>
 						</div>
-						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
-							<table width="100%" class="table table-bordered table-striped" border="0"
-								cellspacing="0" cellpadding="0">
+						<div class="panel-body"
+							style="overflow-x: scroll; overflow-y: scroll">
+							<table width="100%" class="table table-bordered table-striped"
+								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-										<th ng-repeat="cHead in productMapper"
-											><span
-											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
-												")}}</span><br>
-										<span>{{item2.join(" ")}}</span></th>
+										<th ng-repeat="cHead in productMapper"><span></span>
+											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
+											<span>{{item2.join(" ")}}</span></th>
 									</tr>
 									<tr ng-show="mainList.length==0">
-										<td style="text-align: center" colspan="{{productMapper.length}}">No Data
-											available.</td>
+										<td style="text-align: center"
+											colspan="{{productMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in mainList">
 										<td>{{obj.ftpCategory}}</td>
@@ -266,7 +267,7 @@
 										<td>{{obj.astLiabClas}}</td>
 										<td>{{obj.coreNonCore}}</td>
 										<td>{{obj.corePrnt}}</td>
-										<td>{{obj.version}}</td>										
+										<td>{{obj.version}}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -275,26 +276,25 @@
 				</div>
 			</div>
 
-			<div ng-if="fileType=='PC'"class="main-content">
+			<div ng-if="fileType=='PC'" class="main-content">
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<strong>Uploaded Content</strong>
 						</div>
-						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
-							<table width="100%" class="table table-bordered table-striped" border="0"
-								cellspacing="0" cellpadding="0">
+						<div class="panel-body"
+							style="overflow-x: scroll; overflow-y: scroll">
+							<table width="100%" class="table table-bordered table-striped"
+								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-										<th ng-repeat="cHead in policyMapper"
-											><span
-											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
-												")}}</span><br>
-										<span>{{item2.join(" ")}}</span></th>
+										<th ng-repeat="cHead in policyMapper"><span></span>
+											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
+											<span>{{item2.join(" ")}}</span></th>
 									</tr>
 									<tr ng-show="tempList.length==0">
-										<td style="text-align: center" colspan="{{policyMapper.length}}">No Data
-											available.</td>
+										<td style="text-align: center"
+											colspan="{{policyMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in tempList">
 										<td>{{obj.ftpCategory}}</td>
@@ -310,13 +310,13 @@
 										<td>{{obj.subdivisionCodeIn}}</td>
 										<td>{{obj.subdivisionCodeNotIn}}</td>
 										<td>{{obj.fixedLength}}</td>
-										
+
 										<td>{{obj.maturityDate}}</td>
 										<td>{{obj.baseTenor}}</td>
 										<td>{{obj.marginTenor}}</td>
 										<td>{{obj.applicableCurve}}</td>
 										<td>{{obj.prePost}}</td>
-										
+
 										<td>{{obj.finalFtpCategory}}</td>
 										<td>{{obj.uploadedDate}}</td>
 										<td>{{obj.bankCode.bankCode}}</td>
@@ -333,20 +333,19 @@
 						<div class="panel-heading">
 							<strong>Existing Content</strong>
 						</div>
-						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
-							<table width="100%" class="table table-bordered table-striped" border="0"
-								cellspacing="0" cellpadding="0">
+						<div class="panel-body"
+							style="overflow-x: scroll; overflow-y: scroll">
+							<table width="100%" class="table table-bordered table-striped"
+								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-										<th ng-repeat="cHead in policyMapper"
-											><span
-											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
-												")}}</span><br>
-										<span>{{item2.join(" ")}}</span></th>
+										<th ng-repeat="cHead in policyMapper"><span></span>
+											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
+											<span>{{item2.join(" ")}}</span></th>
 									</tr>
 									<tr ng-show="mainList.length==0">
-										<td style="text-align: center" colspan="{{policyMapper.length}}">No Data
-											available.</td>
+										<td style="text-align: center"
+											colspan="{{policyMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in mainList">
 										<td>{{obj.ftpCategory}}</td>
@@ -362,17 +361,17 @@
 										<td>{{obj.subdivisionCodeIn}}</td>
 										<td>{{obj.subdivisionCodeNotIn}}</td>
 										<td>{{obj.fixedLength}}</td>
-										
+
 										<td>{{obj.maturityDate}}</td>
 										<td>{{obj.baseTenor}}</td>
 										<td>{{obj.marginTenor}}</td>
 										<td>{{obj.applicableCurve}}</td>
 										<td>{{obj.prePost}}</td>
-										
+
 										<td>{{obj.finalFtpCategory}}</td>
 										<td>{{obj.uploadedDate}}</td>
 										<td>{{obj.bankCode.bankCode}}</td>
-										<td>{{obj.version}}</td>										
+										<td>{{obj.version}}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -380,27 +379,26 @@
 					</div>
 				</div>
 			</div>
-			
-			<div ng-if="fileType=='DC'"class="main-content">
+
+			<div ng-if="fileType=='DC'" class="main-content">
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<strong>Uploaded Content</strong>
 						</div>
-						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
-							<table width="100%" class="table table-bordered table-striped" border="0"
-								cellspacing="0" cellpadding="0">
+						<div class="panel-body"
+							style="overflow-x: scroll; overflow-y: scroll">
+							<table width="100%" class="table table-bordered table-striped"
+								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-										<th ng-repeat="cHead in divisionMapper"
-											><span
-											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
-												")}}</span><br>
-										<span>{{item2.join(" ")}}</span></th>
+										<th ng-repeat="cHead in divisionMapper"><span></span>
+											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
+											<span>{{item2.join(" ")}}</span></th>
 									</tr>
 									<tr ng-show="tempList.length==0">
-										<td style="text-align: center" colspan="divisionMapper.length}}">No Data
-											available.</td>
+										<td style="text-align: center"
+											colspan="divisionMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in tempList">
 										<td>{{obj.glSubHeadCode}}</td>
@@ -410,7 +408,7 @@
 										<td>{{obj.divisionDesc}}</td>
 										<td>{{obj.officer}}</td>
 										<td>{{obj.subDivision}}</td>
-										
+
 										<td>{{obj.division}}</td>
 										<td>{{obj.finalDivisionDesc}}</td>
 										<td>{{obj.uploadedDate}}</td>
@@ -428,20 +426,19 @@
 						<div class="panel-heading">
 							<strong>Existing Content</strong>
 						</div>
-						<div class="panel-body" style="overflow-x:scroll;overflow-y:scroll">
-							<table width="100%" class="table table-bordered table-striped" border="0"
-								cellspacing="0" cellpadding="0">
+						<div class="panel-body"
+							style="overflow-x: scroll; overflow-y: scroll">
+							<table width="100%" class="table table-bordered table-striped"
+								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
-										<th ng-repeat="cHead in divisionMapper"
-											><span
-											></span> {{getSplitWord(cHead)}}<span>{{item1.join("
-												")}}</span><br>
-										<span>{{item2.join(" ")}}</span></th>
+										<th ng-repeat="cHead in divisionMapper"><span></span>
+											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
+											<span>{{item2.join(" ")}}</span></th>
 									</tr>
 									<tr ng-show="mainList.length==0">
-										<td style="text-align: center" colspan="{{divisionMapper.length}}">No Data
-											available.</td>
+										<td style="text-align: center"
+											colspan="{{divisionMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in mainList">
 										<td>{{obj.glSubHeadCode}}</td>
@@ -451,12 +448,12 @@
 										<td>{{obj.divisionDesc}}</td>
 										<td>{{obj.officer}}</td>
 										<td>{{obj.subDivision}}</td>
-										
+
 										<td>{{obj.division}}</td>
 										<td>{{obj.finalDivisionDesc}}</td>
 										<td>{{obj.uploadedDate}}</td>
 										<td>{{obj.bankCode.bankCode}}</td>
-										<td>{{obj.version}}</td>										
+										<td>{{obj.version}}</td>
 									</tr>
 								</tbody>
 							</table>
@@ -464,7 +461,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 		</div>
 	</div>
 </div>

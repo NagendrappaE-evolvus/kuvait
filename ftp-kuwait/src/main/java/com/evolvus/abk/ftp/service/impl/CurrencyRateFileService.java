@@ -86,30 +86,38 @@ public class CurrencyRateFileService implements RateService {
 						curRates.setCurrency(datatypeSheet.getSheetName());
 
 						curRates.setBusinessCloseDate(sqlDate);
-						if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue() != null)
+						if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue() != null) {
 							curRates.setTenor(cell.getStringCellValue().trim());
-						else
+						}
+						else {
 							curRates.setTenor("");
+						}
 						curRates.setDaysFrom(Double.valueOf(RateConstants.RATE_HEADERS.get(temp).get("from")));
 						curRates.setDaysTo(Double.valueOf(RateConstants.RATE_HEADERS.get(temp).get("to")));
 
 						cell = currentRow.getCell(2);
-						if (cell.getCellTypeEnum() == CellType.NUMERIC)
+						if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 							curRates.setBase(BigDecimal.valueOf(cell.getNumericCellValue()));
-						else
+						}
+						else {
 							curRates.setBase(BigDecimal.ZERO);
+						}
 
 						cell = currentRow.getCell(3);
-						if (cell.getCellTypeEnum() == CellType.NUMERIC)
+						if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 							curRates.setMargin(BigDecimal.valueOf(cell.getNumericCellValue()));
-						else
+						}
+						else {
 							curRates.setMargin(BigDecimal.ZERO);
+						}
 
 						cell = currentRow.getCell(4);
-						if (cell.getCellTypeEnum() == CellType.NUMERIC)
+						if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 							curRates.setNet(BigDecimal.valueOf(cell.getNumericCellValue()));
-						else
+						}
+						else {
 							curRates.setNet(BigDecimal.ZERO);
+						}
 						curRates.setBankCode(user.getEntity());
 						if (overwrite) {
 							curRates.setOverwrittenBy(user.getUsername());
