@@ -86,7 +86,7 @@ public class ProductMapperFileService implements MapperFileService{
 		try {
 			excelFile = new FileInputStream(fileInfo.getUploadedFile());
 			workbook = WorkbookFactory.create(excelFile);
-			Sheet datatypeSheet = workbook.getSheet("Mapping");
+			Sheet datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
 			rowIterator.next();
 

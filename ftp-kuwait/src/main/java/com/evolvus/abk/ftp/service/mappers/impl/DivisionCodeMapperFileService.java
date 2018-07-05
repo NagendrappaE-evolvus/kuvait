@@ -35,11 +35,8 @@ import com.evolvus.abk.ftp.domain.FtpAudit;
 import com.evolvus.abk.ftp.domain.User;
 import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
 import com.evolvus.abk.ftp.domain.mappers.archivals.FTPDivisionCodeMapperArchive;
-import com.evolvus.abk.ftp.domain.mappers.archivals.FTPGrandMapperArchive;
 import com.evolvus.abk.ftp.domain.mappers.main.FTPDivisionCodeMapper;
-import com.evolvus.abk.ftp.domain.mappers.main.FTPGrandMapper;
 import com.evolvus.abk.ftp.domain.mappers.temp.FTPDivisionCodeMapperTemp;
-import com.evolvus.abk.ftp.domain.mappers.temp.FTPGrandMapperTemp;
 import com.evolvus.abk.ftp.repository.mappers.main.DivisionCodeMapperRepository;
 import com.evolvus.abk.ftp.repository.mappers.main.archivals.DivisionCodeMapperArchiveRepository;
 import com.evolvus.abk.ftp.repository.mappers.temp.DivisionCodeMapperTempRepository;
@@ -91,7 +88,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 		try {
 			excelFile = new FileInputStream(fileInfo.getUploadedFile());
 			workbook = WorkbookFactory.create(excelFile);
-			datatypeSheet = workbook.getSheet("Mapping");
+			datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
 
 			List<FTPDivisionCodeMapperTemp> mappersList = new ArrayList<>();
