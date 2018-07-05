@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.evolvus</groupId>
 	<artifactId>ftp-kuwait</artifactId>
-	<version>2.1806.01-SNAPSHOT</version>
+	<version>2.1807.02-SNAPSHOT</version>
 	<name>Kuwait-FTP</name>
 	<description>ABK FTP File and parameter upload ui</description>
 
