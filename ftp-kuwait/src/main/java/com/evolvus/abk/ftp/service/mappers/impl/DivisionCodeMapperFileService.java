@@ -54,25 +54,25 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 
 	@Autowired
 	FtpAuditService ftpAuditService;
-	
+
 	@Autowired
 	MapperConversionService mapperConversionService;
-	
+
 	@Autowired
 	MapperVersionService mapperVersionService;
-	
+
 	@Autowired
 	DivisionCodeMapperTempRepository divisionMapperTempRepository;
 
 	@Autowired
 	DivisionCodeMapperRepository divisionMapperMainRepository;
-	
+
 	@Autowired
 	DivisionCodeMapperArchiveRepository divisionMapperArchiveRepository;
-	
+
 	@Override
 	public CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user) {
-		
+
 		User appUser = ftpAuditService.getUserFromPrincipal(user);
 		FileInputStream excelFile = null;
 		Workbook workbook = null;
@@ -83,9 +83,9 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 		audit.setTxnObjectType(FTPDivisionCodeMapperTemp.class.getName());
 		audit.setBankCode(appUser.getEntity());
 		audit.setTxnUser(appUser.getUsername());
-		Row currentRow=null;
-		Sheet datatypeSheet=null;
-		
+		Row currentRow = null;
+		Sheet datatypeSheet = null;
+
 		try {
 			excelFile = new FileInputStream(fileInfo.getUploadedFile());
 			workbook = WorkbookFactory.create(excelFile);
@@ -98,62 +98,80 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 				clearRecords(appUser.getEntity());
 				rowIterator.next();
 				while (rowIterator.hasNext()) {
-					currentRow = rowIterator.next();//currentRow.getLastCellNum()
+					currentRow = rowIterator.next();// currentRow.getLastCellNum()
 					FTPDivisionCodeMapperTemp mapper = null;
 					mapper = new FTPDivisionCodeMapperTemp();
-					
-					if(currentRow.getCell(0)==null)
+
+					if (currentRow.getCell(0) == null) {
 						throw new IllegalArgumentException();
-					else if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
+					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
 						mapper.setGlSubHeadCode(currentRow.getCell(0).getStringCellValue().trim());
 					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setGlSubHeadCode((String.valueOf((int)currentRow.getCell(0).getNumericCellValue())));
+						mapper.setGlSubHeadCode((String.valueOf((int) currentRow.getCell(0).getNumericCellValue())));
 					}
 
-					 if (currentRow.getCell(1).getCellTypeEnum() == CellType.NUMERIC) {
+					if (currentRow.getCell(1) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(1).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setGlshChar((int) currentRow.getCell(1).getNumericCellValue());
 					}
-					
-					if (currentRow.getCell(2).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(2) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(2).getCellTypeEnum() == CellType.STRING) {
 						mapper.setEntityCode(currentRow.getCell(2).getStringCellValue().trim());
 					} else if (currentRow.getCell(2).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setEntityCode((String.valueOf(currentRow.getCell(2).getNumericCellValue())));
 					}
-			
-					if (currentRow.getCell(3).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(3) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(3).getCellTypeEnum() == CellType.STRING) {
 						mapper.setCategory(currentRow.getCell(3).getStringCellValue().trim());
 					} else if (currentRow.getCell(3).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setCategory((String.valueOf(currentRow.getCell(3).getNumericCellValue())));
 					}
-					if (currentRow.getCell(4).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(4) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(4).getCellTypeEnum() == CellType.STRING) {
 						mapper.setDivisionDesc(currentRow.getCell(4).getStringCellValue().trim());
 					} else if (currentRow.getCell(4).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setDivisionDesc((String.valueOf(currentRow.getCell(4).getNumericCellValue())));
 					}
-					if (currentRow.getCell(5).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(5) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(5).getCellTypeEnum() == CellType.STRING) {
 						mapper.setOfficer(currentRow.getCell(5).getStringCellValue().trim());
 					} else if (currentRow.getCell(5).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setOfficer((String.valueOf(currentRow.getCell(5).getNumericCellValue())));
 					}
-					
-					if (currentRow.getCell(6).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(6) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(6).getCellTypeEnum() == CellType.STRING) {
 						mapper.setSubDivision(currentRow.getCell(6).getStringCellValue().trim());
 					} else if (currentRow.getCell(6).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setSubDivision((String.valueOf(currentRow.getCell(6).getNumericCellValue())));
 					}
-					
-					if (currentRow.getCell(7).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(7) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(7).getCellTypeEnum() == CellType.STRING) {
 						mapper.setDivision(currentRow.getCell(7).getStringCellValue().trim());
 					} else if (currentRow.getCell(7).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setDivision((String.valueOf(currentRow.getCell(7).getNumericCellValue())));
 					}
-					
-					if (currentRow.getCell(8).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(8) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(8).getCellTypeEnum() == CellType.STRING) {
 						mapper.setFinalDivisionDesc(currentRow.getCell(8).getStringCellValue().trim());
 					} else if (currentRow.getCell(8).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setFinalDivisionDesc((String.valueOf(currentRow.getCell(8).getNumericCellValue())));
 					}
-	
+
 					mapper.setUploadedDate(new Date());
 					mapper.setUploadedBy(user.getName());
 					mapper.setBankCode(appUser.getEntity());
@@ -184,13 +202,13 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
-		}catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			response.setDescription("Unable to parse data, error while processing in sheet "
 					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum());
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
-		}catch (InvalidFormatException e) {
+		} catch (InvalidFormatException e) {
 			response.setDescription("Invalid format of the document");
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
@@ -206,7 +224,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} finally {
-			if (workbook!=null) {
+			if (workbook != null) {
 				try {
 					workbook.close();
 				} catch (IOException e) {
@@ -235,18 +253,18 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 	}
 
 	@Override
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain(FtpEntity ftpEntity) {
-		String bankCode=ftpEntity.getBankCode();
+		String bankCode = ftpEntity.getBankCode();
 		List<String> tempNotInMain = divisionMapperTempRepository.fetchRecordsNotInMain(bankCode);
 		List<String> mainNotInTemp = divisionMapperMainRepository.fetchRecordsNotInTemp(bankCode);
 		Set<String> glSubheadSet = new HashSet<>();
 		glSubheadSet.addAll(tempNotInMain);
 		glSubheadSet.addAll(mainNotInTemp);
 		List<FTPDivisionCodeMapperTemp> tempNotInMainList = divisionMapperTempRepository
-				.findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(glSubheadSet,ftpEntity);
+				.findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(glSubheadSet, ftpEntity);
 		List<FTPDivisionCodeMapper> mainNotInTempList = divisionMapperMainRepository
-				.findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(glSubheadSet,ftpEntity);
+				.findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(glSubheadSet, ftpEntity);
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
@@ -258,36 +276,36 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 	public Long archive(FtpEntity ftpEntity) {
 		Iterable<FTPDivisionCodeMapper> mappersList = divisionMapperMainRepository.findByBankCode(ftpEntity);
 		List<FTPDivisionCodeMapperArchive> archives = new ArrayList<>();
-		mappersList.forEach(mapper-> {
-			//divisionMapperMainRepository.delete(mapper);
+		mappersList.forEach(mapper -> {
+			// divisionMapperMainRepository.delete(mapper);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
 		divisionMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
-		if(!archives.isEmpty()) {
+		if (!archives.isEmpty()) {
 			divisionMapperArchiveRepository.save(archives);
-			if(!archives.isEmpty()) {
+			if (!archives.isEmpty()) {
 				return (long) archives.size();
 			}
 		}
 		return 0L;
 	}
-	
+
 	@Override
 	@Transactional
 	public Long insertToMain(FtpEntity ftpEntity) {
 		Iterable<FTPDivisionCodeMapperTemp> tempMappers = divisionMapperTempRepository.findByBankCode(ftpEntity);
 		List<FTPDivisionCodeMapper> mainMappers = new ArrayList<>();
 		MapperVersion version = mapperVersionService.getMapper("DC");
-		
+
 		Long nextMainVersion = version.getCurrentVersion() + 1;
-		String mainVersion = version.getVersionChars()+nextMainVersion;
+		String mainVersion = version.getVersionChars() + nextMainVersion;
 		tempMappers.forEach(mapper -> {
-			//divisionMapperTempRepository.delete(mapper);
+			// divisionMapperTempRepository.delete(mapper);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});
 		divisionMapperTempRepository.deleteInBulkByBankCode(ftpEntity);
-		if(!mainMappers.isEmpty()) {
+		if (!mainMappers.isEmpty()) {
 			divisionMapperMainRepository.save(mainMappers);
 			mapperVersionService.updateMapperVersion("DC", nextMainVersion, version.getCurrentVersion());
 			return (long) mainMappers.size();

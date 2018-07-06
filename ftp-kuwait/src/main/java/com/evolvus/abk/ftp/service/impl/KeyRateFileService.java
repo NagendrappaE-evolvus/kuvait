@@ -44,12 +44,12 @@ public class KeyRateFileService implements RateService {
 
 	@Autowired
 	FileUploadService fileUploadService;
-	
+
 	@Autowired
 	KeyRateRepository keyRateRepository;
 
 	@Override
-	public CustomResponse uploadRates(String fileType, FileInfo fileInfo, String date, User user, Boolean overwrite){
+	public CustomResponse uploadRates(String fileType, FileInfo fileInfo, String date, User user, Boolean overwrite) {
 
 		CustomResponse response = new CustomResponse();
 		FileInputStream excelFile = null;
@@ -82,19 +82,25 @@ public class KeyRateFileService implements RateService {
 					keyrate.setBusinessCloseDate(sqlDate);
 					keyrate.setBankCode(user.getEntity());
 					Cell currentCell = currentRow.getCell(0);
-					if (currentCell.getCellType() == Cell.CELL_TYPE_STRING)
+
+					if (currentCell == null) {
+						throw new IllegalArgumentException();
+					} else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
 						keyrate.setTenor(currentCell.getStringCellValue());
-					else
+					} else {
 						throw new IllegalStateException();
-					
-					currentCell = currentRow.getCell(1);
-					if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-						keyrate.setKeyRate(new BigDecimal(dataFormatter.formatCellValue(currentCell)));
 					}
-					else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING)
+
+					currentCell = currentRow.getCell(1);
+					if (currentCell == null) {
+						throw new IllegalArgumentException();
+					} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+						keyrate.setKeyRate(new BigDecimal(dataFormatter.formatCellValue(currentCell)));
+					} else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING)
 						keyrate.setKeyRate(BigDecimal.valueOf(Double.parseDouble(currentCell.getStringCellValue())));
-					else
+					else {
 						throw new IllegalStateException();
+					}
 
 					keyrate.setCurrency(KeyRateConstants.KEY_RATES_HEADERS.get(temp).get("ccy"));
 					keyrate.setUploadedBy(user.getUsername());
@@ -113,8 +119,14 @@ public class KeyRateFileService implements RateService {
 				response.setStatus(Constants.STATUS_NO_DATA);
 			}
 
-		}catch (EncryptedDocumentException e) {
+		} catch (EncryptedDocumentException e) {
 			response.setDescription("Unable to read Encrypted document");
+			response.setStatus(Constants.STATUS_FAIL);
+			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
+			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
+		} catch (IllegalArgumentException e) {
+			response.setDescription("Unable to parse data, error while processing in sheet "
+					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum());
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -145,7 +157,7 @@ public class KeyRateFileService implements RateService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} finally {
-			if (workbook!=null) {
+			if (workbook != null) {
 				try {
 					workbook.close();
 				} catch (IOException e) {
@@ -157,11 +169,11 @@ public class KeyRateFileService implements RateService {
 			fileUploadService.deleteExistingRecords(fileType, date, user);
 		}
 
-		 audit.setMessage(response.getDescription());
-		 audit.setTxnStatus(response.getStatus());
-		 audit.setTxnEndTime(ftpAuditService.getCurrentTime());
-		 audit.setPostTxnVal(ftpAuditService.objectToJson(fileInfo));
-		 ftpAuditService.logAudit(audit);
+		audit.setMessage(response.getDescription());
+		audit.setTxnStatus(response.getStatus());
+		audit.setTxnEndTime(ftpAuditService.getCurrentTime());
+		audit.setPostTxnVal(ftpAuditService.objectToJson(fileInfo));
+		ftpAuditService.logAudit(audit);
 
 		LOG.debug("End key uploadRates");
 		return response;

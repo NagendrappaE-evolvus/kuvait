@@ -48,34 +48,36 @@ import com.evolvus.abk.ftp.service.impl.MapperConversionService;
 
 @Service
 @Qualifier(value = "ProductMapperFileService")
-public class ProductMapperFileService implements MapperFileService{
-	
+public class ProductMapperFileService implements MapperFileService {
+
 	private static final Logger LOG = LoggerFactory.getLogger(ProductMapperFileService.class);
 
 	@Autowired
 	FtpAuditService ftpAuditService;
-	
+
 	@Autowired
 	ProductMapperTempRepository productMapperTempRepository;
 
 	@Autowired
 	ProductMapperMainRepository productMapperMainRepository;
-	
+
 	@Autowired
 	ProductMapperArchiveRepository productMapperArchiveRepository;
-	
+
 	@Autowired
 	MapperConversionService mapperConversionService;
-	
+
 	@Autowired
 	MapperVersionService mapperVersionService;
-	
+
 	@Override
 	public CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user) {
-		
+
 		User appUser = ftpAuditService.getUserFromPrincipal(user);
 		FileInputStream excelFile = null;
 		Workbook workbook = null;
+		Sheet datatypeSheet = null;
+		Row currentRow = null;
 		CustomResponse response = new CustomResponse();
 		FtpAudit audit = new FtpAudit();
 		audit.setTxnStartTime(ftpAuditService.getCurrentTime());
@@ -87,7 +89,7 @@ public class ProductMapperFileService implements MapperFileService{
 		try {
 			excelFile = new FileInputStream(fileInfo.getUploadedFile());
 			workbook = WorkbookFactory.create(excelFile);
-			Sheet datatypeSheet = workbook.getSheetAt(0);
+			datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
 			rowIterator.next();
 
@@ -96,43 +98,58 @@ public class ProductMapperFileService implements MapperFileService{
 			if (rowIterator.hasNext()) {
 				clearRecords(appUser.getEntity());
 				while (rowIterator.hasNext()) {
-					Row currentRow = rowIterator.next();
+					currentRow = rowIterator.next();
 					FTPProductMapperTemp mapper = null;
 					mapper = new FTPProductMapperTemp();
-					if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(0) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
 						mapper.setFtpCategory(currentRow.getCell(0).getStringCellValue().trim());
 					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setFtpCategory((String.valueOf(currentRow.getCell(0).getNumericCellValue())));
 					}
 
-					if (currentRow.getCell(1).getCellTypeEnum() == CellType.STRING) {
+					if (currentRow.getCell(1) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(1).getCellTypeEnum() == CellType.STRING) {
 						mapper.setProdCode(currentRow.getCell(1).getStringCellValue().trim());
 					} else if (currentRow.getCell(1).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setProdCode((String.valueOf(currentRow.getCell(1).getNumericCellValue())));
 					}
-					
-					if (currentRow.getCell(2).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(2) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(2).getCellTypeEnum() == CellType.STRING) {
 						mapper.setProdDesc(currentRow.getCell(2).getStringCellValue().trim());
 					} else if (currentRow.getCell(2).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setProdDesc((String.valueOf(currentRow.getCell(2).getNumericCellValue())));
 					}
-			
-					if (currentRow.getCell(3).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(3) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(3).getCellTypeEnum() == CellType.STRING) {
 						mapper.setAstLiabClas(currentRow.getCell(3).getStringCellValue().trim());
 					} else if (currentRow.getCell(3).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setAstLiabClas((String.valueOf(currentRow.getCell(3).getNumericCellValue())));
 					}
-					if (currentRow.getCell(4).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(4) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(4).getCellTypeEnum() == CellType.STRING) {
 						mapper.setCoreNonCore(currentRow.getCell(4).getStringCellValue().trim());
 					} else if (currentRow.getCell(4).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setCoreNonCore((String.valueOf(currentRow.getCell(4).getNumericCellValue())));
 					}
-					if (currentRow.getCell(5).getCellTypeEnum() == CellType.STRING) {
+
+					if (currentRow.getCell(5) == null) {
+						throw new IllegalArgumentException();
+					} else if (currentRow.getCell(5).getCellTypeEnum() == CellType.STRING) {
 						mapper.setCorePrnt(currentRow.getCell(5).getStringCellValue().trim());
 					} else if (currentRow.getCell(5).getCellTypeEnum() == CellType.NUMERIC) {
 						mapper.setCorePrnt((String.valueOf(currentRow.getCell(5).getNumericCellValue())));
 					}
-	
+
 					mapper.setUploadedDate(new Date());
 					mapper.setUploadedBy(user.getName());
 					mapper.setBankCode(appUser.getEntity());
@@ -163,6 +180,12 @@ public class ProductMapperFileService implements MapperFileService{
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
+		} catch (IllegalArgumentException e) {
+			response.setDescription("Unable to parse data, error while processing in sheet "
+					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum());
+			response.setStatus(Constants.STATUS_FAIL);
+			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
+			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (InvalidFormatException e) {
 			response.setDescription("Invalid format of the document");
 			response.setStatus(Constants.STATUS_FAIL);
@@ -179,7 +202,7 @@ public class ProductMapperFileService implements MapperFileService{
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} finally {
-			if (workbook!=null) {
+			if (workbook != null) {
 				try {
 					workbook.close();
 				} catch (IOException e) {
@@ -205,13 +228,13 @@ public class ProductMapperFileService implements MapperFileService{
 	@Override
 	@Transactional
 	public void clearRecords(FtpEntity ftpEntity) {
-		productMapperTempRepository.deleteInBulkByBankCode(ftpEntity);		
+		productMapperTempRepository.deleteInBulkByBankCode(ftpEntity);
 	}
 
 	@Override
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain(FtpEntity ftpEntity) {
-		
+
 		String bankCode = ftpEntity.getBankCode();
 		List<String> tempNotInMain = productMapperTempRepository.fetchRecordsNotInMain(bankCode);
 		List<String> mainNotInTemp = productMapperMainRepository.fetchRecordsNotInTemp(bankCode);
@@ -219,9 +242,9 @@ public class ProductMapperFileService implements MapperFileService{
 		ftpCategory.addAll(tempNotInMain);
 		ftpCategory.addAll(mainNotInTemp);
 		List<FTPProductMapperTemp> tempNotInMainList = productMapperTempRepository
-				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategory,ftpEntity);
+				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategory, ftpEntity);
 		List<FTPProductMapper> mainNotInTempList = productMapperMainRepository
-				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategory,ftpEntity);
+				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategory, ftpEntity);
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
@@ -233,14 +256,14 @@ public class ProductMapperFileService implements MapperFileService{
 	public Long archive(FtpEntity ftpEntity) {
 		Iterable<FTPProductMapper> mappersList = productMapperMainRepository.findByBankCode(ftpEntity);
 		List<FTPProductMapperArchive> archives = new ArrayList<>();
-		mappersList.forEach(mapper-> {
-			//productMapperMainRepository.delete(mapper);
+		mappersList.forEach(mapper -> {
+			// productMapperMainRepository.delete(mapper);
 			archives.add(mapperConversionService.mainToArchive(mapper));
 		});
 		productMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
-		if(!archives.isEmpty()) {
+		if (!archives.isEmpty()) {
 			productMapperArchiveRepository.save(archives);
-			if(!archives.isEmpty()) {
+			if (!archives.isEmpty()) {
 				return (long) archives.size();
 			}
 		}
@@ -253,16 +276,16 @@ public class ProductMapperFileService implements MapperFileService{
 		Iterable<FTPProductMapperTemp> tempMappers = productMapperTempRepository.findByBankCode(ftpEntity);
 		List<FTPProductMapper> mainMappers = new ArrayList<>();
 		MapperVersion version = mapperVersionService.getMapper("PD");
-		
+
 		Long nextMainVersion = version.getCurrentVersion() + 1;
-		String mainVersion = version.getVersionChars()+nextMainVersion;
+		String mainVersion = version.getVersionChars() + nextMainVersion;
 		tempMappers.forEach(mapper -> {
-			//productMapperTempRepository.delete(mapper);
+			// productMapperTempRepository.delete(mapper);
 			mapper.setVersion(mainVersion);
 			mainMappers.add(mapperConversionService.tempToMain(mapper));
 		});
 		clearRecords(ftpEntity);
-		if(!mainMappers.isEmpty()) {
+		if (!mainMappers.isEmpty()) {
 			productMapperMainRepository.save(mainMappers);
 			mapperVersionService.updateMapperVersion("PD", nextMainVersion, version.getCurrentVersion());
 			return (long) mainMappers.size();

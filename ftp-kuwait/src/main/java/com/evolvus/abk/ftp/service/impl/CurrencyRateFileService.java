@@ -95,28 +95,40 @@ public class CurrencyRateFileService implements RateService {
 						curRates.setCurrency(datatypeSheet.getSheetName());
 
 						curRates.setBusinessCloseDate(sqlDate);
-						if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue() != null) {
+						if(cell==null) {
+							throw new IllegalArgumentException();
+						}
+						else if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue() != null) {
 							curRates.setTenor(cell.getStringCellValue().trim());
 						} else {
 							curRates.setTenor("");
 						}
 
 						cell = currentRow.getCell(2);
-						if (cell.getCellTypeEnum() == CellType.NUMERIC) {
+						if(cell==null) {
+							throw new IllegalArgumentException();
+						}
+						else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 							curRates.setBase(BigDecimal.valueOf(cell.getNumericCellValue()));
 						} else {
 							curRates.setBase(BigDecimal.ZERO);
 						}
 
 						cell = currentRow.getCell(3);
-						if (cell.getCellTypeEnum() == CellType.NUMERIC) {
+						if(cell==null) {
+							throw new IllegalArgumentException();
+						}
+						else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 							curRates.setMargin(BigDecimal.valueOf(cell.getNumericCellValue()));
 						} else {
 							curRates.setMargin(BigDecimal.ZERO);
 						}
 
 						cell = currentRow.getCell(4);
-						if (cell.getCellTypeEnum() == CellType.NUMERIC) {
+						if(cell==null) {
+							throw new IllegalArgumentException();
+						}
+						else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
 							curRates.setNet(BigDecimal.valueOf(cell.getNumericCellValue()));
 						} else {
 							curRates.setNet(BigDecimal.ZERO);
@@ -148,9 +160,15 @@ public class CurrencyRateFileService implements RateService {
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
-		} catch (IllegalStateException e) {
+		} catch (IllegalArgumentException e) {
 			response.setDescription("Unable to parse data, error while processing in sheet "
 					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum());
+			response.setStatus(Constants.STATUS_FAIL);
+			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
+			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
+		} catch (IllegalStateException e) {
+			response.setDescription("Unable to parse data, error while processing in sheet "
+					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum()+1);
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -193,7 +211,7 @@ public class CurrencyRateFileService implements RateService {
 
 	@Override
 	public Map<String, Integer> getTenorBucketInDays(String tenor) {
-		
+
 		Map<String, Integer> tenorBucket = new HashMap<>();
 		String from = "";
 		String to = "";
@@ -201,7 +219,7 @@ public class CurrencyRateFileService implements RateService {
 		if (tenor != null && !tenor.trim().isEmpty()) {
 			String lowerCaseTenor = tenor.toLowerCase();
 			rawArray = this.getSplittedStringArray(tenor, Constants.NON_NUMERIC_PATTERN);
-			
+
 			if (lowerCaseTenor.contains(Constants.STR_ABOVE.toLowerCase())) {
 				if (rawArray.length == 1) {
 					from = rawArray[0];
@@ -218,14 +236,14 @@ public class CurrencyRateFileService implements RateService {
 				}
 			}
 		}
-		
-		if(!from.isEmpty()) {
+
+		if (!from.isEmpty()) {
 			tenorBucket.put(Constants.FROM, Integer.parseInt(from));
 		} else {
 			tenorBucket.put(Constants.FROM, 0);
 		}
-		
-		if(!to.isEmpty()) {
+
+		if (!to.isEmpty()) {
 			tenorBucket.put(Constants.TO, Integer.parseInt(to));
 		} else {
 			tenorBucket.put(Constants.TO, 0);
