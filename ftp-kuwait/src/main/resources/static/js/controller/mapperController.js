@@ -39,8 +39,20 @@ app.controller("MapperController", [
 							if (response.status === "OK") {
 								$scope.tempList = response.data.TEMP;
 								$scope.mainList = response.data.MAIN;
+								if($scope.fileType==='CT') {
+									$scope.findInGrandMapperMain();
+									$scope.findInGrandMapperTemp();
+								} else if ($scope.fileType==='PD') {
+									$scope.findInProductMapperMain();
+									$scope.findInProductMapperTemp();
+								} else if ($scope.fileType==='PC') {
+									$scope.findInPolicyMapperMain();
+									$scope.findInPolicyMapperTemp();
+								} else if ($scope.fileType==='DC') {
+									$scope.findInDivisionMapperMain();
+									$scope.findInDivisionMapperTemp();
+								}
 							}
-
 						}, function(errorResponse) {
 							$scope.message = "Error occurred.";
 						});
@@ -49,7 +61,6 @@ app.controller("MapperController", [
 			$scope.fetchFileTypes= function() {
 				MapperService.getAllMappers()
 				.then(function(response) {
-					console.log(response);
 					$scope.mapperFiles = response.data;
 				}, function(errorResponse) {
 					$scope.message = "Error occurred.";
@@ -63,7 +74,6 @@ app.controller("MapperController", [
 				}
 				MapperService.processMappers($scope.fileType)
 				.then(function(response) {
-					
 					if (response.status === "OK") {
 						$scope.resetFileForm();
 					}
@@ -136,6 +146,243 @@ app.controller("MapperController", [
 	          for(var i = 2; i <= res.length; i++){
 	              $scope.item2.push(res[i]);
 	          }	          
+	      };
+	      
+	      $scope.findInGrandMapperMain = function() {
+	    	 var changed = true;
+	    	 var index = 0;
+	    	 angular.forEach($scope.tempList,function(obj) {
+	    		 changed = true;
+	    	  angular.forEach($scope.mainList,function(val) {
+	    		  if(obj.glSubheadCode == val.glSubheadCode &&  
+	    				  	obj.glSubheadDesc == val.glSubheadDesc &&
+							obj.drFtpCat == val.drFtpCat &&
+							obj.crFtpCat == val.crFtpCat &&
+							obj.userSubclassCodeIn == val.userSubclassCodeIn &&
+
+							obj.userSubclassCodeNotIn == val.userSubclassCodeNotIn &&
+							obj.bacidIn == val.bacidIn &&
+							obj.bacidNotIn == val.bacidNotIn &&
+
+							obj.divisionCodeIn == val.divisionCodeIn &&
+							obj.divisionCodeNotIn == val.divisionCodeNotIn &&
+
+							obj.custInLength == val.custInLength && 
+							obj.custTypeIn == val.custTypeIn &&
+							obj.custNotInLength == val.custNotInLength &&
+
+							obj.custTypeNotIn == val.custTypeNotIn &&
+							obj.subDivisionCodeIn == val.subDivisionCodeIn &&
+ 							obj.subDivisionCodeNotIn == val.subDivisionCodeNotIn &&
+
+							obj.tradingBookNameIn == val.tradingBookNameIn &&
+							obj.tradingBookNameNotIn == val.tradingBookNameNotIn &&
+							obj.instrumentClassIn == val.instrumentClassIn &&
+
+							obj.instrumentClassNotIn == val.instrumentClassNotIn &&
+							obj.groupByLogic == val.groupByLogic &&
+							obj.count == val.count) {
+	    			 changed=false;
+	    		  }
+	    	  });
+	    	  $scope.tempList[index].changed=changed;
+	    	  index = index + 1;
+	    	 });
+	      };
+	      
+	      $scope.findInGrandMapperTemp = function() {
+	    	  var changed = true;
+	    	  var index = 0;
+	    	  angular.forEach($scope.mainList,function(val) {
+	    		  changed = true;
+	    	  angular.forEach($scope.tempList,function(obj) {
+	    		  if(obj.glSubheadCode == val.glSubheadCode &&  
+	    				  obj.glSubheadDesc == val.glSubheadDesc &&
+							obj.drFtpCat == val.drFtpCat &&
+							obj.crFtpCat == val.crFtpCat &&
+							obj.userSubclassCodeIn == val.userSubclassCodeIn &&
+
+							obj.userSubclassCodeNotIn == val.userSubclassCodeNotIn &&
+							obj.bacidIn == val.bacidIn &&
+							obj.bacidNotIn == val.bacidNotIn &&
+
+							obj.divisionCodeIn == val.divisionCodeIn &&
+							obj.divisionCodeNotIn == val.divisionCodeNotIn &&
+
+							obj.custInLength == val.custInLength && 
+							obj.custTypeIn == val.custTypeIn &&
+							obj.custNotInLength == val.custNotInLength &&
+
+							obj.custTypeNotIn == val.custTypeNotIn &&
+							obj.subDivisionCodeIn == val.subDivisionCodeIn &&
+ 							obj.subDivisionCodeNotIn == val.subDivisionCodeNotIn &&
+
+							obj.tradingBookNameIn == val.tradingBookNameIn &&
+							obj.tradingBookNameNotIn == val.tradingBookNameNotIn &&
+							obj.instrumentClassIn == val.instrumentClassIn &&
+
+							obj.instrumentClassNotIn == val.instrumentClassNotIn &&
+							obj.groupByLogic == val.groupByLogic &&
+							obj.count == val.count) {
+	    			  changed=false;
+	    			
+	    		  }
+	    	  });
+	    	  $scope.mainList[index].changed=changed;
+	    	  index = index + 1;
+	    	  });
+	      };
+	      
+	      $scope.findInPolicyMapperMain = function() {
+	    	  var changed = true;
+		    	 var index = 0;
+		    	 angular.forEach($scope.tempList,function(obj) {
+		    		 changed = true;
+		    	  angular.forEach($scope.mainList,function(val) {
+		    		  if(obj.ftpCategory == val.ftpCategory && 
+								obj.ccyCodeIn == val.ccyCodeIn &&
+								obj.ccyCodeNotIn == val.ccyCodeNotIn &&
+								obj.divisionCodeIn == val.divisionCodeIn &&
+								obj.divisionCodeNotIn == val.divisionCodeNotIn &&
+								obj.origDivisionCodeIn == val.origDivisionCodeIn &&
+								obj.origDivisionCodeNotIn == val.origDivisionCodeNotIn &&
+								obj.custTypeIn == val.custTypeIn &&
+								obj.custTypeNotIn == val.custTypeNotIn &&
+								obj.subdivisionCodeIn == val.subdivisionCodeIn &&
+								obj.subdivisionCodeNotIn == val.subdivisionCodeNotIn &&
+								obj.fixedLength == val.fixedLength &&
+								obj.maturityDate == val.maturityDate &&
+								obj.baseTenor == val.baseTenor &&
+								obj.marginTenor == val.marginTenor &&
+								obj.applicableCurve == val.applicableCurve &&
+								obj.prePost == val.prePost &&
+								obj.finalFtpCategory == val.finalFtpCategory) {
+		    			 changed=false;
+		    		  }
+		    	  });
+		    	  $scope.tempList[index].changed=changed;
+		    	  index = index + 1;
+		    	 });
+	      };
+	      
+	      $scope.findInPolicyMapperTemp = function() {
+	    	  var changed = true;
+	    	  var index = 0;
+	    	  angular.forEach($scope.mainList,function(val) {
+	    		  changed = true;
+	    	  angular.forEach($scope.tempList,function(obj) {
+	    		  if(obj.ftpCategory == val.ftpCategory && 
+							obj.ccyCodeIn == val.ccyCodeIn &&
+							obj.ccyCodeNotIn == val.ccyCodeNotIn &&
+							obj.divisionCodeIn == val.divisionCodeIn &&
+							obj.divisionCodeNotIn == val.divisionCodeNotIn &&
+							obj.origDivisionCodeIn == val.origDivisionCodeIn &&
+							obj.origDivisionCodeNotIn == val.origDivisionCodeNotIn &&
+							obj.custTypeIn == val.custTypeIn &&
+							obj.custTypeNotIn == val.custTypeNotIn &&
+							obj.subdivisionCodeIn == val.subdivisionCodeIn &&
+							obj.subdivisionCodeNotIn == val.subdivisionCodeNotIn &&
+							obj.fixedLength == val.fixedLength &&
+							obj.maturityDate == val.maturityDate &&
+							obj.baseTenor == val.baseTenor &&
+							obj.marginTenor == val.marginTenor &&
+							obj.applicableCurve == val.applicableCurve &&
+							obj.prePost == val.prePost &&
+							obj.finalFtpCategory == val.finalFtpCategory) {
+	    			  changed=false;
+	    		  }
+	    	  });
+	    	  $scope.mainList[index].changed=changed;
+	    	  index = index + 1;
+	    	  });
+	      };
+	      
+	      $scope.findInDivisionMapperMain = function() {
+	    	  var changed = true;
+		    	 var index = 0;
+		    	 angular.forEach($scope.tempList,function(obj) {
+		    		 changed = true;
+		    	  angular.forEach($scope.mainList,function(val) {
+		    		  if(obj.glSubHeadCode == val.glSubHeadCode && 
+								obj.glshChar == val.glshChar && 
+								obj.entityCode == val.entityCode &&
+								obj.category == val.category &&
+								obj.divisionDesc == val.divisionDesc &&
+								obj.officer == val.officer &&
+								obj.subDivision == val.subDivision &&
+								obj.division == val.division &&
+								obj.finalDivisionDesc == val.finalDivisionDesc
+		    				  ) {
+		    			 changed=false;
+		    		  }
+		    	  });
+		    	  $scope.tempList[index].changed=changed;
+		    	  index = index + 1;
+		    	 });
+	      };
+	      
+	      $scope.findInDivisionMapperTemp = function() {
+	    	  var changed = true;
+	    	  var index = 0;
+	    	  angular.forEach($scope.mainList,function(val) {
+	    		  changed = true;
+	    	  angular.forEach($scope.tempList,function(obj) {
+	    		  if(obj.glSubHeadCode == val.glSubHeadCode && 
+							obj.glshChar == val.glshChar && 
+							obj.entityCode == val.entityCode &&
+							obj.category == val.category &&
+							obj.divisionDesc == val.divisionDesc &&
+							obj.officer == val.officer &&
+							obj.subDivision == val.subDivision &&
+							obj.division == val.division &&
+							obj.finalDivisionDesc == val.finalDivisionDesc) {
+	    			  changed=false;
+	    			
+	    		  }
+	    	  });
+	    	  $scope.mainList[index].changed=changed;
+	    	  index = index + 1;
+	    	  });
+	      };
+	      
+	      $scope.findInProductMapperMain = function() {
+	    	  var changed = true;
+		    	 var index = 0;
+		    	 angular.forEach($scope.tempList,function(obj) {
+		    		 changed = true;
+		    	  angular.forEach($scope.mainList,function(val) {
+		    		  if(obj.ftpCategory == val.ftpCategory && 
+								obj.prodCode == val.prodCode && 
+								obj.prodDesc == val.prodDesc &&
+								obj.astLiabClas == val.astLiabClas && 
+								obj.coreNonCore == val.coreNonCore &&
+								obj.corePrnt == val.corePrnt) {
+		    			 changed=false;
+		    		  }
+		    	  });
+		    	  $scope.tempList[index].changed=changed;
+		    	  index = index + 1;
+		    	 });
+	      };
+	      
+	      $scope.findInProductMapperTemp = function() {
+	    	  var changed = true;
+	    	  var index = 0;
+	    	  angular.forEach($scope.mainList,function(val) {
+	    		  changed = true;
+	    	  angular.forEach($scope.tempList,function(obj) {
+	    		  if(obj.ftpCategory == val.ftpCategory && 
+							obj.prodCode == val.prodCode && 
+							obj.prodDesc == val.prodDesc &&
+							obj.astLiabClas == val.astLiabClas && 
+							obj.coreNonCore == val.coreNonCore &&
+							obj.corePrnt == val.corePrnt) {
+	    			  changed=false;
+	    		  }
+	    	  });
+	    	  $scope.mainList[index].changed=changed;
+	    	  index = index + 1;
+	    	  });
 	      };
 			
 

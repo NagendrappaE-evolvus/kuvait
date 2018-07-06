@@ -1651,6 +1651,10 @@ div.panel-heading>strong {
 	color: #4b474b;
 }
 
+.has-changed {
+	background-color:#f1c90859;
+}
+
 .nav-tabs>li, .loginpage>h2 {
 	font-weight: bold;
 }

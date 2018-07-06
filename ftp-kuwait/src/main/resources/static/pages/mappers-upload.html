@@ -99,7 +99,7 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered table-striped"
+							<table width="100%" class="table table-bordered"
 								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
@@ -111,7 +111,7 @@
 										<td style="text-align: center"
 											colspan="{{categoryMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in tempList">
+									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
 										<td>{{obj.glSubheadCode}}</td>
 										<td>{{obj.glSubheadDesc}}</td>
 										<td>{{obj.drFtpCat}}</td>
@@ -155,7 +155,7 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered table-striped"
+							<table width="100%" class="table table-bordered"
 								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
@@ -167,7 +167,7 @@
 										<td style="text-align: center"
 											colspan="{{categoryMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in mainList">
+									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': obj.changed}">
 										<td>{{obj.glSubheadCode}}</td>
 										<td>{{obj.glSubheadDesc}}</td>
 										<td>{{obj.drFtpCat}}</td>
