@@ -91,6 +91,7 @@ app.controller("MapperController", [
 				$scope.tempList = [];
 				$scope.message = "";
 				$scope.applicableDate = "";
+				$scope.uploadForm.applicableDate.$pristine = true;
 			};
 
 			$scope.categoryMapper = [ "GL SUBHEAD CODE", "GL SUBHEAD DESC",

@@ -213,7 +213,7 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered table-striped"
+							<table width="100%" class="table table-bordered"
 								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
@@ -225,7 +225,7 @@
 										<td style="text-align: center"
 											colspan="{{productMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in tempList">
+									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.prodCode}}</td>
 										<td>{{obj.prodDesc}}</td>
@@ -248,7 +248,7 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered table-striped"
+							<table width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
@@ -260,7 +260,7 @@
 										<td style="text-align: center"
 											colspan="{{productMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in mainList">
+									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': (obj.changed)}">
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.prodCode}}</td>
 										<td>{{obj.prodDesc}}</td>
@@ -284,7 +284,7 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered table-striped"
+							<table width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
@@ -296,7 +296,7 @@
 										<td style="text-align: center"
 											colspan="{{policyMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in tempList">
+									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.ccyCodeIn}}</td>
 										<td>{{obj.ccyCodeNotIn}}</td>
@@ -318,7 +318,7 @@
 										<td>{{obj.prePost}}</td>
 
 										<td>{{obj.finalFtpCategory}}</td>
-										<td>{{obj.uploadedDate}}</td>
+										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
 										<td>{{obj.bankCode.bankCode}}</td>
 										<td>{{obj.version}}</td>
 									</tr>
@@ -335,7 +335,7 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered table-striped"
+							<table width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
@@ -347,7 +347,7 @@
 										<td style="text-align: center"
 											colspan="{{policyMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in mainList">
+									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': (obj.changed)}">
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.ccyCodeIn}}</td>
 										<td>{{obj.ccyCodeNotIn}}</td>
@@ -369,7 +369,7 @@
 										<td>{{obj.prePost}}</td>
 
 										<td>{{obj.finalFtpCategory}}</td>
-										<td>{{obj.uploadedDate}}</td>
+										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
 										<td>{{obj.bankCode.bankCode}}</td>
 										<td>{{obj.version}}</td>
 									</tr>
@@ -388,7 +388,7 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered table-striped"
+							<table width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
@@ -400,7 +400,7 @@
 										<td style="text-align: center"
 											colspan="{{divisionMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in tempList">
+									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
 										<td>{{obj.glSubHeadCode}}</td>
 										<td>{{obj.glshChar}}</td>
 										<td>{{obj.entityCode}}</td>
@@ -411,7 +411,7 @@
 
 										<td>{{obj.division}}</td>
 										<td>{{obj.finalDivisionDesc}}</td>
-										<td>{{obj.uploadedDate}}</td>
+										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
 										<td>{{obj.bankCode.bankCode}}</td>
 										<td>{{obj.version}}</td>
 									</tr>
@@ -428,7 +428,7 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered table-striped"
+							<table width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
 								<tbody>
 									<tr>
@@ -440,7 +440,7 @@
 										<td style="text-align: center"
 											colspan="{{divisionMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in mainList">
+									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': (obj.changed)}">
 										<td>{{obj.glSubHeadCode}}</td>
 										<td>{{obj.glshChar}}</td>
 										<td>{{obj.entityCode}}</td>
@@ -451,7 +451,7 @@
 
 										<td>{{obj.division}}</td>
 										<td>{{obj.finalDivisionDesc}}</td>
-										<td>{{obj.uploadedDate}}</td>
+										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
 										<td>{{obj.bankCode.bankCode}}</td>
 										<td>{{obj.version}}</td>
 									</tr>
