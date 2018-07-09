@@ -16,6 +16,7 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -49,6 +50,9 @@ public class CurrencyRateFileService implements RateService {
 
 	@Autowired
 	FileUploadService fileUploadService;
+
+	@Autowired
+	MapperConversionService mapperConversionService;
 
 	@Override
 	public CustomResponse uploadRates(String fileType, FileInfo fileInfo, String date, User user, Boolean overwrite) {
@@ -86,53 +90,28 @@ public class CurrencyRateFileService implements RateService {
 						CurrencyRates curRates = new CurrencyRates();
 
 						Cell cell = currentRow.getCell(0);
+						if(cell==null)
+							continue;
 						String tenorDays = cell.getStringCellValue();
-						Map<String,Integer> tenorDaysMap = this.getTenorBucketInDays(tenorDays);
+						Map<String, Integer> tenorDaysMap = this.getTenorBucketInDays(tenorDays);
 						curRates.setDaysFrom(tenorDaysMap.get(Constants.FROM));
 						curRates.setDaysTo(tenorDaysMap.get(Constants.TO));
 
-						cell = currentRow.getCell(1);
 						curRates.setCurrency(datatypeSheet.getSheetName());
-
 						curRates.setBusinessCloseDate(sqlDate);
-						if(cell==null) {
-							throw new IllegalArgumentException();
-						}
-						else if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue() != null) {
-							curRates.setTenor(cell.getStringCellValue().trim());
-						} else {
-							curRates.setTenor("");
-						}
+
+						cell = currentRow.getCell(1);
+						curRates.setTenor(mapperConversionService.getStringCellValue(cell));
 
 						cell = currentRow.getCell(2);
-						if(cell==null) {
-							throw new IllegalArgumentException();
-						}
-						else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
-							curRates.setBase(BigDecimal.valueOf(cell.getNumericCellValue()));
-						} else {
-							curRates.setBase(BigDecimal.ZERO);
-						}
+						curRates.setBase(mapperConversionService.getBigdecimalValueOfCurrentCell(cell));
 
 						cell = currentRow.getCell(3);
-						if(cell==null) {
-							throw new IllegalArgumentException();
-						}
-						else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
-							curRates.setMargin(BigDecimal.valueOf(cell.getNumericCellValue()));
-						} else {
-							curRates.setMargin(BigDecimal.ZERO);
-						}
+						curRates.setMargin(mapperConversionService.getBigdecimalValueOfCurrentCell(cell));
 
 						cell = currentRow.getCell(4);
-						if(cell==null) {
-							throw new IllegalArgumentException();
-						}
-						else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
-							curRates.setNet(BigDecimal.valueOf(cell.getNumericCellValue()));
-						} else {
-							curRates.setNet(BigDecimal.ZERO);
-						}
+						curRates.setNet(mapperConversionService.getBigdecimalValueOfCurrentCell(cell));
+
 						curRates.setBankCode(user.getEntity());
 						if (overwrite) {
 							curRates.setOverwrittenBy(user.getUsername());
@@ -168,7 +147,7 @@ public class CurrencyRateFileService implements RateService {
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalStateException e) {
 			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum()+1);
+					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum() + 1);
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());

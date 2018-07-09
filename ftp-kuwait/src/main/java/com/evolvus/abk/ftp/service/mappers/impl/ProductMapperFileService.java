@@ -16,6 +16,7 @@ import java.util.Set;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -78,6 +79,7 @@ public class ProductMapperFileService implements MapperFileService {
 		Workbook workbook = null;
 		Sheet datatypeSheet = null;
 		Row currentRow = null;
+		Cell currentCell = null;
 		CustomResponse response = new CustomResponse();
 		FtpAudit audit = new FtpAudit();
 		audit.setTxnStartTime(ftpAuditService.getCurrentTime());
@@ -102,53 +104,23 @@ public class ProductMapperFileService implements MapperFileService {
 					FTPProductMapperTemp mapper = null;
 					mapper = new FTPProductMapperTemp();
 
-					if (currentRow.getCell(0) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
-						mapper.setFtpCategory(currentRow.getCell(0).getStringCellValue().trim());
-					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setFtpCategory((String.valueOf(currentRow.getCell(0).getNumericCellValue())));
-					}
+					currentCell = currentRow.getCell(0);
+					mapper.setFtpCategory(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(1) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(1).getCellTypeEnum() == CellType.STRING) {
-						mapper.setProdCode(currentRow.getCell(1).getStringCellValue().trim());
-					} else if (currentRow.getCell(1).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setProdCode((String.valueOf(currentRow.getCell(1).getNumericCellValue())));
-					}
+					currentCell = currentRow.getCell(1);
+					mapper.setProdCode(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(2) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(2).getCellTypeEnum() == CellType.STRING) {
-						mapper.setProdDesc(currentRow.getCell(2).getStringCellValue().trim());
-					} else if (currentRow.getCell(2).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setProdDesc((String.valueOf(currentRow.getCell(2).getNumericCellValue())));
-					}
+					currentCell = currentRow.getCell(2);
+					mapper.setProdDesc(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(3) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(3).getCellTypeEnum() == CellType.STRING) {
-						mapper.setAstLiabClas(currentRow.getCell(3).getStringCellValue().trim());
-					} else if (currentRow.getCell(3).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setAstLiabClas((String.valueOf(currentRow.getCell(3).getNumericCellValue())));
-					}
+					currentCell = currentRow.getCell(3);
+					mapper.setAstLiabClas(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(4) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(4).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCoreNonCore(currentRow.getCell(4).getStringCellValue().trim());
-					} else if (currentRow.getCell(4).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCoreNonCore((String.valueOf(currentRow.getCell(4).getNumericCellValue())));
-					}
+					currentCell = currentRow.getCell(4);
+					mapper.setCoreNonCore(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(5) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(5).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCorePrnt(currentRow.getCell(5).getStringCellValue().trim());
-					} else if (currentRow.getCell(5).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCorePrnt((String.valueOf(currentRow.getCell(5).getNumericCellValue())));
-					}
+					currentCell = currentRow.getCell(5);
+					mapper.setCorePrnt(mapperConversionService.getStringCellValue(currentCell));
 
 					mapper.setUploadedDate(new Date());
 					mapper.setUploadedBy(user.getName());
@@ -292,5 +264,6 @@ public class ProductMapperFileService implements MapperFileService {
 		}
 		return 0L;
 	}
+
 
 }

@@ -16,6 +16,7 @@ import java.util.Set;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -73,11 +74,13 @@ public class PolicyMapperFileService implements MapperFileService {
 
 	@Override
 	public CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user) {
+		LOG.info(" Start uploadToTemp ");
 		User appUser = ftpAuditService.getUserFromPrincipal(user);
 		FileInputStream excelFile = null;
 		Workbook workbook = null;
 		Sheet datatypeSheet = null;
 		Row currentRow = null;
+		Cell currentCell = null;
 		CustomResponse response = new CustomResponse();
 		FtpAudit audit = new FtpAudit();
 		audit.setTxnStartTime(ftpAuditService.getCurrentTime());
@@ -103,150 +106,59 @@ public class PolicyMapperFileService implements MapperFileService {
 					FTPPolicyMapperTemp mapper = null;
 					mapper = new FTPPolicyMapperTemp();
 
-					if (currentRow.getCell(0) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.STRING) {
-						mapper.setFtpCategory(currentRow.getCell(0).getStringCellValue().trim());
-					} else if (currentRow.getCell(0).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setFtpCategory(String.valueOf(currentRow.getCell(0).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(0);
+					mapper.setFtpCategory(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(1) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(1).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCcyCodeIn(currentRow.getCell(1).getStringCellValue().trim());
-					} else if (currentRow.getCell(1).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCcyCodeIn(String.valueOf(currentRow.getCell(1).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(1);
+					mapper.setCcyCodeIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(2) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(2).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCcyCodeNotIn(currentRow.getCell(2).getStringCellValue().trim());
-					} else if (currentRow.getCell(2).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCcyCodeNotIn(String.valueOf(currentRow.getCell(2).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(2);
+					mapper.setCcyCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(3) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(3).getCellTypeEnum() == CellType.STRING) {
-						mapper.setDivisionCodeIn(currentRow.getCell(3).getStringCellValue().trim());
-					} else if (currentRow.getCell(3).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setDivisionCodeIn(String.valueOf(currentRow.getCell(3).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(3);
+					mapper.setDivisionCodeIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(4) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(4).getCellTypeEnum() == CellType.STRING) {
-						mapper.setDivisionCodeNotIn(currentRow.getCell(4).getStringCellValue().trim());
-					} else if (currentRow.getCell(4).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setDivisionCodeNotIn(String.valueOf(currentRow.getCell(4).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(4);
+					mapper.setDivisionCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(5) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(5).getCellTypeEnum() == CellType.STRING) {
-						mapper.setOrigDivisionCodeIn(currentRow.getCell(5).getStringCellValue().trim());
-					} else if (currentRow.getCell(5).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setOrigDivisionCodeIn(String.valueOf(currentRow.getCell(5).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(5);
+					mapper.setOrigDivisionCodeIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(6) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(6).getCellTypeEnum() == CellType.STRING) {
-						mapper.setOrigDivisionCodeNotIn(currentRow.getCell(6).getStringCellValue().trim());
-					} else if (currentRow.getCell(6).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setOrigDivisionCodeNotIn(String.valueOf(currentRow.getCell(6).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(6);
+					mapper.setOrigDivisionCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(7) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(7).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCustTypeIn(currentRow.getCell(7).getStringCellValue().trim());
-					} else if (currentRow.getCell(7).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCustTypeIn(String.valueOf(currentRow.getCell(7).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(7);
+					mapper.setCustTypeIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(8) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(8).getCellTypeEnum() == CellType.STRING) {
-						mapper.setCustTypeNotIn(currentRow.getCell(8).getStringCellValue().trim());
-					} else if (currentRow.getCell(8).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setCustTypeNotIn(String.valueOf(currentRow.getCell(8).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(8);
+					mapper.setCustTypeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(9) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(9).getCellTypeEnum() == CellType.STRING) {
-						mapper.setSubdivisionCodeIn(currentRow.getCell(9).getStringCellValue().trim());
-					} else if (currentRow.getCell(9).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setSubdivisionCodeIn(String.valueOf(currentRow.getCell(9).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(9);
+					mapper.setSubdivisionCodeIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(10) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(10).getCellTypeEnum() == CellType.STRING) {
-						mapper.setSubdivisionCodeNotIn(currentRow.getCell(10).getStringCellValue().trim());
-					} else if (currentRow.getCell(10).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setSubdivisionCodeNotIn(
-								String.valueOf((int) currentRow.getCell(10).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(10);
+					mapper.setSubdivisionCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(11) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(11).getCellTypeEnum() == CellType.STRING) {
-						mapper.setFixedLength(currentRow.getCell(11).getStringCellValue().trim());
-					} else if (currentRow.getCell(11).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setFixedLength(String.valueOf(currentRow.getCell(11).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(11);
+					mapper.setFixedLength(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(12) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(12).getCellTypeEnum() == CellType.STRING) {
-						mapper.setMaturityDate(currentRow.getCell(12).getStringCellValue().trim());
-					} else if (currentRow.getCell(12).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setMaturityDate(String.valueOf((int) currentRow.getCell(12).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(12);
+					mapper.setMaturityDate(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(13) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(13).getCellTypeEnum() == CellType.STRING) {
-						mapper.setBaseTenor(currentRow.getCell(13).getStringCellValue().trim());
-					} else if (currentRow.getCell(13).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setBaseTenor(String.valueOf(currentRow.getCell(13).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(13);
+					mapper.setBaseTenor(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(14) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(14).getCellTypeEnum() == CellType.STRING) {
-						mapper.setMarginTenor(currentRow.getCell(14).getStringCellValue().trim());
-					} else if (currentRow.getCell(14).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setMarginTenor(String.valueOf(currentRow.getCell(14).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(14);
+					mapper.setMarginTenor(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(15) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(15).getCellTypeEnum() == CellType.STRING) {
-						mapper.setApplicableCurve(currentRow.getCell(15).getStringCellValue().trim());
-					} else if (currentRow.getCell(15).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setApplicableCurve(String.valueOf(currentRow.getCell(15).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(15);
+					mapper.setApplicableCurve(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(16) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(16).getCellTypeEnum() == CellType.STRING) {
-						mapper.setPrePost(currentRow.getCell(16).getStringCellValue().trim());
-					} else if (currentRow.getCell(16).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setPrePost(String.valueOf(currentRow.getCell(16).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(16);
+					mapper.setPrePost(mapperConversionService.getStringCellValue(currentCell));
 
-					if (currentRow.getCell(17) == null) {
-						throw new IllegalArgumentException();
-					} else if (currentRow.getCell(17).getCellTypeEnum() == CellType.STRING) {
-						mapper.setFinalFtpCategory(currentRow.getCell(17).getStringCellValue().trim());
-					} else if (currentRow.getCell(17).getCellTypeEnum() == CellType.NUMERIC) {
-						mapper.setFinalFtpCategory(String.valueOf(currentRow.getCell(17).getNumericCellValue()));
-					}
+					currentCell = currentRow.getCell(17);
+					mapper.setFinalFtpCategory(mapperConversionService.getStringCellValue(currentCell));
 
 					mapper.setUploadedDate(new Date());
 					mapper.setUploadedBy(user.getName());
@@ -319,18 +231,22 @@ public class PolicyMapperFileService implements MapperFileService {
 		audit.setPostTxnVal(ftpAuditService.objectToJson(fileInfo));
 		ftpAuditService.logAudit(audit);
 
+		LOG.info(" End uploadToTemp ");
 		return response;
 	}
 
 	@Override
 	@Transactional
 	public void clearRecords(FtpEntity ftpEntity) {
+		LOG.info(" Start clearRecords ");
 		policyMapperTempRepository.deleteInBulkByBankCode(ftpEntity);
+		LOG.info(" End clearRecords ");
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain(FtpEntity ftpEntity) {
+		LOG.info(" Start getDifferenceOfTempAndMain ");
 		String bankCode = ftpEntity.getBankCode();
 		List<String> tempNotInMain = policyMapperTempRepository.fetchRecordsNotInMain(bankCode);
 		List<String> mainNotInTemp = policyMapperRepository.fetchRecordsNotInTemp(bankCode);
@@ -344,12 +260,14 @@ public class PolicyMapperFileService implements MapperFileService {
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
+		LOG.info(" End getDifferenceOfTempAndMain ");
 		return differences;
 	}
 
 	@Override
 	@Transactional
 	public Long archive(FtpEntity ftpEntity) {
+		LOG.info(" Start archive ");
 		Iterable<FTPPolicyMapper> mappersList = policyMapperRepository.findByBankCode(ftpEntity);
 		List<FTPPolicyMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper -> {
@@ -358,16 +276,19 @@ public class PolicyMapperFileService implements MapperFileService {
 		});
 		if (!archives.isEmpty()) {
 			policyMapperArchiveRepository.save(archives);
+			LOG.info(" End getDifferenceOfTempAndMain ");
 			if (!archives.isEmpty()) {
 				return (long) archives.size();
 			}
 		}
+		LOG.info(" End archive ");
 		return 0L;
 	}
 
 	@Override
 	@Transactional
 	public Long insertToMain(FtpEntity ftpEntity) {
+		LOG.info(" Start insertToMain ");
 		Iterable<FTPPolicyMapperTemp> tempMappers = policyMapperTempRepository.findByBankCode(ftpEntity);
 		List<FTPPolicyMapper> mainMappers = new ArrayList<>();
 		MapperVersion version = mapperVersionService.getMapper("PC");
@@ -382,9 +303,10 @@ public class PolicyMapperFileService implements MapperFileService {
 		if (!mainMappers.isEmpty()) {
 			policyMapperRepository.save(mainMappers);
 			mapperVersionService.updateMapperVersion("PC", nextMainVersion, version.getCurrentVersion());
+			LOG.info(" End archive ");
 			return (long) mainMappers.size();
 		}
+		LOG.info(" End insertToMain ");
 		return 0L;
 	}
-
 }

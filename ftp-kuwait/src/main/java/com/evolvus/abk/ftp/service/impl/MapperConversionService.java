@@ -1,5 +1,12 @@
 package com.evolvus.abk.ftp.service.impl;
 
+import java.math.BigDecimal;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.evolvus.abk.ftp.domain.mappers.archivals.FTPDivisionCodeMapperArchive;
@@ -19,8 +26,10 @@ import com.evolvus.abk.ftp.domain.mappers.temp.FTPProductMapperTemp;
 public class MapperConversionService {
 
 	// Category Mapper Converters
+	private static final Logger LOG = LoggerFactory.getLogger(MapperConversionService.class);
 
 	public FTPGrandMapper tempToMain(FTPGrandMapperTemp tempMapper) {
+		LOG.info("Start tempToMain");
 		FTPGrandMapper mainMapper = new FTPGrandMapper();
 
 		mainMapper.setGlSubheadCode(tempMapper.getGlSubheadCode());
@@ -61,11 +70,13 @@ public class MapperConversionService {
 
 		mainMapper.setVersion(tempMapper.getVersion());
 		mainMapper.setBankCode(tempMapper.getBankCode());
-
+		
+		LOG.info("End tempToMain");
 		return mainMapper;
 	}
 
 	public FTPGrandMapperArchive mainToArchive(FTPGrandMapper mainMapper) {
+		LOG.info("Start mainToArchive");
 		FTPGrandMapperArchive archivalMapper = new FTPGrandMapperArchive();
 
 		archivalMapper.setGlSubheadCode(mainMapper.getGlSubheadCode());
@@ -105,15 +116,16 @@ public class MapperConversionService {
 		archivalMapper.setUploadedDate(mainMapper.getUploadedDate());
 
 		archivalMapper.setVersion(mainMapper.getVersion());
-
 		archivalMapper.setBankCode(mainMapper.getBankCode());
+		
+		LOG.info("End mainToArchive");
 		return archivalMapper;
 	}
 
 	// Product Mapper Converters
 
 	public FTPProductMapper tempToMain(FTPProductMapperTemp tempMapper) {
-
+		LOG.info("Start tempToMain");
 		FTPProductMapper mainMapper = new FTPProductMapper();
 
 		mainMapper.setFtpCategory(tempMapper.getFtpCategory());
@@ -126,12 +138,14 @@ public class MapperConversionService {
 		mainMapper.setUploadedDate(tempMapper.getUploadedDate());
 		mainMapper.setUploadedBy(tempMapper.getUploadedBy());
 		mainMapper.setVersion(tempMapper.getVersion());
+		
+		LOG.info("End tempToMain");
 		return mainMapper;
 
 	}
 
 	public FTPProductMapperArchive mainToArchive(FTPProductMapper mainMapper) {
-
+		LOG.info("Start mainToArchive");
 		FTPProductMapperArchive archivalMapper = new FTPProductMapperArchive();
 		archivalMapper.setFtpCategory(mainMapper.getFtpCategory());
 		archivalMapper.setProdCode(mainMapper.getProdCode());
@@ -143,6 +157,7 @@ public class MapperConversionService {
 		archivalMapper.setUploadedDate(mainMapper.getUploadedDate());
 		archivalMapper.setUploadedBy(mainMapper.getUploadedBy());
 		archivalMapper.setVersion(mainMapper.getVersion());
+		LOG.info("End mainToArchive");
 		return archivalMapper;
 
 	}
@@ -150,7 +165,7 @@ public class MapperConversionService {
 	// Policy Mapper Converter
 
 	public FTPPolicyMapper tempToMain(FTPPolicyMapperTemp tempMapper) {
-		
+		LOG.info("Start tempToMain");
 		FTPPolicyMapper mainMapper = new FTPPolicyMapper();
 
 		mainMapper.setFtpCategory(tempMapper.getFtpCategory());
@@ -185,13 +200,13 @@ public class MapperConversionService {
 		mainMapper.setBankCode(tempMapper.getBankCode());
 		
 		mainMapper.setVersion(tempMapper.getVersion());
-
+		LOG.info("End tempToMain");
 		return mainMapper;
 	}
 
 	public FTPPolicyMapperArchive mainToArchive(FTPPolicyMapper mainMapper) {
 		
-		
+		LOG.info(" Start mainToArchive ");
 		FTPPolicyMapperArchive archivalMapper = new FTPPolicyMapperArchive();
 		archivalMapper.setFtpCategory(mainMapper.getFtpCategory());
 		archivalMapper.setCcyCodeIn(mainMapper.getCcyCodeIn());
@@ -225,12 +240,13 @@ public class MapperConversionService {
 		archivalMapper.setBankCode(mainMapper.getBankCode());
 
 		archivalMapper.setVersion(mainMapper.getVersion());
+		LOG.info(" End mainToArchive ");
 		return archivalMapper;
 	}
 
 	// Division Code Mappers
 	public FTPDivisionCodeMapper tempToMain(FTPDivisionCodeMapperTemp tempMapper) {
-
+		LOG.info(" Start tempToMain ");
 		FTPDivisionCodeMapper mainMapper = new FTPDivisionCodeMapper();
 
 		mainMapper.setGlSubHeadCode(tempMapper.getGlSubHeadCode());
@@ -252,11 +268,12 @@ public class MapperConversionService {
 
 		mainMapper.setBankCode(tempMapper.getBankCode());
 		mainMapper.setVersion(tempMapper.getVersion());
-
+		LOG.info(" End tempToMain ");
 		return mainMapper;
 	}
 
 	public FTPDivisionCodeMapperArchive mainToArchive(FTPDivisionCodeMapper mainMapper) {
+		LOG.info(" Start mainToArchive ");
 		FTPDivisionCodeMapperArchive archivalMapper = new FTPDivisionCodeMapperArchive();
 
 		archivalMapper.setGlSubHeadCode(mainMapper.getGlSubHeadCode());
@@ -278,7 +295,66 @@ public class MapperConversionService {
 
 		archivalMapper.setBankCode(mainMapper.getBankCode());
 		archivalMapper.setVersion(mainMapper.getVersion());
-
+		LOG.info(" End mainToArchive ");
 		return archivalMapper;
+	}
+	
+	public int getNumericCellValue(Cell currentCell) {
+
+		try {
+			if (currentCell==null) {
+				return 0;
+			} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+				return (int) currentCell.getNumericCellValue();
+			}else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
+				return Integer.parseInt(currentCell.getStringCellValue());
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public Double getDoubleValueOfCurrentCell(Cell currentCell) {
+
+		try {
+			if (currentCell == null) {
+				return 0.0;
+			} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+				return currentCell.getNumericCellValue();
+			}else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
+				return Double.parseDouble(currentCell.getStringCellValue());
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		return 0.0;
+	}
+	
+	public BigDecimal getBigdecimalValueOfCurrentCell(Cell currentCell) {
+		DataFormatter dataFormatter = new DataFormatter();
+		try {
+			if (currentCell == null) {
+				return new BigDecimal("0.0");
+			} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+				return BigDecimal.valueOf(currentCell.getNumericCellValue());
+			}else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
+				return BigDecimal.valueOf(Double.parseDouble(currentCell.getStringCellValue()));
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		return new BigDecimal("0.0");
+	}
+	
+	public String getStringCellValue(Cell currentCell) {
+
+		if (currentCell==null) {
+			return "";
+		} else if (currentCell.getCellTypeEnum() == CellType.STRING) {
+			return currentCell.getStringCellValue().trim();
+		}
+		return "";
+
 	}
 }

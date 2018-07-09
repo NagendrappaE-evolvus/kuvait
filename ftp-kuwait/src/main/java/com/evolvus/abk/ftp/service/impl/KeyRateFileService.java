@@ -12,6 +12,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -47,6 +48,9 @@ public class KeyRateFileService implements RateService {
 
 	@Autowired
 	KeyRateRepository keyRateRepository;
+	
+	@Autowired
+	MapperConversionService mapperConversionService;
 
 	@Override
 	public CustomResponse uploadRates(String fileType, FileInfo fileInfo, String date, User user, Boolean overwrite) {
@@ -63,6 +67,7 @@ public class KeyRateFileService implements RateService {
 		java.sql.Date sqlDate = null;
 		Sheet datatypeSheet = null;
 		Row currentRow = null;
+		DataFormatter dataFormatter = new DataFormatter();
 		LOG.debug("Start key uploadRates");
 		try {
 
@@ -72,7 +77,6 @@ public class KeyRateFileService implements RateService {
 			Iterator<Row> rowIterator;
 			datatypeSheet = workbook.getSheet("Static_Rates_Data");
 			rowIterator = datatypeSheet.iterator();
-			DataFormatter dataFormatter = new DataFormatter();
 			int temp = 0;
 			if (rowIterator.hasNext()) {
 				rowIterator.next();
@@ -81,15 +85,9 @@ public class KeyRateFileService implements RateService {
 					KeyRates keyrate = new KeyRates();
 					keyrate.setBusinessCloseDate(sqlDate);
 					keyrate.setBankCode(user.getEntity());
-					Cell currentCell = currentRow.getCell(0);
 
-					if (currentCell == null) {
-						throw new IllegalArgumentException();
-					} else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
-						keyrate.setTenor(currentCell.getStringCellValue());
-					} else {
-						throw new IllegalStateException();
-					}
+					Cell currentCell = currentRow.getCell(0);
+					keyrate.setTenor(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(1);
 					if (currentCell == null) {

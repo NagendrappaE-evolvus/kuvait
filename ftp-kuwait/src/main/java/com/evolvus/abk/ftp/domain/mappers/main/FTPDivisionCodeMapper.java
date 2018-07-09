@@ -59,7 +59,6 @@ public class FTPDivisionCodeMapper {
 	@Column(name="FINAL_DIVISION_DESC")
 	private String finalDivisionDesc;
 
-
 	@Column(name="UPLOADED_DATE")
 	private Date uploadedDate;
 	
