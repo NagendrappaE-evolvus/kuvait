@@ -73,7 +73,7 @@ public class ProductMapperFileService implements MapperFileService {
 
 	@Override
 	public CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user) {
-
+		LOG.info(" Start uploadToTemp ");
 		User appUser = ftpAuditService.getUserFromPrincipal(user);
 		FileInputStream excelFile = null;
 		Workbook workbook = null;
@@ -194,19 +194,22 @@ public class ProductMapperFileService implements MapperFileService {
 		audit.setPostTxnVal(ftpAuditService.objectToJson(fileInfo));
 		ftpAuditService.logAudit(audit);
 
+		LOG.info(" End uploadToTemp ");
 		return response;
 	}
 
 	@Override
 	@Transactional
 	public void clearRecords(FtpEntity ftpEntity) {
+		LOG.info(" Start clearRecords ");
 		productMapperTempRepository.deleteInBulkByBankCode(ftpEntity);
+		LOG.info(" End clearRecords ");
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Map<String, List<? extends Object>> getDifferenceOfTempAndMain(FtpEntity ftpEntity) {
-
+		LOG.info(" Start getDifferenceOfTempAndMain ");
 		String bankCode = ftpEntity.getBankCode();
 		List<String> tempNotInMain = productMapperTempRepository.fetchRecordsNotInMain(bankCode);
 		List<String> mainNotInTemp = productMapperMainRepository.fetchRecordsNotInTemp(bankCode);
@@ -220,12 +223,14 @@ public class ProductMapperFileService implements MapperFileService {
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
+		LOG.info(" End getDifferenceOfTempAndMain ");
 		return differences;
 	}
 
 	@Override
 	@Transactional
 	public Long archive(FtpEntity ftpEntity) {
+		LOG.info(" Start archive ");
 		Iterable<FTPProductMapper> mappersList = productMapperMainRepository.findByBankCode(ftpEntity);
 		List<FTPProductMapperArchive> archives = new ArrayList<>();
 		mappersList.forEach(mapper -> {
@@ -235,16 +240,19 @@ public class ProductMapperFileService implements MapperFileService {
 		productMapperMainRepository.deleteInBulkByBankCode(ftpEntity);
 		if (!archives.isEmpty()) {
 			productMapperArchiveRepository.save(archives);
+			LOG.info(" End archive ");
 			if (!archives.isEmpty()) {
 				return (long) archives.size();
 			}
 		}
+		LOG.info(" End archive ");
 		return 0L;
 	}
 
 	@Override
 	@Transactional
 	public Long insertToMain(FtpEntity ftpEntity) {
+		LOG.info(" Start insertToMain ");
 		Iterable<FTPProductMapperTemp> tempMappers = productMapperTempRepository.findByBankCode(ftpEntity);
 		List<FTPProductMapper> mainMappers = new ArrayList<>();
 		MapperVersion version = mapperVersionService.getMapper("PD");
@@ -260,8 +268,10 @@ public class ProductMapperFileService implements MapperFileService {
 		if (!mainMappers.isEmpty()) {
 			productMapperMainRepository.save(mainMappers);
 			mapperVersionService.updateMapperVersion("PD", nextMainVersion, version.getCurrentVersion());
+			LOG.info(" End insertToMain ");
 			return (long) mainMappers.size();
 		}
+		LOG.info(" End insertToMain ");
 		return 0L;
 	}
 
