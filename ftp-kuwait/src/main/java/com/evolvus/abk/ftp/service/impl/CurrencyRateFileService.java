@@ -15,12 +15,13 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,12 +76,11 @@ public class CurrencyRateFileService implements RateService {
 			workbook = WorkbookFactory.create(excelFile);
 			sqlDate = new java.sql.Date(new SimpleDateFormat("dd-MM-yyyy").parse(date).getTime());
 			Iterator<Row> rowIterator;
-
+			FormulaEvaluator evaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
 			int numberOfSheets = workbook.getNumberOfSheets();
 			for (int i = 0; i < numberOfSheets; i++) {
 				datatypeSheet = workbook.getSheetAt(i);
 				rowIterator = datatypeSheet.iterator();
-				int temp = 0;
 				if (rowIterator.hasNext()) {
 					currentRow = rowIterator.next();
 					while (rowIterator.hasNext()) {
@@ -90,13 +90,16 @@ public class CurrencyRateFileService implements RateService {
 						CurrencyRates curRates = new CurrencyRates();
 
 						Cell cell = currentRow.getCell(0);
-						if(cell==null)
+						if (cell == null || cell.getCellType()==Cell.CELL_TYPE_BLANK)
 							continue;
 						String tenorDays = cell.getStringCellValue();
 						Map<String, Integer> tenorDaysMap = this.getTenorBucketInDays(tenorDays);
 						curRates.setDaysFrom(tenorDaysMap.get(Constants.FROM));
-						curRates.setDaysTo(tenorDaysMap.get(Constants.TO));
-
+						if (tenorDays.toLowerCase().trim().contains("above 1825")) {
+							curRates.setDaysTo(99999);
+						} else {
+							curRates.setDaysTo(tenorDaysMap.get(Constants.TO));
+						}
 						curRates.setCurrency(datatypeSheet.getSheetName());
 						curRates.setBusinessCloseDate(sqlDate);
 
@@ -104,14 +107,14 @@ public class CurrencyRateFileService implements RateService {
 						curRates.setTenor(mapperConversionService.getStringCellValue(cell));
 
 						cell = currentRow.getCell(2);
-						curRates.setBase(mapperConversionService.getBigdecimalValueOfCurrentCell(cell));
+						curRates.setBase(mapperConversionService.getBigdecimalValueOfCurrentCell(cell,evaluator));
 
 						cell = currentRow.getCell(3);
-						curRates.setMargin(mapperConversionService.getBigdecimalValueOfCurrentCell(cell));
+						curRates.setMargin(mapperConversionService.getBigdecimalValueOfCurrentCell(cell,evaluator));
 
 						cell = currentRow.getCell(4);
-						curRates.setNet(mapperConversionService.getBigdecimalValueOfCurrentCell(cell));
-
+						curRates.setNet(mapperConversionService.getBigdecimalValueOfCurrentCell(cell,evaluator));
+		
 						curRates.setBankCode(user.getEntity());
 						if (overwrite) {
 							curRates.setOverwrittenBy(user.getUsername());
@@ -120,7 +123,6 @@ public class CurrencyRateFileService implements RateService {
 						curRates.setUploadedBy(user.getUsername());
 						curRates.setUploadedDate(new Date());
 						currencyRateRepository.save(curRates);
-						temp++;
 					}
 					response.setDescription("File uploaded successfully");
 					response.setStatus(Constants.STATUS_OK);
@@ -141,13 +143,13 @@ public class CurrencyRateFileService implements RateService {
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalArgumentException e) {
 			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum());
+					+ datatypeSheet.getSheetName() + ", in row number " + (currentRow.getRowNum() + 1));
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalStateException e) {
 			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum() + 1);
+					+ datatypeSheet.getSheetName() + ", in row number " + (currentRow.getRowNum() + 1));
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -199,12 +201,12 @@ public class CurrencyRateFileService implements RateService {
 			String lowerCaseTenor = tenor.toLowerCase();
 			rawArray = this.getSplittedStringArray(tenor, Constants.NON_NUMERIC_PATTERN);
 
-			if (lowerCaseTenor.contains(Constants.STR_ABOVE.toLowerCase())) {
+			if (lowerCaseTenor.contains(Constants.STR_ABOVE.toLowerCase()) || lowerCaseTenor.contains(">")) {
 				if (rawArray.length == 1) {
 					from = rawArray[0];
 					to = rawArray[0];
 				}
-			} else if (lowerCaseTenor.contains(Constants.STR_UPTO.toLowerCase())) {
+			} else if (lowerCaseTenor.contains(Constants.STR_UPTO.toLowerCase()) || lowerCaseTenor.contains("<")) {
 				if (rawArray.length == 1) {
 					to = rawArray[0];
 				}

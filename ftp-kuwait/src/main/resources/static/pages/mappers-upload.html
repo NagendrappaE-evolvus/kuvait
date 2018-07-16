@@ -1,21 +1,24 @@
-<div class="container ">
+<div class="container-fluid mapperUpload">
 	<div class="main-content">
 		<h3>Upload File</h3>
 		<div class="jumbotron fileinput fileinput-new"
 			style="overflow-y: auto">
-			<label class="col-md-offset-3">{{message}}</label>
+			<div class="col-md-offset-5">
+			<div ng-show="showLoading" class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div> 
+			</div>
+			<label class="col-md-offset-3">{{message}}</label>			
 			<div class="formcontrol">
 
 				<form class="form-horizontal" name="uploadForm" novalidate>
 
-					<div class="form-group form-group-md">
+			<!-- 		<div class="form-group form-group-md">
 						<label class="col-md-3 control-label" for="applicableDate">
 							Applicable Date</label>
 						<div class="col-md-4">
 							<div class="input-group">
 								<input type="text" class="form-control" uib-datepicker-popup
 									id="applicableDate" placeholder="Applicable Date"
-									name="applicableDate" ng-model="applicableDate"
+									name="applicableDate" ng-model="applicableDate" ng-change="message =''"
 									is-open="dateOpen" ng-pattern="patterns.dateFormatKw"
 									ng-click="dateOpen=true" ng-required="true"
 									datepicker-options="dateOptions" close-text="Close" /> <span
@@ -30,14 +33,14 @@
 								ng-show="!uploadForm.applicableDate.$pristine && uploadForm.applicableDate.$invalid">Please
 								select a Date from Calendar.</span>
 						</div>
-					</div>
+					</div> -->
 
 					<div class="form-group form-group-md">
 						<label class="col-md-3 control-label" for="fileType"> File
 							Type</label>
 						<div class="col-md-4">
 							<select ng-init="fetchFileTypes()" class="form-control"
-								id="fileType" name="fileType" ng-change="fileTypeChanged()"
+								id="fileType" name="fileType" ng-change="fileTypeChanged();message=''"
 								ng-model="fileType"
 								ng-options="fileType.mapperKey as fileType.mapperName for fileType in mapperFiles">
 								<option value="">Select</option>
@@ -81,21 +84,23 @@
 
 				</form>
 			</div>
+			
 			<div class="row">
 				<div class="form-group form-group-md"
 					ng-show="tempList.length>0 || mainList.length>0">
 					<div class="col-md-offset-8 col-md-4" style="padding-right:3%">
-						<button class="btn btn-default pull-right">Cancel</button>
+						<button class="btn btn-default pull-right" ng-click="clearTemp()">Cancel</button>
+						
 						<button class="btn btn-default btn-orange pull-right"
 							ng-click="processMappers()">Proceed</button>
 					</div>
 				</div>
 			</div>
-			<div ng-if="fileType=='CT'" class="main-content">
+			<div ng-if="fileType=='CT' && showTable" class="main-content">
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
-							<strong>Uploaded Content</strong>
+							<strong>Newly uploaded version</strong>
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
@@ -112,6 +117,7 @@
 											colspan="{{categoryMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
+										<td>{{obj.version}}</td>
 										<td>{{obj.glSubheadCode}}</td>
 										<td>{{obj.glSubheadDesc}}</td>
 										<td>{{obj.drFtpCat}}</td>
@@ -139,8 +145,7 @@
 
 										<td>{{obj.instrumentClassNotIn}}</td>
 										<td>{{obj.groupByLogic}}</td>
-										<td>{{obj.count}}</td>
-										<td>{{obj.version}}</td>
+										<td>{{obj.count}}</td>								
 									</tr>
 								</tbody>
 							</table>
@@ -151,7 +156,7 @@
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
-							<strong>Existing Content</strong>
+							<strong>Currently used version</strong>
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
@@ -168,6 +173,7 @@
 											colspan="{{categoryMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': obj.changed}">
+								    	<td>{{obj.version}}</td>
 										<td>{{obj.glSubheadCode}}</td>
 										<td>{{obj.glSubheadDesc}}</td>
 										<td>{{obj.drFtpCat}}</td>
@@ -195,8 +201,7 @@
 
 										<td>{{obj.instrumentClassNotIn}}</td>
 										<td>{{obj.groupByLogic}}</td>
-										<td>{{obj.count}}</td>
-										<td>{{obj.version}}</td>
+										<td>{{obj.count}}</td>									
 									</tr>
 								</tbody>
 							</table>
@@ -205,11 +210,11 @@
 				</div>
 			</div>
 
-			<div ng-if="fileType=='PD'" class="main-content">
+			<div ng-if="fileType=='PD' && showTable" class="main-content">
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
-							<strong>Uploaded Content</strong>
+							<strong>Newly uploaded version</strong>
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
@@ -226,14 +231,13 @@
 											colspan="{{productMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
+									    <td>{{obj.version}}</td>
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.prodCode}}</td>
 										<td>{{obj.prodDesc}}</td>
 										<td>{{obj.astLiabClas}}</td>
 										<td>{{obj.coreNonCore}}</td>
-										<td>{{obj.corePrnt}}</td>
-										<td>{{obj.version}}</td>
-
+										<td>{{obj.corePrnt}}</td>							
 									</tr>
 								</tbody>
 							</table>
@@ -244,7 +248,7 @@
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
-							<strong>Existing Content</strong>
+							<strong>Currently used version</strong>
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
@@ -261,13 +265,13 @@
 											colspan="{{productMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': (obj.changed)}">
+										<td>{{obj.version}}</td>
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.prodCode}}</td>
 										<td>{{obj.prodDesc}}</td>
 										<td>{{obj.astLiabClas}}</td>
 										<td>{{obj.coreNonCore}}</td>
-										<td>{{obj.corePrnt}}</td>
-										<td>{{obj.version}}</td>
+										<td>{{obj.corePrnt}}</td>									
 									</tr>
 								</tbody>
 							</table>
@@ -276,11 +280,11 @@
 				</div>
 			</div>
 
-			<div ng-if="fileType=='PC'" class="main-content">
+			<div ng-if="fileType=='PC' && showTable" class="main-content">
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
-							<strong>Uploaded Content</strong>
+							<strong>Newly uploaded version</strong>
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
@@ -297,6 +301,7 @@
 											colspan="{{policyMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
+										<td>{{obj.version}}</td>
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.ccyCodeIn}}</td>
 										<td>{{obj.ccyCodeNotIn}}</td>
@@ -319,8 +324,7 @@
 
 										<td>{{obj.finalFtpCategory}}</td>
 										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
-										<td>{{obj.bankCode.bankCode}}</td>
-										<td>{{obj.version}}</td>
+										<td>{{obj.bankCode.bankCode}}</td>								
 									</tr>
 								</tbody>
 							</table>
@@ -331,7 +335,7 @@
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
-							<strong>Existing Content</strong>
+							<strong>Currently used version</strong>
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
@@ -348,6 +352,7 @@
 											colspan="{{policyMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': (obj.changed)}">
+										<td>{{obj.version}}</td>
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.ccyCodeIn}}</td>
 										<td>{{obj.ccyCodeNotIn}}</td>
@@ -370,8 +375,7 @@
 
 										<td>{{obj.finalFtpCategory}}</td>
 										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
-										<td>{{obj.bankCode.bankCode}}</td>
-										<td>{{obj.version}}</td>
+										<td>{{obj.bankCode.bankCode}}</td>									
 									</tr>
 								</tbody>
 							</table>
@@ -380,11 +384,11 @@
 				</div>
 			</div>
 
-			<div ng-if="fileType=='DC'" class="main-content">
+			<div ng-if="fileType=='DC' && showTable" class="main-content">
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
-							<strong>Uploaded Content</strong>
+							<strong>Newly uploaded version</strong>
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
@@ -401,6 +405,7 @@
 											colspan="{{divisionMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
+										<td>{{obj.version}}</td>
 										<td>{{obj.glSubHeadCode}}</td>
 										<td>{{obj.glshChar}}</td>
 										<td>{{obj.entityCode}}</td>
@@ -412,8 +417,7 @@
 										<td>{{obj.division}}</td>
 										<td>{{obj.finalDivisionDesc}}</td>
 										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
-										<td>{{obj.bankCode.bankCode}}</td>
-										<td>{{obj.version}}</td>
+										<td>{{obj.bankCode.bankCode}}</td>	
 									</tr>
 								</tbody>
 							</table>
@@ -424,7 +428,7 @@
 				<div class="col-md-6">
 					<div class="panel panel-default">
 						<div class="panel-heading">
-							<strong>Existing Content</strong>
+							<strong>Currently used version</strong>
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
@@ -441,6 +445,7 @@
 											colspan="{{divisionMapper.length}}">No Data available.</td>
 									</tr>
 									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': (obj.changed)}">
+										<td>{{obj.version}}</td>
 										<td>{{obj.glSubHeadCode}}</td>
 										<td>{{obj.glshChar}}</td>
 										<td>{{obj.entityCode}}</td>
@@ -452,8 +457,7 @@
 										<td>{{obj.division}}</td>
 										<td>{{obj.finalDivisionDesc}}</td>
 										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
-										<td>{{obj.bankCode.bankCode}}</td>
-										<td>{{obj.version}}</td>
+										<td>{{obj.bankCode.bankCode}}</td>								
 									</tr>
 								</tbody>
 							</table>

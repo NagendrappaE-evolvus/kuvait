@@ -12,7 +12,26 @@ app.factory('UploadService', [
 					file.append('fileType',fileType);
 					file.append('date',(rateDate.getDate()+"-"+(rateDate.getMonth()+1)+"-"+rateDate.getFullYear()));
 					file.append('overwrite',overwrite);
-					return $http.post("/file/upload",
+					return $http.post("/file/uploadRates",
+							file, {
+								headers : {
+									'Content-Type' : undefined
+								}
+							}).then(function(response) {
+						result = response.data;
+						return result;
+
+					}, function(errResponse) {
+								console.log('Error while uploading the file:'
+										+ JSON.stringify(errResponse));
+								return errResponse;
+					});
+				},
+				uploadMapperFile : function(fileType,selectedFile) {
+					var file = new FormData();
+					file.append('file', selectedFile);
+					file.append('fileType',fileType);				
+					return $http.post("/file/uploadMapper",
 							file, {
 								headers : {
 									'Content-Type' : undefined

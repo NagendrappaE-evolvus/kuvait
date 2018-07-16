@@ -18,10 +18,13 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +75,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 	DivisionCodeMapperArchiveRepository divisionMapperArchiveRepository;
 
 	@Override
-	public CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user) {
+	public CustomResponse uploadToTemp(FileInfo fileInfo, Principal user) {
 		LOG.info(" Start uploadToTemp ");
 		User appUser = ftpAuditService.getUserFromPrincipal(user);
 		FileInputStream excelFile = null;
@@ -93,7 +96,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 			workbook = WorkbookFactory.create(excelFile);
 			datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
-
+			FormulaEvaluator evaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
 			List<FTPDivisionCodeMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
@@ -105,10 +108,12 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 					mapper = new FTPDivisionCodeMapperTemp();
 
 					currentCell = currentRow.getCell(0);
-					mapper.setGlSubHeadCode(String.valueOf(mapperConversionService.getNumericCellValue(currentCell)));
+					mapper.setGlSubHeadCode(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(1);
-					mapper.setGlshChar(mapperConversionService.getNumericCellValue(currentCell));
+					int temp=mapperConversionService.getNumericCellValue(currentCell,evaluator);
+					if(temp!=-111)
+					mapper.setGlshChar(temp);
 
 					currentCell = currentRow.getCell(2);
 					mapper.setEntityCode(mapperConversionService.getStringCellValue(currentCell));
@@ -130,7 +135,9 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 
 					currentCell = currentRow.getCell(8);
 					mapper.setFinalDivisionDesc(mapperConversionService.getStringCellValue(currentCell));
-
+					
+					MapperVersion version = mapperVersionService.getMapper("DC");
+					mapper.setVersion(version.getVersionChars() + (version.getCurrentVersion()+1));
 					mapper.setUploadedDate(new Date());
 					mapper.setUploadedBy(user.getName());
 					mapper.setBankCode(appUser.getEntity());
@@ -162,8 +169,9 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalArgumentException e) {
+			int num=currentRow.getRowNum()+1;
 			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum());
+					+ datatypeSheet.getSheetName() + ", in row number " + num);
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -173,7 +181,9 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalStateException e) {
-			response.setDescription("Unable to parse data, please check the file format.");
+			int num=currentRow.getRowNum()+1;
+			response.setDescription("Unable to parse data, error while processing in sheet "
+					+ datatypeSheet.getSheetName() + ", in row number " + num);
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());

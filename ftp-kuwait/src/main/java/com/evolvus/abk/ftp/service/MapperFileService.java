@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface MapperFileService {
 	
-	CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user);
+	CustomResponse uploadToTemp(FileInfo fileInfo, Principal user);
 	
 	void clearRecords(FtpEntity ftpEntity);
 	

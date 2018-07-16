@@ -58,4 +58,5 @@ public interface Constants {
 	String NON_NUMERIC_PATTERN = "\\D";
 	String FROM="from";
 	String TO = "to";
+	String COMPARISION_DONE = "Comparison Results as shown below, if comparison is fine please press Proceed else Cancel";
 }

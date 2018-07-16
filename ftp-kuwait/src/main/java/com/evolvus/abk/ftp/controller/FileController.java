@@ -82,7 +82,48 @@ public class FileController {
 	 * @throws InterruptedException
 	 *             the interrupted exception
 	 */
-	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/uploadMapper", method = RequestMethod.POST)
+	public ResponseEntity<CustomResponse> uploadMapperFile(@RequestParam("file") MultipartFile multipartfile,
+			@RequestParam("fileType") String fileType,
+			Principal user) throws InterruptedException {
+		LOG.debug("Start MapperUpload");
+		HttpStatus httpStatus = HttpStatus.OK;
+		CustomResponse customResponse = null;
+
+		try {
+			FileInfo fileInfo = this.saveUploadedFile(multipartfile);
+			if (fileInfo.getFileSaved()) {
+				if ("CT".equals(fileType)) {
+					customResponse = grandMapperService.uploadToTemp(fileInfo, user);
+				} else if ("PD".equals(fileType)) {
+					customResponse = productMapperService.uploadToTemp(fileInfo, user);
+				} else if ("DC".equals(fileType)) {
+					customResponse = divisionMapperService.uploadToTemp(fileInfo, user);
+
+				} else if ("PC".equals(fileType)) {
+					customResponse = policyMapperFileService.uploadToTemp(fileInfo, user);
+				} else {
+					throw new CustomException("Invalid file type.");
+				}
+			} else {
+				throw new CustomException("Error in writing file to disk.");
+			}
+		} catch (CustomException e) {
+			customResponse = new CustomResponse();
+			customResponse.setStatus(Constants.STATUS_OK);
+			customResponse.setDescription(e.getMessage());
+			LOG.error(e.getMessage());
+		} catch (Exception e) {
+			customResponse = new CustomResponse();
+			customResponse.setStatus(Constants.STATUS_OK);
+			customResponse.setDescription("Error in mapper file upload.");
+			LOG.error("Error in data for mapper file upload.");
+		}
+		LOG.debug("End MapperUpload");
+		return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
+	}
+
+	@RequestMapping(value = "/uploadRates", method = RequestMethod.POST)
 	public ResponseEntity<CustomResponse> fileUpload(@RequestParam("file") MultipartFile multipartfile,
 			@RequestParam("fileType") String fileType, @RequestParam("date") String date,
 			@RequestParam("overwrite") Boolean overwrite, Principal user) throws InterruptedException {
@@ -90,32 +131,11 @@ public class FileController {
 		HttpStatus httpStatus = HttpStatus.OK;
 		CustomResponse customResponse = null;
 		User appUser = ftpAuditService.getUserFromPrincipal(user);
-		FtpEntity ftpEntity = appUser.getEntity();
 
 		try {
 			FileInfo fileInfo = this.saveUploadedFile(multipartfile);
 			if (fileInfo.getFileSaved()) {
-				if ("CT".equals(fileType)) {
-					customResponse = grandMapperService.uploadToTemp(fileInfo, date, user);
-					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
-						customResponse.setData(grandMapperService.getDifferenceOfTempAndMain(ftpEntity));
-					}
-				} else if ("PD".equals(fileType)) {
-					customResponse = productMapperService.uploadToTemp(fileInfo, date, user);
-					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
-						customResponse.setData(productMapperService.getDifferenceOfTempAndMain(ftpEntity));
-					}
-				} else if ("DC".equals(fileType)) {
-					customResponse = divisionMapperService.uploadToTemp(fileInfo, date, user);
-					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
-						customResponse.setData(divisionMapperService.getDifferenceOfTempAndMain(ftpEntity));
-					}
-				} else if ("PC".equals(fileType)) {
-					customResponse = policyMapperFileService.uploadToTemp(fileInfo, date, user);
-					if (customResponse.getStatus().equals(Constants.STATUS_OK)) {
-						customResponse.setData(policyMapperFileService.getDifferenceOfTempAndMain(ftpEntity));
-					}
-				} else if ("Currency Rates".equals(fileType)) {
+			if ("Currency Rates".equals(fileType)) {
 					if (overwrite) {
 						fileUploadService.deleteExistingRecords(fileType, date, appUser);
 					}
@@ -143,6 +163,39 @@ public class FileController {
 			LOG.error("Error in data for file upload.");
 		}
 		LOG.debug("End fileUpload");
+		return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
+	}
+	@RequestMapping(value = "/getDifferences", method = RequestMethod.POST)
+	public ResponseEntity<CustomResponse> getDifferences(@RequestParam("fileType") String fileType, Principal user) {
+		LOG.debug("Start comparision");
+		HttpStatus httpStatus = HttpStatus.OK;
+		CustomResponse customResponse = new CustomResponse();
+		User appUser = ftpAuditService.getUserFromPrincipal(user);
+		FtpEntity ftpEntity = appUser.getEntity();
+
+		try {
+
+			if ("CT".equals(fileType)) {
+				customResponse.setData(grandMapperService.getDifferenceOfTempAndMain(ftpEntity));
+				customResponse.setDescription(Constants.COMPARISION_DONE);
+			} else if ("PD".equals(fileType)) {
+				customResponse.setData(productMapperService.getDifferenceOfTempAndMain(ftpEntity));
+				customResponse.setDescription(Constants.COMPARISION_DONE);
+
+			} else if ("DC".equals(fileType)) {
+				customResponse.setData(divisionMapperService.getDifferenceOfTempAndMain(ftpEntity));
+				customResponse.setDescription(Constants.COMPARISION_DONE);
+
+			} else if ("PC".equals(fileType)) {
+				customResponse.setData(policyMapperFileService.getDifferenceOfTempAndMain(ftpEntity));
+				customResponse.setDescription(Constants.COMPARISION_DONE);
+			}
+			customResponse.setStatus(Constants.STATUS_OK);
+		} catch (Exception e) {
+			customResponse.setDescription("Error in comparing files.");
+			LOG.error("Error while comparing.");
+		}
+		LOG.debug("End comparision");
 		return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
 	}
 

@@ -18,10 +18,12 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +74,7 @@ public class GrandMapperFileService implements MapperFileService {
 	MapperConversionService mapperConversionService;
 
 	@Override
-	public CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user) {
+	public CustomResponse uploadToTemp(FileInfo fileInfo, Principal user) {
 		LOG.info(" Start uploadToTemp ");
 		User appUser = ftpAuditService.getUserFromPrincipal(user);
 		FileInputStream excelFile = null;
@@ -91,9 +93,11 @@ public class GrandMapperFileService implements MapperFileService {
 		try {
 			excelFile = new FileInputStream(fileInfo.getUploadedFile());
 			workbook = WorkbookFactory.create(excelFile);
+			FormulaEvaluator evaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
 			datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
 			rowIterator.next();
+			// evaluator.evaluateAll();
 
 			List<FTPGrandMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
@@ -169,8 +173,10 @@ public class GrandMapperFileService implements MapperFileService {
 					mapper.setGroupByLogic(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(21);
-					mapper.setCount(mapperConversionService.getDoubleValueOfCurrentCell(currentCell));
+					mapper.setCount(mapperConversionService.getDoubleValueOfCurrentCell(currentCell, evaluator));
 
+					MapperVersion version = mapperVersionService.getMapper("CT");
+					mapper.setVersion(version.getVersionChars() + (version.getCurrentVersion()+1));
 					mapper.setUploadedDate(new Date());
 					mapper.setUploadedBy(user.getName());
 					mapper.setBankCode(appUser.getEntity());
@@ -202,8 +208,9 @@ public class GrandMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalArgumentException e) {
+			int num = currentRow.getRowNum() + 1;
 			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum());
+					+ datatypeSheet.getSheetName() + ", in row number " + num);
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -213,7 +220,9 @@ public class GrandMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalStateException e) {
-			response.setDescription("Unable to parse data, please check the file format.");
+			int num = currentRow.getRowNum() + 1;
+			response.setDescription("Unable to parse data, error while processing in sheet "
+					+ datatypeSheet.getSheetName() + ", in row number " + num);
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -242,7 +251,7 @@ public class GrandMapperFileService implements MapperFileService {
 		audit.setPostTxnVal(ftpAuditService.objectToJson(fileInfo));
 		ftpAuditService.logAudit(audit);
 		LOG.info(" Start uploadToTemp ");
-		
+
 		return response;
 	}
 

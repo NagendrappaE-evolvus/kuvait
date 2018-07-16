@@ -3,8 +3,8 @@ package com.evolvus.abk.ftp.service.impl;
 import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,8 @@ public class MapperConversionService {
 
 	// Category Mapper Converters
 	private static final Logger LOG = LoggerFactory.getLogger(MapperConversionService.class);
+	DataFormatter dataFormatter = new DataFormatter();
+	FormulaEvaluator evaluator = null;
 
 	public FTPGrandMapper tempToMain(FTPGrandMapperTemp tempMapper) {
 		LOG.info("Start tempToMain");
@@ -70,7 +72,7 @@ public class MapperConversionService {
 
 		mainMapper.setVersion(tempMapper.getVersion());
 		mainMapper.setBankCode(tempMapper.getBankCode());
-		
+
 		LOG.info("End tempToMain");
 		return mainMapper;
 	}
@@ -117,7 +119,7 @@ public class MapperConversionService {
 
 		archivalMapper.setVersion(mainMapper.getVersion());
 		archivalMapper.setBankCode(mainMapper.getBankCode());
-		
+
 		LOG.info("End mainToArchive");
 		return archivalMapper;
 	}
@@ -138,7 +140,7 @@ public class MapperConversionService {
 		mainMapper.setUploadedDate(tempMapper.getUploadedDate());
 		mainMapper.setUploadedBy(tempMapper.getUploadedBy());
 		mainMapper.setVersion(tempMapper.getVersion());
-		
+
 		LOG.info("End tempToMain");
 		return mainMapper;
 
@@ -198,14 +200,14 @@ public class MapperConversionService {
 
 		mainMapper.setUploadedBy(tempMapper.getUploadedBy());
 		mainMapper.setBankCode(tempMapper.getBankCode());
-		
+
 		mainMapper.setVersion(tempMapper.getVersion());
 		LOG.info("End tempToMain");
 		return mainMapper;
 	}
 
 	public FTPPolicyMapperArchive mainToArchive(FTPPolicyMapper mainMapper) {
-		
+
 		LOG.info(" Start mainToArchive ");
 		FTPPolicyMapperArchive archivalMapper = new FTPPolicyMapperArchive();
 		archivalMapper.setFtpCategory(mainMapper.getFtpCategory());
@@ -298,61 +300,75 @@ public class MapperConversionService {
 		LOG.info(" End mainToArchive ");
 		return archivalMapper;
 	}
-	
-	public int getNumericCellValue(Cell currentCell) {
 
+	public int getNumericCellValue(Cell currentCell, FormulaEvaluator evaluator) {
+		/*currentCell = evaluator.evaluateInCell(currentCell);*/
 		try {
-			if (currentCell==null) {
-				return 0;
+			if (currentCell == null) {
+				return -111;
 			} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				return (int) currentCell.getNumericCellValue();
-			}else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
-				return Integer.parseInt(currentCell.getStringCellValue());
+			} else if (currentCell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+				return (int) currentCell.getNumericCellValue();
 			}
+			return Integer.parseInt(dataFormatter.formatCellValue(currentCell));
+
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
-		return 0;
+		return -111;
 	}
 
-	public Double getDoubleValueOfCurrentCell(Cell currentCell) {
-
+	public Double getDoubleValueOfCurrentCell(Cell currentCell, FormulaEvaluator evaluator) {
 		try {
 			if (currentCell == null) {
-				return 0.0;
+				return null;
 			} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				return currentCell.getNumericCellValue();
-			}else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
-				return Double.parseDouble(currentCell.getStringCellValue());
+			} else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
+				return Double.parseDouble(currentCell.getStringCellValue().trim());
+			} else if (currentCell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+				return currentCell.getNumericCellValue();
 			}
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
-		return 0.0;
+		return null;
 	}
-	
-	public BigDecimal getBigdecimalValueOfCurrentCell(Cell currentCell) {
-		DataFormatter dataFormatter = new DataFormatter();
+
+	public BigDecimal getBigdecimalValueOfCurrentCell(Cell currentCell, FormulaEvaluator evaluator) {
 		try {
 			if (currentCell == null) {
-				return new BigDecimal("0.0");
+				return null;
 			} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 				return BigDecimal.valueOf(currentCell.getNumericCellValue());
-			}else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
-				return BigDecimal.valueOf(Double.parseDouble(currentCell.getStringCellValue()));
+			} else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
+				return BigDecimal.valueOf(Double.parseDouble(currentCell.getStringCellValue().trim()));
+			} else if (currentCell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+				return BigDecimal.valueOf(currentCell.getNumericCellValue());
 			}
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
-		return new BigDecimal("0.0");
+		return null;
 	}
-	
+
 	public String getStringCellValue(Cell currentCell) {
 
-		if (currentCell==null) {
+		if (currentCell == null) {
 			return "";
-		} else if (currentCell.getCellTypeEnum() == CellType.STRING) {
+		} else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
 			return currentCell.getStringCellValue().trim();
+		} else if (currentCell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+			return currentCell.getRichStringCellValue().toString().trim();
+		} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+			return dataFormatter.formatCellValue(currentCell).trim();
+		} else if (currentCell.getCellType() == Cell.CELL_TYPE_BLANK) {
+			return "";
+		} else if (currentCell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
+			return dataFormatter.formatCellValue(currentCell).trim();
+		} else if (currentCell.getCellType() == Cell.CELL_TYPE_ERROR) {
+			return "";
 		}
 		return "";
 

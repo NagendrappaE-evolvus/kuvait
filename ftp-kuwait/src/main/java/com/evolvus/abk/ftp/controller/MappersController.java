@@ -95,7 +95,39 @@ public class MappersController {
 			}
 		} catch (Exception e) {
 			LOG.error("ERROR In loading data");
+			customResponse.setDescription("ERROR In processing mappers");
 		}
+		LOG.debug("End process mapper");
+		return new ResponseEntity<>(customResponse, httpStatus);
+	}
+	
+	@RequestMapping(value = "/clearTempMapper", method = RequestMethod.POST)
+	public ResponseEntity<CustomResponse> clearRecordsInTempMapper(@RequestParam("mapperName") String mapperName, Principal user) {
+		LOG.debug("Start clear mapper");
+		HttpStatus httpStatus = HttpStatus.OK;
+		CustomResponse customResponse = new CustomResponse();
+		User appUser=ftpAuditService.getUserFromPrincipal(user);
+		FtpEntity ftpEntity = appUser.getEntity();
+		try {
+			if ("CT".equals(mapperName)) {
+				grandMapperService.clearRecords(ftpEntity);
+			}
+			if ("PD".equals(mapperName)) {
+				productMapperService.clearRecords(ftpEntity);
+		
+			}
+			if ("PC".equals(mapperName)) {
+				policyMapperService.clearRecords(ftpEntity);
+			}
+			if ("DC".equals(mapperName)) {
+				divisionMapperService.clearRecords(ftpEntity);	
+			}
+		} catch (Exception e) {
+			LOG.error("ERROR In clearing data");
+			customResponse.setDescription("ERROR In clearing temp");
+		}
+		customResponse.setStatus("OK");
+		customResponse.setDescription("Upload was not successful");
 		return new ResponseEntity<>(customResponse, httpStatus);
 	}
 }

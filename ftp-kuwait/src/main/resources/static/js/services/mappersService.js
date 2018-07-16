@@ -28,6 +28,33 @@ app.factory('MapperService', [
 								+ JSON.stringify(errResponse));
 						return errResponse;
 					});
+				},
+				clearTemp : function(type) {
+					return $http.post("/mappers/clearTempMapper?mapperName="+encodeURI(type))
+					.then(function(response) {
+						result = response.data;
+						return result;
+					}, function(errResponse) {
+						console.log('Error while clearing temp file:'
+								+ JSON.stringify(errResponse));
+						return errResponse;
+					});
+				},
+				getDifferences : function(fileType) {
+					return $http.post("/file/getDifferences?fileType="+fileType,
+							{
+								headers : {
+									'Content-Type' : undefined
+								}
+							}).then(function(response) {
+						result = response.data;
+						return result;
+
+					}, function(errResponse) {
+								console.log('Error while comparing the files:'
+										+ JSON.stringify(errResponse));
+								return errResponse;
+					});
 				}
 			};
 		}]);

@@ -72,7 +72,7 @@ public class ProductMapperFileService implements MapperFileService {
 	MapperVersionService mapperVersionService;
 
 	@Override
-	public CustomResponse uploadToTemp(FileInfo fileInfo, String date, Principal user) {
+	public CustomResponse uploadToTemp(FileInfo fileInfo, Principal user) {
 		LOG.info(" Start uploadToTemp ");
 		User appUser = ftpAuditService.getUserFromPrincipal(user);
 		FileInputStream excelFile = null;
@@ -121,7 +121,9 @@ public class ProductMapperFileService implements MapperFileService {
 
 					currentCell = currentRow.getCell(5);
 					mapper.setCorePrnt(mapperConversionService.getStringCellValue(currentCell));
-
+					
+					MapperVersion version = mapperVersionService.getMapper("PD");
+					mapper.setVersion(version.getVersionChars() + (version.getCurrentVersion()+1));
 					mapper.setUploadedDate(new Date());
 					mapper.setUploadedBy(user.getName());
 					mapper.setBankCode(appUser.getEntity());
@@ -153,8 +155,9 @@ public class ProductMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalArgumentException e) {
+			int num=currentRow.getRowNum()+1;
 			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + currentRow.getRowNum());
+					+ datatypeSheet.getSheetName() + ", in row number " + num);
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -164,7 +167,9 @@ public class ProductMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalStateException e) {
-			response.setDescription("Unable to parse data, please check the file format.");
+			int num=currentRow.getRowNum()+1;
+			response.setDescription("Unable to parse data, error while processing in sheet "
+					+ datatypeSheet.getSheetName() + ", in row number " + num);
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
