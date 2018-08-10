@@ -128,13 +128,19 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 					mapper.setOfficer(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(6);
-					mapper.setSubDivision(mapperConversionService.getStringCellValue(currentCell));
-
+					mapper.setSubDivisionIn(mapperConversionService.getStringCellValue(currentCell));
+					
 					currentCell = currentRow.getCell(7);
-					mapper.setDivision(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setSubDivisionNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(8);
+					mapper.setDivision(mapperConversionService.getStringCellValue(currentCell));
+
+					currentCell = currentRow.getCell(9);
 					mapper.setFinalDivisionDesc(mapperConversionService.getStringCellValue(currentCell));
+					
+					currentCell = currentRow.getCell(10);
+					mapper.setFtpDivisionCode(mapperConversionService.getStringCellValue(currentCell));
 					
 					MapperVersion version = mapperVersionService.getMapper("DC");
 					mapper.setVersion(version.getVersionChars() + (version.getCurrentVersion()+1));

@@ -117,62 +117,68 @@ public class GrandMapperFileService implements MapperFileService {
 
 					currentCell = currentRow.getCell(2);
 					mapper.setDrFtpCat(mapperConversionService.getStringCellValue(currentCell));
-
+					
 					currentCell = currentRow.getCell(3);
 					mapper.setCrFtpCat(mapperConversionService.getStringCellValue(currentCell));
-
+					
 					currentCell = currentRow.getCell(4);
-					mapper.setUserSubclassCodeIn(mapperConversionService.getStringCellValue(currentCell));
-
+					mapper.setEntityNoIn(mapperConversionService.getStringCellValue(currentCell));
+					
 					currentCell = currentRow.getCell(5);
-					mapper.setUserSubclassCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setEntityNoNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(6);
-					mapper.setBAcidIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setUserSubclassCodeIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(7);
-					mapper.setBAcidNotIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setUserSubclassCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(8);
-					mapper.setDivisionCodeIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setBAcidIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(9);
-					mapper.setDivisionCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setBAcidNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(10);
-					mapper.setCustInLength(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setDivisionCodeIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(11);
-					mapper.setCustTypeIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setDivisionCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(12);
-					mapper.setCustNotInLength(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setCustInLength(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(13);
-					mapper.setCustTypeNotIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setCustTypeIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(14);
-					mapper.setSubDivisionCodeIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setCustNotInLength(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(15);
-					mapper.setSubDivisionCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setCustTypeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(16);
-					mapper.setTradingBookNameIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setSubDivisionCodeIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(17);
-					mapper.setTradingBookNameNotIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setSubDivisionCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(18);
-					mapper.setInstrumentClassIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setTradingBookNameIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(19);
-					mapper.setInstrumentClassNotIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setTradingBookNameNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(20);
-					mapper.setGroupByLogic(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setInstrumentClassIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(21);
+					mapper.setInstrumentClassNotIn(mapperConversionService.getStringCellValue(currentCell));
+
+					currentCell = currentRow.getCell(22);
+					mapper.setGroupByLogic(mapperConversionService.getStringCellValue(currentCell));
+
+					currentCell = currentRow.getCell(23);
 					mapper.setCount(mapperConversionService.getDoubleValueOfCurrentCell(currentCell, evaluator));
 
 					MapperVersion version = mapperVersionService.getMapper("CT");

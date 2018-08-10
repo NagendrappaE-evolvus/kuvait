@@ -40,6 +40,12 @@ public class FTPGrandMapperArchive {
 	@Column(name="DR_FTP_CATEGORY", length=255)
 	private String drFtpCat;
 	
+	@Column(name="ENTITY_NO_IN", length=255)
+	private String entityNoIn;
+	
+	@Column(name="ENTITY_NO_NOT_IN", length=255)
+	private String entityNoNotIn;
+	
 	@Column(name="CR_FTP_CATEGORY", length=255)
 	private String crFtpCat;
 	

@@ -9,12 +9,11 @@ app.controller("MapperController", [
 				$state.transitionTo("login");
 			}
 			$scope.uploadFile = function() {
-			/*	if ($scope.applicableDate == undefined
-						|| $scope.applicableDate == "") {
-					alertify.alert("Error",
-							"Please select a valid date from calendar.");
-					return false;
-				}*/
+			/*
+			 * if ($scope.applicableDate == undefined || $scope.applicableDate ==
+			 * "") { alertify.alert("Error", "Please select a valid date from
+			 * calendar."); return false; }
+			 */
 				if ($scope.fileType == undefined || $scope.fileType == "") {
 					alertify.alert("Error", "Please select the file type.");
 					return false;
@@ -39,6 +38,9 @@ app.controller("MapperController", [
 							if (response.status === "OK") {
 								$scope.message = "Comparison is in progress... Please Wait";	
 								$scope.startComparision();
+							}
+							else{
+								$scope.showLoading=false;
 							}
 						}, function(errorResponse) {
 							$scope.message = "Error occurred in file upload";
@@ -134,13 +136,15 @@ app.controller("MapperController", [
 				$scope.mainList = [];
 				$scope.tempList = [];
 				$scope.message = "";
-				/*	$scope.applicableDate = "";
-				$scope.uploadForm.applicableDate.$pristine = true;*/
+				/*
+				 * $scope.applicableDate = "";
+				 * $scope.uploadForm.applicableDate.$pristine = true;
+				 */
 				$scope.showTable=false;
 			};
 
 			$scope.categoryMapper = ["VERSION", "GL SUBHEAD CODE", "GL SUBHEAD DESC",
-					"DR FTP CATEGORY", "CR FTP CATEGORY",
+					"DR FTP CATEGORY", "CR FTP CATEGORY", "ENTITY_NO_IN", "ENTITY_NO_NOT_IN",
 					"USER SUBCLASS CODE IN", "USER SUBCLASS CODE NOT IN",
 					"BACID IN", "BACID NOT IN", "DIVISION CODE IN",
 					"DIVISION CODE NOT IN", "CUST IN LENGTH", "CUST TYPE IN",
@@ -161,11 +165,12 @@ app.controller("MapperController", [
 				"CATEGORY",
 				"DIVISION DESC",
 				"OFFICER",
-				"SUBDIVISION",
+				"SUBDIVISION In",
+				"SUBDIVISION Not In",
 				"DIVISION",
 				"FINAL DIVISION DESC",
-				"UPLOADED DATE",
-				"BANK ID"
+				"FTP_DIVISION_CODE",
+				"UPLOADED DATE"
 			];
 			
 			$scope.policyMapper = ["VERSION",
@@ -176,8 +181,7 @@ app.controller("MapperController", [
 					"CUST TYPE NOT IN", "SUBDIVISION CODE IN",
 					"SUBDIVISION CODE NOT IN", "FIXED LENGTH", "MATURITY DATE",
 					"BASE TENOR", "MARGIN TENOR", "APPLICABLE CURVE",
-					"PRE POST", "FINAL FTP CATEGORY", "UPLOADED DATE",
-					"BANK ID"
+					"PRE POST", "FINAL FTP CATEGORY", "UPLOADED DATE"
 			];
 			$scope.getSplitWord = function(item){
 	     		$scope.item1 = [];
@@ -202,6 +206,9 @@ app.controller("MapperController", [
 	    		  if(obj.glSubheadCode == val.glSubheadCode &&  
 	    				  	obj.glSubheadDesc == val.glSubheadDesc &&
 							obj.drFtpCat == val.drFtpCat &&
+							
+							obj.entityNoIn == val.entityNoIn &&
+							obj.entityNoNotIn == val.entityNoNotIn &&
 							obj.crFtpCat == val.crFtpCat &&
 							obj.userSubclassCodeIn == val.userSubclassCodeIn &&
 
@@ -244,6 +251,9 @@ app.controller("MapperController", [
 	    		  if(obj.glSubheadCode == val.glSubheadCode &&  
 	    				  obj.glSubheadDesc == val.glSubheadDesc &&
 							obj.drFtpCat == val.drFtpCat &&
+							
+							obj.entityNoIn == val.entityNoIn &&
+							obj.entityNoNotIn == val.entityNoNotIn &&
 							obj.crFtpCat == val.crFtpCat &&
 							obj.userSubclassCodeIn == val.userSubclassCodeIn &&
 

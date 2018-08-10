@@ -50,16 +50,21 @@ public class FTPDivisionCodeMapperTemp {
 	@Column(name="OFFICER")
 	private String officer;
 
-	@Column(name="SUBDIVISION",length=10)
-	private String subDivision;
+	@Column(name="SUBDIVISION_IN",length=255)
+	private String subDivisionIn;
+	
+	@Column(name="SUBDIVISION_NOT_IN",length=255)
+	private String subDivisionNotIn;
 	
 	@Column(name="DIVISION",length=10)
 	private String division;
 
 	@Column(name="FINAL_DIVISION_DESC")
 	private String finalDivisionDesc;
-
-
+	
+	@Column(name="FTP_DIVISION_CODE" ,length=20)
+	private String ftpDivisionCode;
+	
 	@Column(name="UPLOADED_DATE")
 	private Date uploadedDate;
 	

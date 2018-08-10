@@ -22,7 +22,7 @@ import lombok.ToString;
 
 @Data
 @Entity 
-@Table(name="FTP_KEY_RATES")
+@Table(name="FTP_STATIC_RATES")
 @ToString
 public class KeyRates {
 	
@@ -41,7 +41,7 @@ public class KeyRates {
 	@Column(name="TENOR")
 	private String tenor;
 	
-	@Column(name="KEY_RATE", columnDefinition="decimal(17,7)")
+	@Column(name="STATIC_RATE", columnDefinition="decimal(17,7)")
 	private BigDecimal keyRate;
 	
 	@Column(name="LATEST")

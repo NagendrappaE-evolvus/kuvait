@@ -17,9 +17,9 @@ public interface DivisionCodeMapperTempRepository extends CrudRepository<FTPDivi
 
 	@Query(value ="SELECT tempMapper.gl_sub_head_code FROM FTP_FINAL_DIVISION_MAPPER_TEMP tempMapper where tempMapper.bank_id=:bankCode and "
 			+"CONCAT(tempMapper.gl_sub_head_code,tempMapper.glsh_char ,tempMapper.entity_code ,tempMapper.category," + 
-			"tempMapper.division_desc,tempMapper.officer,tempMapper.subdivision,tempMapper.division," + 
+			"tempMapper.division_desc,tempMapper.officer,tempMapper.subdivision_in,tempMapper.subdivision_not_in,tempMapper.ftp_division_code,tempMapper.division," + 
 			"tempMapper.final_division_desc) not in (SELECT CONCAT(mapper.gl_sub_head_code,mapper.glsh_char ,mapper.entity_code ,mapper.category, " + 
-			"mapper.division_desc,mapper.officer,mapper.subdivision,mapper.division," + 
+			"mapper.division_desc,mapper.officer,mapper.subdivision_in,mapper.subdivision_not_in,mapper.ftp_division_code,mapper.division," + 
 			"mapper.final_division_desc) from FTP_FINAL_DIVISION_MAPPER mapper where mapper.bank_id=:bankCode)",
 			nativeQuery=true)
 	List<String> fetchRecordsNotInMain(@Param("bankCode")String bankCode);

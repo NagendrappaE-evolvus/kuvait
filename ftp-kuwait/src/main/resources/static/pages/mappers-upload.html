@@ -122,6 +122,10 @@
 										<td>{{obj.glSubheadDesc}}</td>
 										<td>{{obj.drFtpCat}}</td>
 										<td>{{obj.crFtpCat}}</td>
+										
+										<td>{{obj.entityNoIn}}</td>
+										<td>{{obj.entityNoNotIn}}</td>
+								
 										<td>{{obj.userSubclassCodeIn}}</td>
 
 										<td>{{obj.userSubclassCodeNotIn}}</td>
@@ -178,6 +182,9 @@
 										<td>{{obj.glSubheadDesc}}</td>
 										<td>{{obj.drFtpCat}}</td>
 										<td>{{obj.crFtpCat}}</td>
+										
+										<td>{{obj.entityNoIn}}</td>
+										<td>{{obj.entityNoNotIn}}</td>									
 										<td>{{obj.userSubclassCodeIn}}</td>
 
 										<td>{{obj.userSubclassCodeNotIn}}</td>
@@ -323,8 +330,7 @@
 										<td>{{obj.prePost}}</td>
 
 										<td>{{obj.finalFtpCategory}}</td>
-										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
-										<td>{{obj.bankCode.bankCode}}</td>								
+										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>							
 									</tr>
 								</tbody>
 							</table>
@@ -374,8 +380,7 @@
 										<td>{{obj.prePost}}</td>
 
 										<td>{{obj.finalFtpCategory}}</td>
-										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
-										<td>{{obj.bankCode.bankCode}}</td>									
+										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>								
 									</tr>
 								</tbody>
 							</table>
@@ -412,12 +417,13 @@
 										<td>{{obj.category}}</td>
 										<td>{{obj.divisionDesc}}</td>
 										<td>{{obj.officer}}</td>
-										<td>{{obj.subDivision}}</td>
-
+										<td>{{obj.subDivisionIn}}</td>
+                                        <td>{{obj.subDivisionNotIn}}</td>
+                                        
 										<td>{{obj.division}}</td>
 										<td>{{obj.finalDivisionDesc}}</td>
+										<td>{{obj.ftpDivisionCode}}</td>
 										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
-										<td>{{obj.bankCode.bankCode}}</td>	
 									</tr>
 								</tbody>
 							</table>
@@ -444,7 +450,7 @@
 										<td style="text-align: center"
 											colspan="{{divisionMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': (obj.changed)}">
+									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': true}">
 										<td>{{obj.version}}</td>
 										<td>{{obj.glSubHeadCode}}</td>
 										<td>{{obj.glshChar}}</td>
@@ -452,12 +458,13 @@
 										<td>{{obj.category}}</td>
 										<td>{{obj.divisionDesc}}</td>
 										<td>{{obj.officer}}</td>
-										<td>{{obj.subDivision}}</td>
-
+										<td>{{obj.subDivisionIn}}</td>
+                                        <td>{{obj.subDivisionNotIn}}</td>
+                                        
 										<td>{{obj.division}}</td>
 										<td>{{obj.finalDivisionDesc}}</td>
-										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
-										<td>{{obj.bankCode.bankCode}}</td>								
+										<td>{{obj.ftpDivisionCode}}</td>
+										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>							
 									</tr>
 								</tbody>
 							</table>

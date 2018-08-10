@@ -20,7 +20,7 @@ public class FtpEntity implements Serializable{
 	private static final long serialVersionUID = -1365559768098015670L;
 
 	@Id
-	@Column(name="BANK_CODE", length=2)
+	@Column(name="BANK_ID", length=2)
 	private String bankCode;
 	
 	@Column(name="REGION_NAME", length=100)

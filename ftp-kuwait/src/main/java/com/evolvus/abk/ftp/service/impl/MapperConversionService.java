@@ -39,6 +39,9 @@ public class MapperConversionService {
 
 		mainMapper.setDrFtpCat(tempMapper.getDrFtpCat());
 		mainMapper.setCrFtpCat(tempMapper.getCrFtpCat());
+		
+		mainMapper.setEntityNoIn(tempMapper.getEntityNoIn());
+		mainMapper.setEntityNoNotIn(tempMapper.getEntityNoNotIn());
 
 		mainMapper.setUserSubclassCodeIn(tempMapper.getUserSubclassCodeIn());
 		mainMapper.setUserSubclassCodeNotIn(tempMapper.getUserSubclassCodeNotIn());
@@ -86,6 +89,9 @@ public class MapperConversionService {
 
 		archivalMapper.setDrFtpCat(mainMapper.getDrFtpCat());
 		archivalMapper.setCrFtpCat(mainMapper.getCrFtpCat());
+		
+		archivalMapper.setEntityNoIn(mainMapper.getEntityNoIn());
+		archivalMapper.setEntityNoNotIn(mainMapper.getEntityNoNotIn());
 
 		archivalMapper.setUserSubclassCodeIn(mainMapper.getUserSubclassCodeIn());
 		archivalMapper.setUserSubclassCodeNotIn(mainMapper.getUserSubclassCodeNotIn());
@@ -260,10 +266,13 @@ public class MapperConversionService {
 		mainMapper.setDivisionDesc(tempMapper.getDivisionDesc());
 
 		mainMapper.setOfficer(tempMapper.getOfficer());
-		mainMapper.setSubDivision(tempMapper.getSubDivision());
-
+		mainMapper.setSubDivisionIn(tempMapper.getSubDivisionIn());
+		mainMapper.setSubDivisionNotIn(tempMapper.getSubDivisionNotIn());
+		
 		mainMapper.setDivision(tempMapper.getDivision());
 		mainMapper.setFinalDivisionDesc(tempMapper.getFinalDivisionDesc());
+		
+		mainMapper.setFtpDivisionCode(tempMapper.getFtpDivisionCode());
 
 		mainMapper.setUploadedBy(tempMapper.getUploadedBy());
 		mainMapper.setUploadedDate(tempMapper.getUploadedDate());
@@ -287,11 +296,13 @@ public class MapperConversionService {
 		archivalMapper.setDivisionDesc(mainMapper.getDivisionDesc());
 
 		archivalMapper.setOfficer(mainMapper.getOfficer());
-		archivalMapper.setSubDivision(mainMapper.getSubDivision());
-
+		archivalMapper.setSubDivisionIn(mainMapper.getSubDivisionIn());
+		archivalMapper.setSubDivisionNotIn(mainMapper.getSubDivisionNotIn());
+		
 		archivalMapper.setDivision(mainMapper.getDivision());
 		archivalMapper.setFinalDivisionDesc(mainMapper.getFinalDivisionDesc());
 
+		archivalMapper.setFtpDivisionCode(mainMapper.getFtpDivisionCode());
 		archivalMapper.setUploadedBy(mainMapper.getUploadedBy());
 		archivalMapper.setUploadedDate(mainMapper.getUploadedDate());
 
@@ -362,7 +373,12 @@ public class MapperConversionService {
 		} else if (currentCell.getCellType() == Cell.CELL_TYPE_FORMULA) {
 			return currentCell.getRichStringCellValue().toString().trim();
 		} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-			return dataFormatter.formatCellValue(currentCell).trim();
+			String temp = dataFormatter.formatCellValue(currentCell).trim();
+			if(temp.contains(","))
+			{
+				temp = ""+currentCell.getNumericCellValue();
+			}
+			return temp;
 		} else if (currentCell.getCellType() == Cell.CELL_TYPE_BLANK) {
 			return "";
 		} else if (currentCell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {

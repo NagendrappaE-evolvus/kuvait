@@ -75,7 +75,7 @@ public class KeyRateFileService implements RateService {
 			workbook = WorkbookFactory.create(excelFile);
 			sqlDate = new java.sql.Date(new SimpleDateFormat("dd-MM-yyyy").parse(date).getTime());
 			Iterator<Row> rowIterator;
-			datatypeSheet = workbook.getSheet("Static_Rates_Data");
+			datatypeSheet = workbook.getSheetAt(0);
 			rowIterator = datatypeSheet.iterator();
 			int temp = 0;
 			if (rowIterator.hasNext()) {
@@ -86,10 +86,14 @@ public class KeyRateFileService implements RateService {
 					keyrate.setBusinessCloseDate(sqlDate);
 					keyrate.setBankCode(user.getEntity());
 
-					Cell currentCell = currentRow.getCell(0);
-					keyrate.setTenor(mapperConversionService.getStringCellValue(currentCell));
-
+					
+					Cell currentCell = currentRow.getCell(0);	
+					keyrate.setCurrency(mapperConversionService.getStringCellValue(currentCell));
+					
 					currentCell = currentRow.getCell(1);
+					keyrate.setTenor(mapperConversionService.getStringCellValue(currentCell));
+				
+					currentCell = currentRow.getCell(2);
 					if (currentCell == null) {
 						throw new IllegalArgumentException();
 					} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -100,7 +104,6 @@ public class KeyRateFileService implements RateService {
 						throw new IllegalStateException();
 					}
 
-					keyrate.setCurrency(KeyRateConstants.KEY_RATES_HEADERS.get(temp).get("ccy"));
 					keyrate.setUploadedBy(user.getUsername());
 					keyrate.setUploadedDate(new Date());
 					if (overwrite) {

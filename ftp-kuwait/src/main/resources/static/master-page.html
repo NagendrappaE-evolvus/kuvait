@@ -46,7 +46,7 @@
 							<li><a ui-sref="home.schemecodes">Scheme Codes</a></li>
 							<li><a ui-sref="home.user-mgmt">User Management</a></li>
 						</ul></li> -->
-					<li role="navigation" ui-sref-active="active" class="dropdown"><a
+					<li ng-if="user.isAdmin" role="navigation" ui-sref-active="active" class="dropdown"><a
 						class="dropdown-toggle" data-toggle="dropdown" href="#"
 						onclick="return false;" role="button" aria-haspopup="false"
 						aria-expanded="true">Configuration &nbsp;<span class="caret"></span></a>

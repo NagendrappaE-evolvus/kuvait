@@ -23,7 +23,7 @@ public interface PolicyMapperTempRepository extends CrudRepository<FTPPolicyMapp
 			+ "mapper.subdivision_code_not_in,mapper.fixed_float,mapper.maturity_date,mapper.base_tenor,mapper.margin_tenor,mapper.applicable_curve,mapper.pre_post,mapper.final_ftp_category) FROM ftp_curve_mapper mapper where  mapper.bank_id=:bankCode)",nativeQuery=true)
 	List<String> fetchRecordsNotInMain(@Param("bankCode")String bankCode);
 	
-	List<FTPPolicyMapperTemp> findByFtpCategoryInOrderByFtpCategory(Set<String> ftpCategories);
+	List<FTPPolicyMapperTemp> findByFtpCategoryInAndBankCodeOrderByFtpCategory(Set<String> ftpCategories,FtpEntity ftpEntity);
 
 	@Transactional
 	Long deleteInBulkByBankCode(FtpEntity entity);

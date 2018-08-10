@@ -259,9 +259,9 @@ public class PolicyMapperFileService implements MapperFileService {
 		ftpCategorySet.addAll(tempNotInMain);
 		ftpCategorySet.addAll(mainNotInTemp);
 		List<FTPPolicyMapperTemp> tempNotInMainList = policyMapperTempRepository
-				.findByFtpCategoryInOrderByFtpCategory(ftpCategorySet);
+				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategorySet,ftpEntity);
 		List<FTPPolicyMapper> mainNotInTempList = policyMapperRepository
-				.findByFtpCategoryInOrderByFtpCategory(ftpCategorySet);
+				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategorySet,ftpEntity);
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);

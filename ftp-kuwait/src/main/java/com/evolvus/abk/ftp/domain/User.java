@@ -74,7 +74,7 @@ public class User implements Serializable{
 	private String password;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "BANK_CODE")
+	@JoinColumn(name = "BANK_ID")
 	private FtpEntity entity;
 
 	public User() {

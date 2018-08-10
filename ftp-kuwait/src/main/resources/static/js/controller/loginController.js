@@ -11,6 +11,7 @@ app.controller("LoginController", [
 								fullName:"",
 								name:"",
 								username:"",
+								isAdmin:"",
 								entity:{
 									bankCode:"",
 									regionName:"",

@@ -21,7 +21,7 @@ public interface PolicyMapperRepository extends CrudRepository<FTPPolicyMapper, 
 			+ "tempMapper.subdivision_code_not_in,tempMapper.fixed_float,tempMapper.maturity_date,tempMapper.base_tenor,tempMapper.margin_tenor,tempMapper.applicable_curve,tempMapper.pre_post,tempMapper.final_ftp_category) FROM ftp_curve_mapper_temp tempMapper where tempMapper.bank_id=:bankCode)", nativeQuery = true)
 	List<String> fetchRecordsNotInTemp(@Param("bankCode")String bankCode);
 
-	List<FTPPolicyMapper> findByFtpCategoryInOrderByFtpCategory(Set<String> ftpCategories);
+	List<FTPPolicyMapper> findByFtpCategoryInAndBankCodeOrderByFtpCategory(Set<String> ftpCategories,FtpEntity ftpEntity);
 
 	Iterable<FTPPolicyMapper> findByBankCode(FtpEntity ftpEntity);
 }
