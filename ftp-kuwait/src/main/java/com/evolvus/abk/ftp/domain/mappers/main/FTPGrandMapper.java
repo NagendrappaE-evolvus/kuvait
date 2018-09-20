@@ -33,7 +33,7 @@ public class FTPGrandMapper {
 	private Long id;
 	
 	@Column(name="GL_SUB_HEAD_CODE" ,length=10)
-	private String glSubheadCode;
+	private String glSubHeadCode;
 	
 	@Column(name="GL_SUB_HEAD_DESC", length=255)
 	private String glSubheadDesc;
@@ -41,14 +41,14 @@ public class FTPGrandMapper {
 	@Column(name="DR_FTP_CATEGORY", length=255)
 	private String drFtpCat;
 	
+	@Column(name="CR_FTP_CATEGORY", length=255)
+	private String crFtpCat;
+	
 	@Column(name="ENTITY_NO_IN", length=255)
 	private String entityNoIn;
 	
 	@Column(name="ENTITY_NO_NOT_IN", length=255)
 	private String entityNoNotIn;
-	
-	@Column(name="CR_FTP_CATEGORY", length=255)
-	private String crFtpCat;
 	
 	@Column(name="USER_SUBCLASS_CODE_IN", length=255)
 	private String userSubclassCodeIn;
@@ -57,10 +57,10 @@ public class FTPGrandMapper {
 	private String userSubclassCodeNotIn;
 	
 	@Column(name="BACID_IN", length=255)
-	private String bAcidIn;
+	private String bacidIn;
 	
 	@Column(name="BACID_NOT_IN", length=255)
-	private String bAcidNotIn;
+	private String bacidNotIn;
 	
 	@Column(name="DIVISION_CODE_IN", length=5)
 	private String divisionCodeIn;

@@ -104,11 +104,11 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered"
+							<table id = "tempTable" width="100%" class="table table-bordered"
 								border="0" cellspacing="0" cellpadding="0">
-								<tbody>
+								<tbody ng-class="{'has-changed': true}">
 									<tr>
-										<th ng-repeat="cHead in categoryMapper"><span></span>
+										<th ng-class="{'has-dup': true}" ng-repeat="cHead in categoryMapper"><span></span>
 											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
 											<span>{{item2.join(" ")}}</span></th>
 									</tr>
@@ -116,9 +116,46 @@
 										<td style="text-align: center"
 											colspan="{{categoryMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
+									<tr ng-repeat="obj in tempList">
 										<td>{{obj.version}}</td>
-										<td>{{obj.glSubheadCode}}</td>
+										<td>{{obj.glSubHeadCode}}</td>
+										<td>{{obj.glSubheadDesc}}</td>
+										<td>{{obj.drFtpCat}}</td>
+										<td>{{obj.crFtpCat}}</td>
+										
+										<td>{{obj.entityNoIn}}</td>
+										<td>{{obj.entityNoNotIn}}</td>
+								
+										<td>{{obj.userSubclassCodeIn}}</td>
+										<td>{{obj.userSubclassCodeNotIn}}</td>
+										<td>{{obj.bacidIn}}</td>
+										<td>{{obj.bacidNotIn}}</td>
+
+										<td>{{obj.divisionCodeIn}}</td>
+										<td>{{obj.divisionCodeNotIn}}</td>
+
+										<td>{{obj.custInLength}}</td>
+										<td>{{obj.custTypeIn}}</td>
+										<td>{{obj.custNotInLength}}</td>
+
+										<td>{{obj.custTypeNotIn}}</td>
+										<td>{{obj.subDivisionCodeIn}}</td>
+										<td>{{obj.subDivisionCodeNotIn}}</td>
+
+										<td>{{obj.tradingBookNameIn}}</td>
+										<td>{{obj.tradingBookNameNotIn}}</td>
+										<td>{{obj.instrumentClassIn}}</td>
+
+										<td>{{obj.instrumentClassNotIn}}</td>
+										<td>{{obj.groupByLogic}}</td>
+										<td>{{obj.count}}</td>								
+									</tr>
+									<tr ng-show="dupList.length!==0">
+										<td ng-class="{'has-dup': true}"colspan="{{divisionMapper.length}}">Duplicate rows</td>
+									</tr>	
+									<tr ng-repeat="obj in dupList">
+										<td>{{obj.version}}</td>
+										<td>{{obj.glSubHeadCode}}</td>
 										<td>{{obj.glSubheadDesc}}</td>
 										<td>{{obj.drFtpCat}}</td>
 										<td>{{obj.crFtpCat}}</td>
@@ -164,9 +201,9 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered"
+							<table id = "mainTable" width="100%" class="table table-bordered"
 								border="0" cellspacing="0" cellpadding="0">
-								<tbody>
+								<tbody ng-class="{'has-changed': true}">
 									<tr>
 										<th ng-repeat="cHead in categoryMapper"><span></span>
 											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
@@ -176,9 +213,9 @@
 										<td style="text-align: center"
 											colspan="{{categoryMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': obj.changed}">
+									<tr ng-repeat="obj in mainList">
 								    	<td>{{obj.version}}</td>
-										<td>{{obj.glSubheadCode}}</td>
+										<td>{{obj.glSubHeadCode}}</td>
 										<td>{{obj.glSubheadDesc}}</td>
 										<td>{{obj.drFtpCat}}</td>
 										<td>{{obj.crFtpCat}}</td>
@@ -225,11 +262,11 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered"
+							<table id = "tempTable" width="100%" class="table table-bordered"
 								border="0" cellspacing="0" cellpadding="0">
-								<tbody>
+								<tbody ng-class="{'has-changed': true}">
 									<tr>
-										<th ng-repeat="cHead in productMapper"><span></span>
+										<th ng-class="{'has-dup': true}" ng-repeat="cHead in productMapper"><span></span>
 											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
 											<span>{{item2.join(" ")}}</span></th>
 									</tr>
@@ -237,7 +274,7 @@
 										<td style="text-align: center"
 											colspan="{{productMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
+									<tr ng-repeat="obj in tempList">
 									    <td>{{obj.version}}</td>
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.prodCode}}</td>
@@ -245,6 +282,18 @@
 										<td>{{obj.astLiabClas}}</td>
 										<td>{{obj.coreNonCore}}</td>
 										<td>{{obj.corePrnt}}</td>							
+									</tr>
+									<tr ng-show="dupList.length!==0">
+										<td ng-class="{'has-dup': true}"colspan="{{divisionMapper.length}}"><strong>Duplicate rows</strong></td>
+									</tr>
+									<tr ng-repeat="obj2 in dupList">
+									    <td>{{obj2.version}}</td>
+										<td>{{obj2.ftpCategory}}</td>
+										<td>{{obj2.prodCode}}</td>
+										<td>{{obj2.prodDesc}}</td>
+										<td>{{obj2.astLiabClas}}</td>
+										<td>{{obj2.coreNonCore}}</td>
+										<td>{{obj2.corePrnt}}</td>							
 									</tr>
 								</tbody>
 							</table>
@@ -259,11 +308,11 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered "
+							<table id = "mainTable" width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
-								<tbody>
+								<tbody ng-class="{'has-changed': true}">
 									<tr>
-										<th ng-repeat="cHead in productMapper"><span></span>
+										<th ng-class="{'has-dup': true}" ng-repeat="cHead in productMapper"><span></span>
 											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
 											<span>{{item2.join(" ")}}</span></th>
 									</tr>
@@ -271,14 +320,14 @@
 										<td style="text-align: center"
 											colspan="{{productMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': (obj.changed)}">
-										<td>{{obj.version}}</td>
+											<tr ng-repeat="obj in mainList" >
+									    <td>{{obj.version}}</td>
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.prodCode}}</td>
 										<td>{{obj.prodDesc}}</td>
 										<td>{{obj.astLiabClas}}</td>
 										<td>{{obj.coreNonCore}}</td>
-										<td>{{obj.corePrnt}}</td>									
+										<td>{{obj.corePrnt}}</td>							
 									</tr>
 								</tbody>
 							</table>
@@ -295,9 +344,9 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered "
+							<table id = "tempTable" width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
-								<tbody>
+								<tbody ng-class="{'has-changed': true}">
 									<tr>
 										<th ng-repeat="cHead in policyMapper"><span></span>
 											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
@@ -307,7 +356,35 @@
 										<td style="text-align: center"
 											colspan="{{policyMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
+									<tr ng-repeat="obj in tempList">
+										<td>{{obj.version}}</td>
+										<td>{{obj.ftpCategory}}</td>
+										<td>{{obj.ccyCodeIn}}</td>
+										<td>{{obj.ccyCodeNotIn}}</td>
+										<td>{{obj.divisionCodeIn}}</td>
+										<td>{{obj.divisionCodeNotIn}}</td>
+										<td>{{obj.origDivisionCodeIn}}</td>
+										<td>{{obj.origDivisionCodeNotIn}}</td>
+
+										<td>{{obj.custTypeIn}}</td>
+										<td>{{obj.custTypeNotIn}}</td>
+										<td>{{obj.subdivisionCodeIn}}</td>
+										<td>{{obj.subdivisionCodeNotIn}}</td>
+										<td>{{obj.fixedLength}}</td>
+
+										<td>{{obj.maturityDate}}</td>
+										<td>{{obj.baseTenor}}</td>
+										<td>{{obj.marginTenor}}</td>
+										<td>{{obj.applicableCurve}}</td>
+										<td>{{obj.prePost}}</td>
+
+										<td>{{obj.finalFtpCategory}}</td>
+										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>							
+									</tr>
+									<tr ng-show="dupList.length!==0">
+										<td ng-class="{'has-dup': true}"colspan="{{policyMapper.length}}">Duplicate rows</td>
+									</tr>
+									<tr ng-repeat="obj in dupList">
 										<td>{{obj.version}}</td>
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.ccyCodeIn}}</td>
@@ -345,9 +422,9 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered "
+							<table id = "mainTable" width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
-								<tbody>
+								<tbody ng-class="{'has-changed': true}">
 									<tr>
 										<th ng-repeat="cHead in policyMapper"><span></span>
 											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
@@ -357,7 +434,7 @@
 										<td style="text-align: center"
 											colspan="{{policyMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': (obj.changed)}">
+									<tr ng-repeat="obj in mainList">
 										<td>{{obj.version}}</td>
 										<td>{{obj.ftpCategory}}</td>
 										<td>{{obj.ccyCodeIn}}</td>
@@ -397,9 +474,9 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered "
+							<table id = "tempTable" width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
-								<tbody>
+								<tbody ng-class="{'has-changed': true}">
 									<tr>
 										<th ng-repeat="cHead in divisionMapper"><span></span>
 											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
@@ -409,7 +486,27 @@
 										<td style="text-align: center"
 											colspan="{{divisionMapper.length}}">No Data available.</td>
 									</tr>
-									<tr ng-repeat="obj in tempList" ng-class="{'has-changed': (obj.changed)}">
+									<tr ng-repeat="obj in tempList">
+										<td>{{obj.version}}</td>
+										<td>{{obj.glSubHeadCode}}</td>
+										<td>{{obj.glshChar}}</td>
+										<td>{{obj.entityCode}}</td>
+										<td>{{obj.category}}</td>
+										<td>{{obj.divisionDesc}}</td>
+										<td>{{obj.officer}}</td>
+										<td>{{obj.subDivisionIn}}</td>
+                                        <td>{{obj.subDivisionNotIn}}</td>
+                                        
+										<td>{{obj.division}}</td>
+										<td>{{obj.finalDivisionDesc}}</td>
+										<td>{{obj.ftpDivisionCode}}</td>
+										<td>{{obj.uploadedDate | date:'yyyy-dd-MM'}}</td>
+									</tr>
+									
+									<tr ng-show="dupList.length!==0">
+										<td ng-class="{'has-dup': true}"colspan="{{divisionMapper.length}}">Duplicate rows</td>
+									</tr>
+									<tr ng-repeat="obj in dupList">
 										<td>{{obj.version}}</td>
 										<td>{{obj.glSubHeadCode}}</td>
 										<td>{{obj.glshChar}}</td>
@@ -438,9 +535,9 @@
 						</div>
 						<div class="panel-body"
 							style="overflow-x: scroll; overflow-y: scroll">
-							<table width="100%" class="table table-bordered "
+							<table id = "mainTable" width="100%" class="table table-bordered "
 								border="0" cellspacing="0" cellpadding="0">
-								<tbody>
+								<tbody ng-class="{'has-changed': true}">
 									<tr>
 										<th ng-repeat="cHead in divisionMapper"><span></span>
 											{{getSplitWord(cHead)}}<span>{{item1.join(" ")}}</span><br>
@@ -449,8 +546,7 @@
 									<tr ng-show="mainList.length==0">
 										<td style="text-align: center"
 											colspan="{{divisionMapper.length}}">No Data available.</td>
-									</tr>
-									<tr ng-repeat="obj in mainList" ng-class="{'has-changed': true}">
+									<tr ng-repeat="obj in mainList">
 										<td>{{obj.version}}</td>
 										<td>{{obj.glSubHeadCode}}</td>
 										<td>{{obj.glshChar}}</td>

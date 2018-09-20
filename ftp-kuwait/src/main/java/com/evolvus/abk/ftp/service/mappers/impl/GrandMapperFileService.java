@@ -41,6 +41,7 @@ import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
 import com.evolvus.abk.ftp.domain.mappers.archivals.FTPGrandMapperArchive;
 import com.evolvus.abk.ftp.domain.mappers.main.FTPGrandMapper;
 import com.evolvus.abk.ftp.domain.mappers.temp.FTPGrandMapperTemp;
+import com.evolvus.abk.ftp.domain.mappers.temp.FTPProductMapperTemp;
 import com.evolvus.abk.ftp.repository.mappers.main.GrandMapperMainRepository;
 import com.evolvus.abk.ftp.repository.mappers.main.archivals.GrandMapperArchiveRepository;
 import com.evolvus.abk.ftp.repository.mappers.temp.GrandMapperTempRepository;
@@ -96,7 +97,9 @@ public class GrandMapperFileService implements MapperFileService {
 			FormulaEvaluator evaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
 			datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
-			rowIterator.next();
+			int numberOfCells = rowIterator.next().getPhysicalNumberOfCells();
+            if(numberOfCells<24)
+            	throw new IllegalArgumentException("File incorrect format.Required 24 columns for Grand mapper upload");
 			// evaluator.evaluateAll();
 
 			List<FTPGrandMapperTemp> mappersList = new ArrayList<>();
@@ -110,7 +113,7 @@ public class GrandMapperFileService implements MapperFileService {
 					mapper = new FTPGrandMapperTemp();
 
 					currentCell = currentRow.getCell(0);
-					mapper.setGlSubheadCode(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setGlSubHeadCode(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(1);
 					mapper.setGlSubheadDesc(mapperConversionService.getStringCellValue(currentCell));
@@ -134,10 +137,10 @@ public class GrandMapperFileService implements MapperFileService {
 					mapper.setUserSubclassCodeNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(8);
-					mapper.setBAcidIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setBacidIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(9);
-					mapper.setBAcidNotIn(mapperConversionService.getStringCellValue(currentCell));
+					mapper.setBacidNotIn(mapperConversionService.getStringCellValue(currentCell));
 
 					currentCell = currentRow.getCell(10);
 					mapper.setDivisionCodeIn(mapperConversionService.getStringCellValue(currentCell));
@@ -214,9 +217,7 @@ public class GrandMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalArgumentException e) {
-			int num = currentRow.getRowNum() + 1;
-			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + num);
+			response.setDescription(e.getMessage());
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -279,13 +280,16 @@ public class GrandMapperFileService implements MapperFileService {
 		Set<String> glSubheadSet = new HashSet<>();
 		glSubheadSet.addAll(tempNotInMain);
 		glSubheadSet.addAll(mainNotInTemp);
+		 List<FTPGrandMapperTemp> duplicateRecords = grandMapperTempRepository
+					.findDuplicatesInTemp();
 		List<FTPGrandMapperTemp> tempNotInMainList = grandMapperTempRepository
-				.findByGlSubheadCodeInAndBankCodeOrderByGlSubheadCode(glSubheadSet, ftpEntity);
+				.findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(glSubheadSet, ftpEntity);
 		List<FTPGrandMapper> mainNotInTempList = grandMapperMainRepository
-				.findByGlSubheadCodeInAndBankCodeOrderByGlSubheadCode(glSubheadSet, ftpEntity);
+				.findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(glSubheadSet, ftpEntity);
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
+		differences.put(Constants.LIST_DUP, duplicateRecords);
 		LOG.info(" End getDifferenceOfTempAndMain ");
 		return differences;
 	}

@@ -56,6 +56,7 @@ app.controller("FileUploadController", [
 			$scope.resetFileForm = function() {
 				$scope.selectedFile = null; 
 				$scope.fileType = "";
+				$scope.message = "";
 			};
 			
 	

@@ -26,5 +26,14 @@ public interface ProductMapperTempRepository extends CrudRepository<FTPProductMa
 	Long deleteInBulkByBankCode(FtpEntity entity);
 
 	Iterable<FTPProductMapperTemp> findByBankCode(FtpEntity ftpEntity);
+	
+	@Query(value ="SELECT tmp.ftp_category ,tmp.uploaded_by ,null as uploaded_date,tmp.version,tmp.bank_id,tmp.ast_liab_clas,tmp.core_non_core ,tmp.core_prnt ,tmp.prod_code," + 
+			"tmp.prod_desc,max(tmp.prod_id) as prod_id from ftp_product_mapper_temp tmp " + 
+			"inner join ftp_product_mapper_temp tmpMap on tmp.prod_id=tmpMap.prod_id " + 
+			" group by tmp.ast_liab_clas," + 
+			"tmp.core_non_core,tmp.core_prnt,tmp.ftp_category,tmp.uploaded_by,tmp.version,tmp.bank_id," + 
+			"tmp.prod_code,tmp.prod_desc having count(*)>1",
+			nativeQuery=true)
+	List<FTPProductMapperTemp> findDuplicatesInTemp();
 
 }

@@ -29,4 +29,17 @@ public interface PolicyMapperTempRepository extends CrudRepository<FTPPolicyMapp
 	Long deleteInBulkByBankCode(FtpEntity entity);
 
 	Iterable<FTPPolicyMapperTemp> findByBankCode(FtpEntity ftpEntity);
+	
+	@Query(value ="SELECT tempMapper.ftp_category,tempMapper.ccy_code_in,tempMapper.ccy_code_not_in,tempMapper.division_code_in,tempMapper.division_code_not_in," + 
+			"tempMapper.orig_division_code_in,tempMapper.orig_division_code_not_in,tempMapper.cust_type_in,tempMapper.cust_type_not_in,tempMapper.subdivision_code_in," + 
+			"tempMapper.subdivision_code_not_in,tempMapper.fixed_float,tempMapper.maturity_date,tempMapper.base_tenor,tempMapper.margin_tenor,tempMapper.applicable_curve,"+
+		    "tempMapper.pre_post,tempMapper.final_ftp_category,tempMapper.uploaded_by ,null as uploaded_date,tempMapper.version,tempMapper.bank_id," + 
+			"max(tempMapper.c_id) as c_id from ftp_curve_mapper_temp tempMapper " + 
+			"inner join ftp_curve_mapper_temp tmpMap on tempMapper.c_id=tmpMap.c_id " + 
+			" group by tempMapper.ftp_category,tempMapper.ccy_code_in,tempMapper.ccy_code_not_in,tempMapper.division_code_in,tempMapper.division_code_not_in," + 
+			"tempMapper.orig_division_code_in,tempMapper.orig_division_code_not_in,tempMapper.cust_type_in,tempMapper.cust_type_not_in,tempMapper.subdivision_code_in," + 
+			"tempMapper.subdivision_code_not_in,tempMapper.fixed_float,tempMapper.maturity_date,tempMapper.base_tenor,tempMapper.margin_tenor,tempMapper.applicable_curve," + 
+			"tempMapper.pre_post,tempMapper.final_ftp_category,tempMapper.uploaded_by ,tempMapper.version,tempMapper.bank_id having count(*)>1",
+			nativeQuery=true)
+	List<FTPPolicyMapperTemp> findDuplicatesInTemp();
 }

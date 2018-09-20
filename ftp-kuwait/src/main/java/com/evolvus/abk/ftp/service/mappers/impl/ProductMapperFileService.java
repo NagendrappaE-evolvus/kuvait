@@ -93,8 +93,9 @@ public class ProductMapperFileService implements MapperFileService {
 			workbook = WorkbookFactory.create(excelFile);
 			datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
-			rowIterator.next();
-
+			int numberOfCells = rowIterator.next().getPhysicalNumberOfCells();
+            if(numberOfCells<6)
+            	throw new IllegalArgumentException("File incorrect format.Required 6 columns for Product mapper upload");
 			List<FTPProductMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
@@ -155,9 +156,7 @@ public class ProductMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalArgumentException e) {
-			int num=currentRow.getRowNum()+1;
-			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + num);
+			response.setDescription(e.getMessage());
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -221,6 +220,8 @@ public class ProductMapperFileService implements MapperFileService {
 		Set<String> ftpCategory = new HashSet<>();
 		ftpCategory.addAll(tempNotInMain);
 		ftpCategory.addAll(mainNotInTemp);
+	    List<FTPProductMapperTemp> duplicateRecords = productMapperTempRepository
+			.findDuplicatesInTemp();
 		List<FTPProductMapperTemp> tempNotInMainList = productMapperTempRepository
 				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategory, ftpEntity);
 		List<FTPProductMapper> mainNotInTempList = productMapperMainRepository
@@ -228,6 +229,7 @@ public class ProductMapperFileService implements MapperFileService {
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
+		differences.put(Constants.LIST_DUP, duplicateRecords);
 		LOG.info(" End getDifferenceOfTempAndMain ");
 		return differences;
 	}

@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name="KWT_FTP_ENTITY")
+@Table(name="FTP_ENTITY")
 @Data
 public class FtpEntity implements Serializable{
 

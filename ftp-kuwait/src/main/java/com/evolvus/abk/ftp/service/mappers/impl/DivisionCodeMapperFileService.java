@@ -42,6 +42,7 @@ import com.evolvus.abk.ftp.domain.mappers.MapperVersion;
 import com.evolvus.abk.ftp.domain.mappers.archivals.FTPDivisionCodeMapperArchive;
 import com.evolvus.abk.ftp.domain.mappers.main.FTPDivisionCodeMapper;
 import com.evolvus.abk.ftp.domain.mappers.temp.FTPDivisionCodeMapperTemp;
+import com.evolvus.abk.ftp.domain.mappers.temp.FTPProductMapperTemp;
 import com.evolvus.abk.ftp.repository.mappers.main.DivisionCodeMapperRepository;
 import com.evolvus.abk.ftp.repository.mappers.main.archivals.DivisionCodeMapperArchiveRepository;
 import com.evolvus.abk.ftp.repository.mappers.temp.DivisionCodeMapperTempRepository;
@@ -97,11 +98,13 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 			datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
 			FormulaEvaluator evaluator = new XSSFFormulaEvaluator((XSSFWorkbook) workbook);
+			int numberOfCells = rowIterator.next().getPhysicalNumberOfCells();
+            if(numberOfCells<11)
+            	throw new IllegalArgumentException("File incorrect format.Required 11 columns for Division mapper upload");
 			List<FTPDivisionCodeMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
 				clearRecords(appUser.getEntity());
-				rowIterator.next();
 				while (rowIterator.hasNext()) {
 					currentRow = rowIterator.next();// currentRow.getLastCellNum()
 					FTPDivisionCodeMapperTemp mapper = null;
@@ -175,9 +178,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalArgumentException e) {
-			int num=currentRow.getRowNum()+1;
-			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + num);
+			response.setDescription(e.getMessage());
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -239,6 +240,8 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 		Set<String> glSubheadSet = new HashSet<>();
 		glSubheadSet.addAll(tempNotInMain);
 		glSubheadSet.addAll(mainNotInTemp);
+		 List<FTPDivisionCodeMapperTemp> duplicateRecords = divisionMapperTempRepository
+					.findDuplicatesInTemp();
 		List<FTPDivisionCodeMapperTemp> tempNotInMainList = divisionMapperTempRepository
 				.findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(glSubheadSet, ftpEntity);
 		List<FTPDivisionCodeMapper> mainNotInTempList = divisionMapperMainRepository
@@ -246,6 +249,7 @@ public class DivisionCodeMapperFileService implements MapperFileService {
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
+		differences.put(Constants.LIST_DUP, duplicateRecords);
 		LOG.info(" End getDifferenceOfTempAndMain ");
 		return differences;
 	}

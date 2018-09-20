@@ -22,7 +22,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name="KWT_FTP_USERS")
+@Table(name="FTP_USERS")
 public class User implements Serializable{
 	
 	/**
@@ -66,8 +66,18 @@ public class User implements Serializable{
 	@Column(name="IS_ADMIN")
 	private Boolean isAdmin;
 	
+	@Column(name="RATES")
+	private Boolean rates;
+	
+	@Column(name="MAPPERS")
+	private Boolean mappers;
+	
+	@Column(name="USER_MNGT")
+	private Boolean userMngt;
+	
 	@Column(name="LAST_UPDATED_DATE")
 	private Date lastUpdatedDate;
+	
 	
 	@JsonIgnore
 	@Transient

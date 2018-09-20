@@ -34,7 +34,7 @@ public class MapperConversionService {
 		LOG.info("Start tempToMain");
 		FTPGrandMapper mainMapper = new FTPGrandMapper();
 
-		mainMapper.setGlSubheadCode(tempMapper.getGlSubheadCode());
+		mainMapper.setGlSubHeadCode(tempMapper.getGlSubHeadCode());
 		mainMapper.setGlSubheadDesc(tempMapper.getGlSubheadDesc());
 
 		mainMapper.setDrFtpCat(tempMapper.getDrFtpCat());
@@ -46,8 +46,8 @@ public class MapperConversionService {
 		mainMapper.setUserSubclassCodeIn(tempMapper.getUserSubclassCodeIn());
 		mainMapper.setUserSubclassCodeNotIn(tempMapper.getUserSubclassCodeNotIn());
 
-		mainMapper.setBAcidIn(tempMapper.getBAcidIn());
-		mainMapper.setBAcidNotIn(tempMapper.getBAcidNotIn());
+		mainMapper.setBacidIn(tempMapper.getBacidIn());
+		mainMapper.setBacidNotIn(tempMapper.getBacidNotIn());
 
 		mainMapper.setDivisionCodeIn(tempMapper.getDivisionCodeIn());
 		mainMapper.setDivisionCodeNotIn(tempMapper.getDivisionCodeNotIn());
@@ -84,7 +84,7 @@ public class MapperConversionService {
 		LOG.info("Start mainToArchive");
 		FTPGrandMapperArchive archivalMapper = new FTPGrandMapperArchive();
 
-		archivalMapper.setGlSubheadCode(mainMapper.getGlSubheadCode());
+		archivalMapper.setGlSubHeadCode(mainMapper.getGlSubHeadCode());
 		archivalMapper.setGlSubheadDesc(mainMapper.getGlSubheadDesc());
 
 		archivalMapper.setDrFtpCat(mainMapper.getDrFtpCat());
@@ -96,8 +96,8 @@ public class MapperConversionService {
 		archivalMapper.setUserSubclassCodeIn(mainMapper.getUserSubclassCodeIn());
 		archivalMapper.setUserSubclassCodeNotIn(mainMapper.getUserSubclassCodeNotIn());
 
-		archivalMapper.setBAcidIn(mainMapper.getBAcidIn());
-		archivalMapper.setBAcidNotIn(mainMapper.getBAcidNotIn());
+		archivalMapper.setBacidIn(mainMapper.getBacidIn());
+		archivalMapper.setBacidNotIn(mainMapper.getBacidNotIn());
 
 		archivalMapper.setDivisionCodeIn(mainMapper.getDivisionCodeIn());
 		archivalMapper.setDivisionCodeNotIn(mainMapper.getDivisionCodeNotIn());
@@ -369,7 +369,7 @@ public class MapperConversionService {
 		if (currentCell == null) {
 			return "";
 		} else if (currentCell.getCellType() == Cell.CELL_TYPE_STRING) {
-			return currentCell.getStringCellValue().trim();
+			return currentCell.getStringCellValue();
 		} else if (currentCell.getCellType() == Cell.CELL_TYPE_FORMULA) {
 			return currentCell.getRichStringCellValue().toString().trim();
 		} else if (currentCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {

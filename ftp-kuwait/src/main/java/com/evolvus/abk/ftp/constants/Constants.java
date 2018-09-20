@@ -27,6 +27,7 @@ public interface Constants {
 	String STATUS_NO_DATA="NODATA";
 	String LIST_TEMP = "TEMP";
 	String LIST_MAIN = "MAIN";
+	String LIST_DUP = "DUP";
 	String STATUS_FAIL="FAIL";
 	
 	String OP_EQUAL="=";
@@ -59,4 +60,5 @@ public interface Constants {
 	String FROM="from";
 	String TO = "to";
 	String COMPARISION_DONE = "Comparison Results as shown below, if comparison is fine please press Proceed else Cancel";
+	
 }

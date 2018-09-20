@@ -23,13 +23,25 @@ public interface GrandMapperTempRepository extends CrudRepository<FTPGrandMapper
 			+ "mapper.instrument_sub_class_not_in,mapper.group_by_logic,mapper.count) from ftp_grand_mapper mapper where mapper.bank_id=:bankCode)", nativeQuery = true)
 	List<String> fetchRecordsNotInMain(@Param("bankCode") String bankCode);
 
-	List<FTPGrandMapperTemp> findByGlSubheadCodeInAndBankCodeOrderByGlSubheadCode(Set<String> glSubheadCode,
+	List<FTPGrandMapperTemp> findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(Set<String> glSubheadCode,
 			FtpEntity entity);
 
 	@Transactional
 	Long deleteInBulkByBankCode(FtpEntity entity);
 
 	Iterable<FTPGrandMapperTemp> findByBankCode(FtpEntity ftpEntity);
+	
+	@Query(value ="SELECT  tmpMapper.gl_sub_head_code,tmpMapper.gl_sub_head_desc,tmpMapper.dr_ftp_category,tmpMapper.entity_no_in,tmpMapper.entity_no_not_in,tmpMapper.cr_ftp_category,tmpMapper.user_subclass_code_in,tmpMapper.user_subclass_code_not_in," + 
+			"tmpMapper.bacid_in,tmpMapper.bacid_not_in,tmpMapper.division_code_in,tmpMapper.division_code_not_in,tmpMapper.cust_in_length,tmpMapper.cust_type_in,tmpMapper.cust_notin_length," + 
+			"tmpMapper.cust_type_not_in,tmpMapper.subdivision_code_in,tmpMapper.subdivision_code_not_in,tmpMapper.trading_book_name_in,tmpMapper.trading_book_name_not_in,tmpMapper.instrument_sub_class_in," + 
+			"tmpMapper.instrument_sub_class_not_in,tmpMapper.group_by_logic,tmpMapper.count,tmpMapper.uploaded_by ,null as uploaded_date,tmpMapper.version,tmpMapper.bank_id,max(tmpMapper.g_id) as g_id from ftp_grand_mapper_temp tmpMapper " + 
+			"inner join ftp_grand_mapper_temp tmpMap2 on tmpMapper.g_id=tmpMap2.g_id " + 
+			"group by tmpMapper.gl_sub_head_code,tmpMapper.gl_sub_head_desc,tmpMapper.dr_ftp_category,tmpMapper.entity_no_in,tmpMapper.entity_no_not_in,tmpMapper.cr_ftp_category,tmpMapper.user_subclass_code_in,tmpMapper.user_subclass_code_not_in," + 
+			"tmpMapper.bacid_in,tmpMapper.bacid_not_in,tmpMapper.division_code_in,tmpMapper.division_code_not_in,tmpMapper.cust_in_length,tmpMapper.cust_type_in,tmpMapper.cust_notin_length," + 
+			"tmpMapper.cust_type_not_in,tmpMapper.subdivision_code_in,tmpMapper.subdivision_code_not_in,tmpMapper.trading_book_name_in,tmpMapper.trading_book_name_not_in,tmpMapper.instrument_sub_class_in," + 
+			"tmpMapper.instrument_sub_class_not_in,tmpMapper.group_by_logic,tmpMapper.count,tmpMapper.uploaded_by,tmpMapper.version,tmpMapper.bank_id having count(*)>1",
+			nativeQuery=true)
+	List<FTPGrandMapperTemp> findDuplicatesInTemp();
 	
 	
 }

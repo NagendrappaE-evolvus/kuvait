@@ -129,4 +129,24 @@ public class UserController {
 		LOG.debug("End getByCode => /getSchmMap/" + username);
 		return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
 	}
+	
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
+	public ResponseEntity<CustomResponse> deleteUser(@RequestBody User user) {
+		HttpStatus httpStatus = HttpStatus.OK;
+		LOG.debug("Start saveUser");
+		CustomResponse customResponse = null;
+		try {
+			userService.deleteUser(user);
+			customResponse = new CustomResponse();
+			customResponse.setStatus(Constants.STATUS_OK);
+			customResponse.setDescription("User deleted successfully.");
+		} catch (Exception e) {
+			customResponse = new CustomResponse();
+			customResponse.setStatus(Constants.STATUS_FAIL);
+			customResponse.setDescription("Error in deleting user.");
+			LOG.error(customResponse.getDescription() + "=>" + ExceptionUtils.getStackTrace(e));
+		}
+		LOG.debug("End saveUser");
+		return new ResponseEntity<CustomResponse>(customResponse, httpStatus);
+	}
 }

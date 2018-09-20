@@ -29,6 +29,7 @@ app.controller("MapperController", [
 			$scope.showTable=false;
 			$scope.tempList = [];
 			$scope.mainList = [];
+			$scope.dupList = [];
 			$scope.serveUploadFile = function(fileType, file) {
 				$scope.message = "UPLOADING… Please Wait";
 				$scope.showLoading=true;
@@ -60,22 +61,27 @@ app.controller("MapperController", [
 						$scope.showTable=true;
 						$scope.tempList = response.data.TEMP;
 						$scope.mainList = response.data.MAIN;
+						$scope.dupList = response.data.DUP;
 						if($scope.mainList.length==0 && $scope.tempList.length==0 ){
 							$scope.message = "Comparision done...No differences found";
 						} else{
-							if($scope.fileType==='CT') {
-								$scope.findInGrandMapperMain();
-								$scope.findInGrandMapperTemp();
-							} else if ($scope.fileType==='PD') {
-								$scope.findInProductMapperMain();
-								$scope.findInProductMapperTemp();
-							} else if ($scope.fileType==='PC') {
-								$scope.findInPolicyMapperMain();
-								$scope.findInPolicyMapperTemp();
-							} else if ($scope.fileType==='DC') {
-								$scope.findInDivisionMapperMain();
-								$scope.findInDivisionMapperTemp();
-							}
+							setTimeout(function(){
+								//$scope.showHighlightInTemp();
+								$scope.showHighlight();
+							},1000);
+//							if($scope.fileType==='CT') {
+//								$scope.findInGrandMapperMain();
+//								$scope.findInGrandMapperTemp();
+//							} else if ($scope.fileType==='PD') {
+//								$scope.findInProductMapperMain();
+//								$scope.findInProductMapperTemp();
+//							} else if ($scope.fileType==='PC') {
+//								$scope.findInPolicyMapperMain();
+//								$scope.findInPolicyMapperTemp();
+//							} else if ($scope.fileType==='DC') {
+//								$scope.findInDivisionMapperMain();
+//								$scope.findInDivisionMapperTemp();
+//							}
 						}
 					
 					}
@@ -196,6 +202,65 @@ app.controller("MapperController", [
 	              $scope.item2.push(res[i]);
 	          }	          
 	      };
+	      
+	      $scope.showHighlight = function() {
+	    	  var mainRows = document.getElementById("mainTable").getElementsByTagName("tr");
+	    	  var tempRows = document.getElementById("tempTable").getElementsByTagName("tr");
+	    	  var continu =false;
+	    	  var p=0;
+	    	  var i=0;
+	    	  var dup = false;
+//				for(m=1;m<=$scope.mainList.length;m++){
+//					change[m]= new Array(10);
+//				}			
+		    for(n=0;n<$scope.mainList.length;n++)
+		    {    		 		     
+		      var j=0;
+		      p=0;
+		      i=0;
+		      while(p<$scope.tempList.length){
+		    	  i=0;
+		      if($scope.fileType=='PD' || $scope.fileType=='PC'){
+		    		 while(!continu && p<$scope.tempList.length){
+		    			 if($scope.mainList[n].ftpCategory==$scope.tempList[p].ftpCategory){
+		    			 continu = true;
+		    			 }
+		    	  		 p++;
+		    		 }
+		      }else{
+		    		 while(!continu && p<$scope.tempList.length){
+		    			 if($scope.mainList[n].glSubHeadCode==$scope.tempList[p].glSubHeadCode){
+		    			 continu = true;
+		    			 }
+		    	  		 p++;
+		    		 }
+		      }	
+	    		 p=p-1;
+	    		 if(continu){
+		    	 angular.forEach($scope.mainList[n],function(val,key)
+		    	 { 
+		    		 j=0;val=val+"";
+		    		 if(key!=="id" && key!=="glSubHeadCode" && key!=="ftpCategory" && key!=="uploadedDate"  && key!=="version" && key!="$$hashKey"){
+		    		angular.forEach($scope.tempList[p],function(value,key2)
+		    		{		    		
+		    			console.log("keyyyyyyyyyy= "+key);console.log("222keyyyyyyyyyy= "+key2);
+		    			value=value+"";
+		    			if(i==j && key2!=="id" && key2!=="glSubheadCode" && key2!=="ftpCategory" && key2!=="uploadedDate"  && key2!=="version" && key2!="$$hashKey"){
+		    			    if(val!==value) {	 			 
+		    			    	mainRows[n+2].cells[j].style.backgroundColor = "#f0b27a";
+		    			    	tempRows[p+2].cells[j].style.backgroundColor = "#f0b27a";
+		    			    	console.log("diff found: temp= "+value +" main : "+val+"n= "+n+"j= "+j);
+			    		     }
+		    			 } j++;		    			
+		    		 });
+		    		 } i++;
+		    	 });    				    	
+	    		 }
+	    		 continu = false;
+	    		 p=p+1;
+		       }
+		     }
+		   }
 	      
 	      $scope.findInGrandMapperMain = function() {
 	    	 var changed = true;

@@ -23,7 +23,7 @@ public interface GrandMapperMainRepository extends CrudRepository<FTPGrandMapper
 			nativeQuery=true)
 	List<String> fetchRecordsNotInTemp(@Param("bankCode") String bankCode);
 	
-	List<FTPGrandMapper> findByGlSubheadCodeInAndBankCodeOrderByGlSubheadCode(Set<String> glSubheadCode,FtpEntity ftpEntity);
+	List<FTPGrandMapper> findByGlSubHeadCodeInAndBankCodeOrderByGlSubHeadCode(Set<String> glSubHeadCode,FtpEntity ftpEntity);
 
 	Iterable<FTPGrandMapper> findByBankCode(FtpEntity ftpEntity);
 

@@ -126,5 +126,9 @@ public class UserService {
 		LOG.debug("End getPagedUsers");
 		return pagedUsers;
 	}
+	
+	public void deleteUser(User user) {
+		userRepository.delete(user);
+	}
 
 }

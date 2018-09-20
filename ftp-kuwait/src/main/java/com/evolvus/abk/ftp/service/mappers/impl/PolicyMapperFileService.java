@@ -40,6 +40,7 @@ import com.evolvus.abk.ftp.domain.mappers.archivals.FTPPolicyMapperArchive;
 import com.evolvus.abk.ftp.domain.mappers.main.FTPPolicyMapper;
 import com.evolvus.abk.ftp.domain.mappers.temp.FTPGrandMapperTemp;
 import com.evolvus.abk.ftp.domain.mappers.temp.FTPPolicyMapperTemp;
+import com.evolvus.abk.ftp.domain.mappers.temp.FTPProductMapperTemp;
 import com.evolvus.abk.ftp.repository.mappers.main.PolicyMapperRepository;
 import com.evolvus.abk.ftp.repository.mappers.main.archivals.PolicyMapperArchiveRepository;
 import com.evolvus.abk.ftp.repository.mappers.temp.PolicyMapperTempRepository;
@@ -94,13 +95,14 @@ public class PolicyMapperFileService implements MapperFileService {
 			workbook = WorkbookFactory.create(excelFile);
 			datatypeSheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = datatypeSheet.iterator();
-
+			int numberOfCells = rowIterator.next().getPhysicalNumberOfCells();
+            if(numberOfCells<18)
+            	throw new IllegalArgumentException("File incorrect format.Required 18 columns for Product mapper upload");
 			List<FTPPolicyMapperTemp> mappersList = new ArrayList<>();
 			Long numberOfRecords = 0L;
 			if (rowIterator.hasNext()) {
 				// Clearing existing records
 				clearRecords(appUser.getEntity());
-				rowIterator.next();
 				while (rowIterator.hasNext()) {
 					currentRow = rowIterator.next();
 					FTPPolicyMapperTemp mapper = null;
@@ -193,9 +195,7 @@ public class PolicyMapperFileService implements MapperFileService {
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
 		} catch (IllegalArgumentException e) {
-			int num=currentRow.getRowNum()+1;
-			response.setDescription("Unable to parse data, error while processing in sheet "
-					+ datatypeSheet.getSheetName() + ", in row number " + num);
+			response.setDescription(e.getMessage());
 			response.setStatus(Constants.STATUS_FAIL);
 			audit.setStackTrace(ExceptionUtils.getStackTrace(e));
 			LOG.error(response.getDescription() + " => " + audit.getStackTrace());
@@ -258,6 +258,8 @@ public class PolicyMapperFileService implements MapperFileService {
 		Set<String> ftpCategorySet = new HashSet<>();
 		ftpCategorySet.addAll(tempNotInMain);
 		ftpCategorySet.addAll(mainNotInTemp);
+		List<FTPPolicyMapperTemp> duplicateRecords = policyMapperTempRepository
+					.findDuplicatesInTemp();
 		List<FTPPolicyMapperTemp> tempNotInMainList = policyMapperTempRepository
 				.findByFtpCategoryInAndBankCodeOrderByFtpCategory(ftpCategorySet,ftpEntity);
 		List<FTPPolicyMapper> mainNotInTempList = policyMapperRepository
@@ -265,6 +267,7 @@ public class PolicyMapperFileService implements MapperFileService {
 		Map<String, List<? extends Object>> differences = new HashMap<>();
 		differences.put(Constants.LIST_MAIN, mainNotInTempList);
 		differences.put(Constants.LIST_TEMP, tempNotInMainList);
+		differences.put(Constants.LIST_DUP, duplicateRecords);
 		LOG.info(" End getDifferenceOfTempAndMain ");
 		return differences;
 	}

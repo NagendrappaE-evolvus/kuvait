@@ -30,4 +30,14 @@ public interface DivisionCodeMapperTempRepository extends CrudRepository<FTPDivi
 	Long deleteInBulkByBankCode(FtpEntity ftpEntity);
 
 	Iterable<FTPDivisionCodeMapperTemp> findByBankCode(FtpEntity ftpEntity);
+	
+	@Query(value ="SELECT tempMapper.gl_sub_head_code,tempMapper.glsh_char ,tempMapper.entity_code ,tempMapper.category," + 
+			"tempMapper.division_desc,tempMapper.officer,tempMapper.subdivision_in,tempMapper.subdivision_not_in,tempMapper.ftp_division_code,tempMapper.division," + 
+			"tempMapper.final_division_desc,tempMapper.uploaded_by,tempMapper.version,null as uploaded_date,tempMapper.bank_id,max(tempMapper.d_id) as d_id from FTP_FINAL_DIVISION_MAPPER_TEMP tempMapper " + 
+			"inner join FTP_FINAL_DIVISION_MAPPER_TEMP tmpMap on tempMapper.d_id=tmpMap.d_id " + 
+			"group by tempMapper.gl_sub_head_code,tempMapper.glsh_char ,tempMapper.entity_code ,tempMapper.category," + 
+			"tempMapper.division_desc,tempMapper.officer,tempMapper.subdivision_in,tempMapper.subdivision_not_in,tempMapper.ftp_division_code,tempMapper.division," + 
+			"tempMapper.final_division_desc,tempMapper.uploaded_by,tempMapper.version,tempMapper.bank_id having count(*)>1",
+			nativeQuery=true)
+	List<FTPDivisionCodeMapperTemp> findDuplicatesInTemp();
 }
